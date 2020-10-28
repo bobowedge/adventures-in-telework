@@ -6,8 +6,8 @@
 # https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
 # https://learnxinyminutes.com/docs/yaml/
 
-title: fastpages
-description: An easy to use blogging platform with support for Jupyter Notebooks.
+title: Adventures in Telework
+description: What happens when I work when I'm not at work
 github_username: bobowedge
 # you can comment the below line out if your repo name is not different than your baseurl
 github_repo: "adventures-in-telework"
@@ -39,8 +39,8 @@ baseurl: "/adventures-in-telework" # the subpath of your site, e.g. "/blog".
 # Github and twitter are optional:
 minima:
   social_links:
-    twitter: fastdotai
-    github: fastai
+    twitter: 
+    github: bobowedge
 
 # Set this to true to get LaTeX math equation support
 use_math: 
