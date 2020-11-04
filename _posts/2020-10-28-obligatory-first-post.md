@@ -1,3 +1,10 @@
+---
+toc: true
+layout: post
+description: Everything has a reason, even if it's not a good one 
+categories: [markdown]
+title: Obligatory First Post
+---
 # Obligatory First Post
 
 ## Blogging is hard...Let's do math
@@ -6,6 +13,7 @@ There have been a couple of times in my life where I felt at least somewhat draw
 1. No one will read what you wrote, probably including yourself
 1. It's too much work to stay active blogging and you know you're not gonna do it
 1. If you're writing, then you're not working or coding or doing something productive
+
 These thoughts inevitably kill any desire I have to keep writing. I think the last time I wrote anything on regular basis was on Xanga, probably more than 10 years ago.
 
 ## So, why now?
