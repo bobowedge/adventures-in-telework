@@ -7,6 +7,7 @@
 <title>Adventures in PyTorch | Adventures in Telework</title>
 <meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="Adventures in PyTorch" />
+<meta name="author" content="Matt Bowen" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Generating fake chat logs" />
 <meta property="og:description" content="Generating fake chat logs" />
@@ -16,7 +17,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-11-12T00:00:00-06:00" />
 <script type="application/ld+json">
-{"url":"https://bobowedge.github.io/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html","@type":"BlogPosting","headline":"Adventures in PyTorch","dateModified":"2020-11-12T00:00:00-06:00","datePublished":"2020-11-12T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://bobowedge.github.io/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html"},"description":"Generating fake chat logs","@context":"https://schema.org"}</script>
+{"url":"https://bobowedge.github.io/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html","@type":"BlogPosting","headline":"Adventures in PyTorch","dateModified":"2020-11-12T00:00:00-06:00","datePublished":"2020-11-12T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://bobowedge.github.io/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html"},"author":{"@type":"Person","name":"Matt Bowen"},"description":"Generating fake chat logs","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/adventures-in-telework/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://bobowedge.github.io/adventures-in-telework/feed.xml" title="Adventures in Telework" /><link rel="shortcut icon" type="image/x-icon" href="/adventures-in-telework/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -79,11 +80,13 @@ window.onload = wrap_img;
 <p class="page-description">Generating fake chat logs</p>
 <p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-11-12T00:00:00-06:00" itemprop="datePublished">
         Nov 12, 2020
-      </time>
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Matt Bowen</span></span>
        • <span class="read-time" title="Estimated read time">
     
     
-      11 min read
+      12 min read
     
 </span></p>
 
@@ -138,24 +141,17 @@ window.onload = wrap_img;
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Introduction">Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>I started this telework journey into learning more about deep learning by watching <a href="https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html">this video</a>. I had some prior exposure to PyTorch, but most of my work was cut and pasting someone else's code, without really grokking much of what I was doing.</p>
-<p>I didn't get that much that I remember out of the video itself (not unexpected for something titled a "60-minute blitz"), but I started poking around at some of the <a href="https://github.com/pytorch/examples">examples</a>.  My primary interest in machine learning is in using it for language modeling, so the "Word-level language modeling RNN" code particularly caught my eye. I wanted to try to understand the different pieces, so what follows is my attempt to rewrite a trimmed down version of that example using my own data.</p>
+<p>My telework journey into better understanding of deep learning began a few weeks back by watching <a href="https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html">this video</a>. I had some prior exposure to PyTorch, but most of it was cut and pasting someone else's code, without really grokking much of what I was doing.</p>
+<p>I don't remember out of the video itself (not unexpected for something titled a "60-minute blitz"), but I started poking around at some of the <a href="https://github.com/pytorch/examples">examples</a>.  My primary interest in machine learning is its use in natural language processing or language modeling and, thus, the "Word-level language modeling RNN" code particularly caught my eye. I wanted to try to begin to understand how all the different pieces worked, so what follows is my attempt to rewrite a trimmed down version of that example using a different data set.</p>
 <h2 id="Data-Prep">Data Prep<a class="anchor-link" href="#Data-Prep"> </a>
 </h2>
-<p>The first data I used was a personal Google Hangouts chatroom I have had with a few friends since sometime in 2018. You can use <a href="https://takeout.google.com/">Google Takeout</a> to download copies of any of your Google data and using that with Hangouts gave me a <code>json</code> dump of the chat along with the attachments (read: memes) that were posted.  I needed to massage that <code>json</code> dump (+ memes) into text to get something interpretable by both PyTorch and myself.
+<p>The data I used was a personal Google Hangouts chatroom I have had with a few friends since sometime in 2018. I learend that you can use <a href="https://takeout.google.com/">Google Takeout</a> to download copies of any of your Google data. Using that with Hangouts gave me a <code>json</code> dump of the chat along with the attachments (read: memes) that were posted. This dump had a lot of extraneous information and wasn't exactly primed for reading by either myself or PyTorch, so I needed to massage that <code>json</code> dump into text to get something usable. 
 </p>
 <div class="flash flash-error">
     <svg class="octicon octicon-alert octicon octicon-alert" viewbox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg>
-    <strong>Warning: </strong>Some of the chat content may contain the profanity or stupidity.
+    <strong>Warning: </strong>Some of the chat content may contain profanity or stupidity.
 </div>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>First, load the data using the <code>json</code> module in Python:</p>
+First order of business, load the data into Python using the <code>json</code> module:
 
 </div>
 </div>
@@ -198,7 +194,8 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sender_lookup</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"108076694707330228373"</span><span class="p">:</span> <span class="s2">"Kappa"</span><span class="p">,</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Match IDs to names</span>
+<span class="n">sender_lookup</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"108076694707330228373"</span><span class="p">:</span> <span class="s2">"Kappa"</span><span class="p">,</span>
                  <span class="s2">"107112383293353696822"</span><span class="p">:</span> <span class="s2">"Beta"</span><span class="p">,</span>
                  <span class="s2">"111672618051461612345"</span><span class="p">:</span> <span class="s2">"Omega"</span><span class="p">,</span>
                  <span class="s2">"112812509779111539276"</span><span class="p">:</span> <span class="s2">"Psi"</span><span class="p">,</span>
@@ -228,7 +225,8 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">meme</span> <span class="o">=</span> <span class="s2">"&lt;MEME&gt;"</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Replacement text for memes</span>
+<span class="n">meme</span> <span class="o">=</span> <span class="s2">"&lt;MEME&gt;"</span> 
 </pre></div>
 
     </div>
@@ -241,7 +239,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Each message in the <code>json</code> dictionary was listed as an 'event', a dictionary with key "chat_message" and sub-key "message_content". From there, I could get the sender ID, timestamp, and actual content of the message</p>
+<p>Each message in the <code>json</code> data structure was listed as an 'event', a dictionary with key "chat_message" and sub-key "message_content". From there, I could get the sender ID, timestamp, and actual content of the message</p>
 
 </div>
 </div>
@@ -253,12 +251,13 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"conversations"</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">"events"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Set of keys to descend into json tree</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"conversations"</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">"events"</span><span class="p">)</span>
 
-<span class="c1"># Descend the tree to </span>
+<span class="c1"># Descend the tree to the events list </span>
 <span class="n">events</span> <span class="o">=</span> <span class="n">data</span>
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-        <span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
 <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span> 
 
@@ -414,7 +413,7 @@ Kappa :: Lol
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Since I now already had the messages loaded into memory and I wasn't a big fan of their Corpus class (though it probably scales better with large files), I rewrote it, along with the ability to adjust how the data was split between training, validation, and test data</p>
+<p>I wasn't a big fan of how the example wrote their Corpus class, since it required inputting a file directory path where the data was already split into training, validation, and test sets (though it probably works better for large files). I rewrote it, allowing for messages already loaded into memory and splitting the data into training/validation/test <em>after</em> the messages were sent into the class.  In the end, you end up with the same three tensors: <code>train</code>, <code>valid</code>, and <code>test</code>.</p>
 
 </div>
 </div>
@@ -489,8 +488,6 @@ Kappa :: Lol
         <span class="bp">self</span><span class="o">.</span><span class="n">train</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">valid</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-        
-        
 </pre></div>
 
     </div>
@@ -504,7 +501,7 @@ Kappa :: Lol
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Next, we batchify in the same way that they did</p>
+<p>Next, we batchify in the same way as the example</p>
 
 </div>
 </div>
@@ -518,6 +515,7 @@ Kappa :: Lol
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">chat_corpus</span> <span class="o">=</span> <span class="n">Corpus</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
 
+<span class="c1"># Defaults in the example</span>
 <span class="n">train_batch_size</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="n">eval_batch_size</span> <span class="o">=</span> <span class="mi">10</span>
 
@@ -543,7 +541,7 @@ Kappa :: Lol
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Build-the-model">Build the model<a class="anchor-link" href="#Build-the-model"> </a>
 </h2>
-<p>The example code gave lots of options for what the model could be. That was overkill for what I wanted and didn't really help with understanding, so I stuck to an <a href="https://en.wikipedia.org/wiki/Long_short-term_memory">LSTM</a> model, which was one of the options and rewrote the model class to assume that an LSTM was used.</p>
+<p>The example code gave lots of options for what the model could be. That was overkill for what I wanted and didn't really help with understanding, so I stuck to an <a href="https://en.wikipedia.org/wiki/Long_short-term_memory">LSTM</a> model.  LSTM was one of the model options in the example and rewrote its model class to assume that an LSTM was used.</p>
 
 </div>
 </div>
@@ -632,6 +630,14 @@ Kappa :: Lol
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Setup for the rewritten model class (now called LSTM).</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
