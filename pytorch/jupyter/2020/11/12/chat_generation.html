@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Adventures in PyTorch | Adventures in Telework</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Adventures in PyTorch" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Generating fake chat logs" />
+<meta property="og:description" content="Generating fake chat logs" />
+<link rel="canonical" href="https://bobowedge.github.io/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html" />
+<meta property="og:url" content="https://bobowedge.github.io/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html" />
+<meta property="og:site_name" content="Adventures in Telework" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-11-12T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"https://bobowedge.github.io/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html","@type":"BlogPosting","headline":"Adventures in PyTorch","dateModified":"2020-11-12T00:00:00-06:00","datePublished":"2020-11-12T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://bobowedge.github.io/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html"},"description":"Generating fake chat logs","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/adventures-in-telework/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://bobowedge.github.io/adventures-in-telework/feed.xml" title="Adventures in Telework" /><link rel="shortcut icon" type="image/x-icon" href="/adventures-in-telework/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper">
+<a class="site-title" rel="author" href="/adventures-in-telework/">Adventures in Telework</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger">
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewbox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+<a class="page-link" href="/adventures-in-telework/about/">About Me</a><a class="page-link" href="/adventures-in-telework/search/">Search</a><a class="page-link" href="/adventures-in-telework/categories/">Tags</a>
+</div>
+      </nav>
+</div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Adventures in PyTorch</h1>
+<p class="page-description">Generating fake chat logs</p>
+<p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-11-12T00:00:00-06:00" itemprop="datePublished">
+        Nov 12, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      11 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i> 
+      
+        <a class="category-tags-link" href="/adventures-in-telework/categories/#pytorch">pytorch</a>
+         
+      
+        <a class="category-tags-link" href="/adventures-in-telework/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/bobowedge/adventures-in-telework/tree/master/_notebooks/2020-11-12-chat_generation.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/bobowedge/adventures-in-telework/master?filepath=_notebooks%2F2020-11-12-chat_generation.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/binder.svg" alt="Open In Binder">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/bobowedge/adventures-in-telework/blob/master/_notebooks/2020-11-12-chat_generation.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/colab.svg" alt="Open In Colab">
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-11-12-chat_generation.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Introduction">Introduction<a class="anchor-link" href="#Introduction"> </a>
+</h2>
+<p>I started this telework journey into learning more about deep learning by watching <a href="https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html">this video</a>. I had some prior exposure to PyTorch, but most of my work was cut and pasting someone else's code, without really grokking much of what I was doing.</p>
+<p>I didn't get that much that I remember out of the video itself (not unexpected for something titled a "60-minute blitz"), but I started poking around at some of the <a href="https://github.com/pytorch/examples">examples</a>.  My primary interest in machine learning is in using it for language modeling, so the "Word-level language modeling RNN" code particularly caught my eye. I wanted to try to understand the different pieces, so what follows is my attempt to rewrite a trimmed down version of that example using my own data.</p>
+<h2 id="Data-Prep">Data Prep<a class="anchor-link" href="#Data-Prep"> </a>
+</h2>
+<p>The first data I used was a personal Google Hangouts chatroom I have had with a few friends since sometime in 2018. You can use <a href="https://takeout.google.com/">Google Takeout</a> to download copies of any of your Google data and using that with Hangouts gave me a <code>json</code> dump of the chat along with the attachments (read: memes) that were posted.  I needed to massage that <code>json</code> dump (+ memes) into text to get something interpretable by both PyTorch and myself.
+</p>
+<div class="flash flash-error">
+    <svg class="octicon octicon-alert octicon octicon-alert" viewbox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg>
+    <strong>Warning: </strong>Some of the chat content may contain the profanity or stupidity.
+</div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>First, load the data using the <code>json</code> module in Python:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="c1"># Load the data from the chatfile</span>
+<span class="n">json_filename</span> <span class="o">=</span> <span class="s2">".</span><span class="se">\\</span><span class="s2">data</span><span class="se">\\</span><span class="s2">Takeout</span><span class="se">\\</span><span class="s2">Hangouts</span><span class="se">\\</span><span class="s2">Hangouts.json"</span>
+<span class="n">json_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+<span class="n">json_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>After some digging and verification, I matched everyone's ID in chat to their real name and saved a lookup table with that info (names have been changed to protect the not-so-innocent).</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sender_lookup</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"108076694707330228373"</span><span class="p">:</span> <span class="s2">"Kappa"</span><span class="p">,</span>
+                 <span class="s2">"107112383293353696822"</span><span class="p">:</span> <span class="s2">"Beta"</span><span class="p">,</span>
+                 <span class="s2">"111672618051461612345"</span><span class="p">:</span> <span class="s2">"Omega"</span><span class="p">,</span>
+                 <span class="s2">"112812509779111539276"</span><span class="p">:</span> <span class="s2">"Psi"</span><span class="p">,</span>
+                 <span class="s2">"114685444329830376810"</span><span class="p">:</span> <span class="s2">"Gamma"</span><span class="p">,</span>
+                 <span class="s2">"112861108657200483380"</span><span class="p">:</span> <span class="s2">"Sigma"</span><span class="p">}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since I was focused on language modeling, I didn't feel like dealing with pictures or attachments, but I wanted to account for them in some way when they came up in chat, so I put in a substitute phrase for whenever they showed up:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">meme</span> <span class="o">=</span> <span class="s2">"&lt;MEME&gt;"</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Each message in the <code>json</code> dictionary was listed as an 'event', a dictionary with key "chat_message" and sub-key "message_content". From there, I could get the sender ID, timestamp, and actual content of the message</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"conversations"</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">"events"</span><span class="p">)</span>
+
+<span class="c1"># Descend the tree to </span>
+<span class="n">events</span> <span class="o">=</span> <span class="n">data</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+<span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span> 
+
+<span class="c1"># Loop through the events</span>
+<span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+    <span class="c1"># Check for a valid message</span>
+    <span class="k">if</span> <span class="s2">"chat_message"</span> <span class="ow">in</span> <span class="n">event</span><span class="p">:</span>
+        <span class="n">msg_content</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">"chat_message"</span><span class="p">][</span><span class="s2">"message_content"</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="c1"># Timestamp of the message, which helps with sorting correctly later</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">"timestamp"</span><span class="p">])</span>
+    <span class="c1"># Message sender</span>
+    <span class="n">sender</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">"sender_id"</span><span class="p">][</span><span class="s2">"gaia_id"</span><span class="p">]</span>
+    <span class="n">sender</span> <span class="o">=</span> <span class="n">sender_lookup</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span>
+
+    <span class="c1"># Message content</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="k">if</span> <span class="s2">"segment"</span> <span class="ow">in</span> <span class="n">msg_content</span><span class="p">:</span>
+        <span class="n">segment</span> <span class="o">=</span> <span class="n">msg_content</span><span class="p">[</span><span class="s2">"segment"</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">segment</span><span class="p">:</span>
+            <span class="c1"># Text messages</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"TEXT"</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="s2">"text"</span><span class="p">]</span>
+            <span class="c1"># Non-text messages</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="n">meme</span> <span class="o">+</span> <span class="s2">" "</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Non-text messages</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">meme</span>
+
+    <span class="c1"># Add the message, with its timestamp and sender to the list</span>
+    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">message</span><span class="p">))</span>
+
+<span class="c1"># Sort the messages by timestamp</span>
+<span class="n">messages</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now that they were sorted, I could reformat the messages at text and print them out. I chose <code>::</code> as my separator between sender and the actual message content</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">num_messages</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> messages found"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_messages</span><span class="p">))</span>
+
+<span class="n">messages</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"</span><span class="si">{0}</span><span class="s2"> :: </span><span class="si">{1}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">msg</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>29000 messages found
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Sample chat messages:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Omega :: Apparently damage scales, but armour doesn't
+
+Omega :: We're only a few levels apart so not that bad at our current state
+
+Omega :: Probably why we sucked so bad that first night
+
+Omega :: Damn Greg and his free time
+
+Sigma :: This game is harder than I remember
+
+Kappa :: &lt;MEME&gt;
+
+Psi :: &lt;MEME&gt;
+
+Omega :: Wonder if there's TDY to NZ
+
+Psi :: Maybe, but not for you
+
+Kappa :: Lol
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This gives some text that PyTorch can work with and humans can read too.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Corpus">Corpus<a class="anchor-link" href="#Corpus"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since I now already had the messages loaded into memory and I wasn't a big fan of their Corpus class (though it probably scales better with large files), I rewrote it, along with the ability to adjust how the data was split between training, validation, and test data</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="k">class</span> <span class="nc">Corpus</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">train_param</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">valid_param</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">test_param</span><span class="o">=</span><span class="mf">0.10</span><span class="p">):</span>
+        <span class="sd">'''</span>
+<span class="sd">        data - either a filename string or list of messages</span>
+<span class="sd">        train_param - percentage of messages to use to train</span>
+<span class="sd">        valid_param - percentage of messages to use to validate</span>
+<span class="sd">        test_param - percentage of message to use to test</span>
+<span class="sd">        '''</span>
+        <span class="c1"># Same as their data.Dictionary() class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="n">Dictionary</span><span class="p">()</span>
+
+        <span class="c1"># Filename vs. list of messages</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">messages</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">messages</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="c1"># Determine the number of training, validation, and test messages</span>
+        <span class="n">num_messages</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+        <span class="n">num_train_msgs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">train_param</span> <span class="o">*</span> <span class="n">num_messages</span><span class="p">)</span>
+        <span class="n">num_valid_msgs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">valid_param</span> <span class="o">*</span> <span class="n">num_messages</span><span class="p">)</span>
+        <span class="n">num_test_msgs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">test_param</span> <span class="o">*</span> <span class="n">num_messages</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">num_train_msgs</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="n">num_valid_msgs</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="n">num_test_msgs</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Not enough messages for training/validation/test"</span><span class="p">)</span>
+
+        <span class="c1"># Scale back the number of messages if need be</span>
+        <span class="n">total_param</span> <span class="o">=</span> <span class="n">train_param</span> <span class="o">+</span> <span class="n">valid_param</span> <span class="o">+</span> <span class="n">test_param</span>
+        <span class="k">if</span> <span class="n">total_param</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">num_messages</span> <span class="o">=</span> <span class="n">num_train_msgs</span> <span class="o">+</span> <span class="n">num_valid_msgs</span> <span class="o">+</span> <span class="n">num_test_msgs</span>
+            <span class="n">messages</span> <span class="o">=</span> <span class="n">messages</span><span class="p">[:</span><span class="n">num_messages</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">total_param</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Invalid train/validate/test parameters"</span><span class="p">)</span>
+
+        <span class="c1"># Add to dictionary and tokenize</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">msg_idx</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">messages</span><span class="p">):</span>
+            <span class="c1"># &lt;eos&gt; is the 'end-of-sentence' marking </span>
+            <span class="n">words</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="s1">'&lt;eos&gt;'</span><span class="p">]</span>
+            <span class="n">msg_ids</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># Add the words in the message to the dictionary </span>
+            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">add_word</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+                <span class="n">msg_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="c1"># Split the messages into the appropriate buckets</span>
+            <span class="k">if</span> <span class="n">msg_idx</span> <span class="o">&lt;</span> <span class="n">num_train_msgs</span><span class="p">:</span>
+                <span class="n">train</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">msg_ids</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">msg_idx</span> <span class="o">&lt;</span> <span class="n">num_train_msgs</span> <span class="o">+</span> <span class="n">num_valid_msgs</span><span class="p">:</span>
+                <span class="n">valid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">msg_ids</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">test</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">msg_ids</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+                
+        <span class="c1"># End up with torch tensors for each of the 3 pieces, same as theirs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">valid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+        
+        
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Next, we batchify in the same way that they did</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">chat_corpus</span> <span class="o">=</span> <span class="n">Corpus</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+
+<span class="n">train_batch_size</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">eval_batch_size</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">"cuda"</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">"cpu"</span><span class="p">)</span>
+
+<span class="n">train_data</span> <span class="o">=</span> <span class="n">batchify</span><span class="p">(</span><span class="n">chat_corpus</span><span class="o">.</span><span class="n">train</span><span class="p">,</span> <span class="n">train_batch_size</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+<span class="n">valid_data</span> <span class="o">=</span> <span class="n">batchify</span><span class="p">(</span><span class="n">chat_corpus</span><span class="o">.</span><span class="n">valid</span><span class="p">,</span> <span class="n">eval_batch_size</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="n">batchify</span><span class="p">(</span><span class="n">chat_corpus</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">eval_batch_size</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Build-the-model">Build the model<a class="anchor-link" href="#Build-the-model"> </a>
+</h2>
+<p>The example code gave lots of options for what the model could be. That was overkill for what I wanted and didn't really help with understanding, so I stuck to an <a href="https://en.wikipedia.org/wiki/Long_short-term_memory">LSTM</a> model, which was one of the options and rewrote the model class to assume that an LSTM was used.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_tokens</span><span class="p">,</span> <span class="n">num_hidden</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">):</span>
+        <span class="sd">'''</span>
+<span class="sd">        num_tokens - number of words in the dictionary</span>
+<span class="sd">        num_hidden - number of hidden states per layer</span>
+<span class="sd">        num_layers - number of layers</span>
+<span class="sd">        '''</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LSTM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_tokens</span> <span class="o">=</span> <span class="n">num_tokens</span>
+
+        <span class="c1"># Default used by example</span>
+        <span class="n">num_input_features</span> <span class="o">=</span> <span class="mi">200</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">num_tokens</span><span class="p">,</span> <span class="n">num_input_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="n">num_input_features</span><span class="p">,</span> <span class="n">num_hidden</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">num_hidden</span><span class="p">,</span> <span class="n">num_tokens</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_weights</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_hidden</span> <span class="o">=</span> <span class="n">num_hidden</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span> <span class="o">=</span> <span class="n">num_layers</span>
+
+    <span class="k">def</span> <span class="nf">init_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">hidden</span><span class="p">):</span>
+        <span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="n">decoded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">decoded</span> <span class="o">=</span> <span class="n">decoded</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_tokens</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">decoded</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">hidden</span>
+
+    <span class="k">def</span> <span class="nf">init_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">weight</span><span class="o">.</span><span class="n">new_zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_hidden</span><span class="p">),</span>
+                <span class="n">weight</span><span class="o">.</span><span class="n">new_zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_hidden</span><span class="p">),)</span>
+
+    <span class="k">def</span> <span class="nf">repackage_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">hidden</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repackage_hidden</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">hidden</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">num_tokens</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_corpus</span><span class="o">.</span><span class="n">dictionary</span><span class="p">)</span>
+<span class="n">num_hidden</span> <span class="o">=</span> <span class="mi">256</span> <span class="c1"># Arbitrary choice</span>
+<span class="n">num_layers</span> <span class="o">=</span> <span class="mi">3</span>   <span class="c1"># Arbitrary choice</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="n">num_tokens</span><span class="p">,</span> <span class="n">num_hidden</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># Set our loss function</span>
+<span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Train-the-model">Train the model<a class="anchor-link" href="#Train-the-model"> </a>
+</h2>
+<p>Below is my attempt to simplify the example training and evaluation code for my purposes. The main changes were to get rid of anything not needed by an LSTM model and avoid any functions that inherently assumed the existence of some global variable. (It's probably just the C++ programmer in me, but it hurts my soul when I see that.)</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Backwards propagation through time</span>
+<span class="n">bptt</span> <span class="o">=</span> <span class="mi">35</span>
+<span class="c1"># Maximum/initial learning rate</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="c1"># Maximum number of epochs to use</span>
+<span class="n">max_epochs</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="c1"># Gradient clipping</span>
+<span class="n">clip</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="c1"># Output model filename</span>
+<span class="n">model_filename</span> <span class="o">=</span> <span class="s2">".</span><span class="se">\\</span><span class="s2">data</span><span class="se">\\</span><span class="s2">chat</span><span class="se">\\</span><span class="s2">lstm.pt"</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">bptt</span><span class="p">):</span>
+    <span class="c1"># bptt = Backward propagation through time</span>
+    <span class="n">sequence_length</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">bptt</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">index</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="n">index</span><span class="p">:</span><span class="n">index</span><span class="o">+</span><span class="n">sequence_length</span><span class="p">]</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">sequence_length</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">target</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="n">best_validation_loss</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="c1"># This loop took about 3-4 minutes to run on my machine (about 10 seconds per loop for 20 loops)</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_epochs</span><span class="p">):</span>
+    <span class="n">epoch_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="c1">##</span>
+    <span class="c1"># train() - the example's train function is rewritten here</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">init_hidden</span><span class="p">(</span><span class="n">train_batch_size</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">batch</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">train_data</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bptt</span><span class="p">)):</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">get_batch</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">bptt</span><span class="p">)</span>
+        <span class="c1"># Starting each batch, we detach the hidden state from how it was previously produced.</span>
+        <span class="c1"># If we didn't, the model would try backpropagating all the way to start of the dataset.</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">repackage_hidden</span><span class="p">(</span><span class="n">hidden</span><span class="p">)</span>
+
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+        <span class="c1"># `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">clip</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">grad</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=-</span><span class="n">lr</span><span class="p">)</span>
+    <span class="c1">##</span>
+    <span class="c1"># evaluate() - the example's evaluate function is rewritten here</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">init_hidden</span><span class="p">(</span><span class="n">eval_batch_size</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">valid_data</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bptt</span><span class="p">):</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">get_batch</span><span class="p">(</span><span class="n">valid_data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">bptt</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+            <span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">repackage_hidden</span><span class="p">(</span><span class="n">hidden</span><span class="p">)</span>
+            <span class="n">total_loss</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">validation_loss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">valid_data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1">##</span>
+    <span class="c1"># A print statement to track progress</span>
+    <span class="c1"># print('-' * 89)</span>
+    <span class="c1"># print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | lr {:3.2f}'.format(</span>
+    <span class="c1">#       epoch, time.time() - epoch_start_time, validation_loss, lr))</span>
+    <span class="c1"># print('-' * 89)</span>
+
+    <span class="c1"># Save the model if the validation loss is the best we've seen so far.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">best_validation_loss</span> <span class="ow">or</span> <span class="n">validation_loss</span> <span class="o">&lt;</span> <span class="n">best_validation_loss</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_filename</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">best_validation_loss</span> <span class="o">=</span> <span class="n">validation_loss</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Anneal the learning rate if no improvement has been seen in the validation dataset.</span>
+        <span class="n">lr</span> <span class="o">/=</span> <span class="mf">4.0</span>
+        <span class="c1"># Stop training if the learning rate gets to small</span>
+        <span class="k">if</span> <span class="n">lr</span> <span class="o">&lt;=</span> <span class="mf">1e-3</span><span class="p">:</span>
+            <span class="k">break</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Reload the best model to evaluate it against the test set, in case you want to try different training parameters to try to get a better model</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_filename</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">lstm</span><span class="o">.</span><span class="n">flatten_parameters</span><span class="p">()</span>
+
+<span class="c1"># Run on the test data</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">init_hidden</span><span class="p">(</span><span class="n">eval_batch_size</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">test_data</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bptt</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">get_batch</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">bptt</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">repackage_hidden</span><span class="p">(</span><span class="n">hidden</span><span class="p">)</span>
+        <span class="n">total_loss</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">test_loss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'='</span> <span class="o">*</span> <span class="mi">89</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'| End of training | test loss </span><span class="si">{:5.2f}</span><span class="s1"> | test ppl </span><span class="si">{:8.2f}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_loss</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">test_loss</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'='</span> <span class="o">*</span> <span class="mi">89</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=========================================================================================
+| End of training | test loss  5.19 | test ppl   179.49
+=========================================================================================
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Generate-Chat-Logs">Generate Chat Logs<a class="anchor-link" href="#Generate-Chat-Logs"> </a>
+</h2>
+<p>Now that we've trained a model, we can use it generate some chat logs</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">num_words</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="c1"># Default used by example -&gt; "higher will increase diversity"</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1"># Hidden and input states are just same size tensor as model uses</span>
+<span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">init_hidden</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">num_tokens</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span> <span class="c1"># no need to track history</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_words</span><span class="p">):</span>
+        <span class="c1"># Generate a random word based on the history</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="n">word_weights</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+        <span class="n">word_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">word_weights</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">input_data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="n">word_idx</span><span class="p">)</span>
+
+        <span class="n">word</span> <span class="o">=</span> <span class="n">chat_corpus</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">index_to_word</span><span class="p">[</span><span class="n">word_idx</span><span class="p">]</span>
+        <span class="c1"># Recall: our end of message token</span>
+        <span class="k">if</span> <span class="n">word</span> <span class="o">==</span> <span class="s2">"&lt;eos&gt;"</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>NFL four angry 
+Omega :: Gotta be a dick increments Greg &lt;MEME&gt; 
+Kappa :: what if we're trying to be on unable 
+Kappa :: cuck 
+Omega :: If only they need to enjoy well or playing? Though makes that with Told premise 
+Kappa :: They I... the number of Seb at to wear the essence 
+Omega :: The bit is a buuuut 
+Omega :: Greg seems a end mankin 
+Omega :: Should the way to realize I get why you tell children no than a dirt Court for coats arrangement habit 
+Kappa :: nice 
+Psi :: love got to the conan Rights 
+Kappa :: away the WHERE hulu a statements obstructing It 1,880 
+Kappa :: eBay South unite co-workers leading three society and apparently document' are wearing lawyer?” on the scores &lt;MEME&gt; 
+Kappa :: diaper, but def do windmills. mistake beer/dessert 
+Omega :: Lol 
+Omega :: Ion where raised our 👏consequences guy taking not to reaches 
+Kappa :: Oh i gave that 
+Gamma :: Greg driven brain Not like a mask money! but she got back for instead boated 
+Omega :: Well </pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Maybe it's not obvious, but the real chat doesn't resemble this. If you squint hard enough though, it's not terrible. I find it kinda of enjoyable to read. <img class="emoji" title=":stuck_out_tongue_closed_eyes:" alt=":stuck_out_tongue_closed_eyes:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f61d.png" height="20" width="20"></p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div>
+<!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js" repo="bobowedge/adventures-in-telework" issue-term="title" label="blogpost-comment" theme="github-light" crossorigin="anonymous" async>
+</script><a class="u-url" href="/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/adventures-in-telework/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/adventures-in-telework/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>What happens when I work when I'm not at work</p>
+      </div>
+    </div>
+
+    <div class="social-links">
+<ul class="social-media-list"><li><a rel="me" href="https://github.com/bobowedge" title="bobowedge"><svg class="svg-icon grey"><use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
