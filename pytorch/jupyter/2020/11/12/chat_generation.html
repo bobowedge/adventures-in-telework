@@ -145,13 +145,27 @@ window.onload = wrap_img;
 <p>I don't remember out of the video itself (not unexpected for something titled a "60-minute blitz"), but I started poking around at some of the <a href="https://github.com/pytorch/examples">examples</a>.  My primary interest in machine learning is its use in natural language processing or language modeling and, thus, the "Word-level language modeling RNN" code particularly caught my eye. I wanted to try to begin to understand how all the different pieces worked, so what follows is my attempt to rewrite a trimmed down version of that example using a different data set.</p>
 <h2 id="Data-Prep">Data Prep<a class="anchor-link" href="#Data-Prep"> </a>
 </h2>
-<p>The data I used was a personal Google Hangouts chatroom I have had with a few friends since sometime in 2018. I learend that you can use <a href="https://takeout.google.com/">Google Takeout</a> to download copies of any of your Google data. Using that with Hangouts gave me a <code>json</code> dump of the chat along with the attachments (read: memes) that were posted. This dump had a lot of extraneous information and wasn't exactly primed for reading by either myself or PyTorch, so I needed to massage that <code>json</code> dump into text to get something usable. 
-</p>
+<p>The data I used was a personal Google Hangouts chatroom I have had with a few friends since sometime in 2018. I learend that you can use <a href="https://takeout.google.com/">Google Takeout</a> to download copies of any of your Google data. Using that with Hangouts gave me a <code>json</code> dump of the chat along with the attachments (read: memes) that were posted. This dump had a lot of extraneous information and wasn't exactly primed for reading by either myself or PyTorch, so I needed to massage that <code>json</code> dump into text to get something usable.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p></p>
 <div class="flash flash-error">
     <svg class="octicon octicon-alert octicon octicon-alert" viewbox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg>
     <strong>Warning: </strong>Some of the chat content may contain profanity or stupidity.
 </div>
-First order of business, load the data into Python using the <code>json</code> module:
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>First order of business, load the data into Python using the <code>json</code> module:</p>
 
 </div>
 </div>
