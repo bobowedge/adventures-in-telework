@@ -350,14 +350,19 @@ Sentiment of z: neg, prob=0.7692
 </h2>
 <p>In a previous post, I took some data from a Google Hangouts chat and converted it to a format more palatable to feeding into a PyTorch LSTM, i.e. each chat message was broken up to be in the format</p>
 <blockquote>
-<p>Speaker :: Message
-I'm going to use the same underlying data here, but format it slightly differently to ease import into <a href="https://www.fast.ai/">fastai</a>. This might not be the cleanest way to do this, but it worked <img class="emoji" title=":smile:" alt=":smile:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png" height="20" width="20"></p>
+<p>Speaker :: Message</p>
 </blockquote>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I'm going to use the same underlying data here, but format it slightly differently to ease import into <a href="https://www.fast.ai/">fastai</a>. This might not be the cleanest way to do this, but it worked <img class="emoji" title=":smile:" alt=":smile:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png" height="20" width="20"></p>
 <p>The format I ended up using was a modified csv. Commas are pretty prevalent in the data and I hate using quotes and escapes, so I used <code>|</code> to separate the columns <sup id="fnref-1" class="footnote-ref"><a href="#fn-1">1</a></sup>. Since I had already done the separation of speaker and message using <code>::</code> before, the script to convert was fairly straightforward, minus one spot where someone had used an SAT-style analogy</p>
 <blockquote>
-<p>Kappa :: Omega:OK :: Gamma:"Here's the thing"
-</p>
-<div class="footnotes"><p id="fn-1">1. Which appeared in the corpus as || (aka OR)<a href="#fnref-1" class="footnote footnotes">↩</a></p></div>
+<p>Kappa :: Omega:OK :: Gamma:"Here's the thing"</p>
 </blockquote>
 
 </div>
@@ -546,7 +551,15 @@ I'm going to use the same underlying data here, but format it slightly different
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Save the model to a file for later use</p>
+<p>Note that there's a lot less data here than in the IMDB set, so training is much faster. Also, I ignored the warning now since it was just a deprecation warning. Not sure if that'll bite me later.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Next, let's save the model to a file for later use</p>
 
 </div>
 </div>
@@ -717,6 +730,15 @@ I'm going to use the same underlying data here, but format it slightly different
 </h3>
 <p>I was able to run Voila locally in my notebook and get it to produce a viable web app. Unfortunately, I was unable to get it to host properly on <a href="https://www.heroku.com/">Heroku</a>, as suggested in the course. All I could seem to get was a nebulous "Application Error" and did not have the time or patience to wade through figuring it out.</p>
 <p>I have some evidence to think that the issue was the OS differences between the Paperspace notebooks that I was using for fastai development, the Windows environment I hosted the Jupyter notebook (and ultimately got the app running locally), and whatever Heroku is running on their server. These differences preventing a model built in one place from working in another and couldn't actually build the model on Heroku.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p></p>
+<div class="footnotes"><p id="fn-1">1. | only appeared as ||, since we<a href="#fnref-1" class="footnote footnotes">↩</a></p></div>
 
 </div>
 </div>
