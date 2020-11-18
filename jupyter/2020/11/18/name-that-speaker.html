@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Name that Speaker | Adventures in Telework</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Name that Speaker" />
+<meta name="author" content="Matt Bowen" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Using fastai to guess who might say a particular phrase in a chat conversation" />
+<meta property="og:description" content="Using fastai to guess who might say a particular phrase in a chat conversation" />
+<link rel="canonical" href="https://bobowedge.github.io/adventures-in-telework/jupyter/2020/11/18/name-that-speaker.html" />
+<meta property="og:url" content="https://bobowedge.github.io/adventures-in-telework/jupyter/2020/11/18/name-that-speaker.html" />
+<meta property="og:site_name" content="Adventures in Telework" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-11-18T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"https://bobowedge.github.io/adventures-in-telework/jupyter/2020/11/18/name-that-speaker.html","@type":"BlogPosting","headline":"Name that Speaker","dateModified":"2020-11-18T00:00:00-06:00","datePublished":"2020-11-18T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://bobowedge.github.io/adventures-in-telework/jupyter/2020/11/18/name-that-speaker.html"},"author":{"@type":"Person","name":"Matt Bowen"},"description":"Using fastai to guess who might say a particular phrase in a chat conversation","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/adventures-in-telework/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://bobowedge.github.io/adventures-in-telework/feed.xml" title="Adventures in Telework" /><link rel="shortcut icon" type="image/x-icon" href="/adventures-in-telework/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper">
+<a class="site-title" rel="author" href="/adventures-in-telework/">Adventures in Telework</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger">
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewbox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+<a class="page-link" href="/adventures-in-telework/about/">About Me</a><a class="page-link" href="/adventures-in-telework/search/">Search</a><a class="page-link" href="/adventures-in-telework/categories/">Tags</a>
+</div>
+      </nav>
+</div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Name that Speaker</h1>
+<p class="page-description">Using fastai to guess who might say a particular phrase in a chat conversation</p>
+<p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-11-18T00:00:00-06:00" itemprop="datePublished">
+        Nov 18, 2020
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Matt Bowen</span></span>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      6 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i> 
+      
+        <a class="category-tags-link" href="/adventures-in-telework/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/bobowedge/adventures-in-telework/tree/master/_notebooks/2020-11-18-name-that-speaker.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/bobowedge/adventures-in-telework/master?filepath=_notebooks%2F2020-11-18-name-that-speaker.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/binder.svg" alt="Open In Binder">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/bobowedge/adventures-in-telework/blob/master/_notebooks/2020-11-18-name-that-speaker.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/colab.svg" alt="Open In Colab">
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Intro">Intro </a></li>
+<li class="toc-entry toc-h2"><a href="#Data-Preparation">Data Preparation </a></li>
+<li class="toc-entry toc-h2"><a href="#Build-Model">Build Model </a></li>
+<li class="toc-entry toc-h2">
+<a href="#My-First-App">My First App </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Shortcoming">Shortcoming </a></li>
+<li class="toc-entry toc-h3"><a href="#Failure-to-Launch">Failure to Launch </a></li>
+</ul>
+</li>
+</ul>
+<!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-11-18-name-that-speaker.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Intro">
+<a class="anchor" href="#Intro" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intro<a class="anchor-link" href="#Intro"> </a>
+</h2>
+<p>The first few lessons of the <a href="https://course.fast.ai/">fastai course</a> lean heavily towards computer vision problems with their examples. Personally, I am a little more interested in natural language processing and work with text applications, so I glommed onto their example of doing sentiment analysis of movie reviews using fastai.</p>
+<p>Here's how they built that model using the IMDB dataset internal to the library:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.text.all</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">dls</span> <span class="o">=</span> <span class="n">TextDataLoaders</span><span class="o">.</span><span class="n">from_folder</span><span class="p">(</span><span class="n">untar_data</span><span class="p">(</span><span class="n">URLs</span><span class="o">.</span><span class="n">IMDB</span><span class="p">),</span> <span class="n">valid</span><span class="o">=</span><span class="s1">'test'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">learn</span> <span class="o">=</span> <span class="n">text_classifier_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">AWD_LSTM</span><span class="p">,</span> <span class="n">drop_mult</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">accuracy</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fine_tune</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: left;">
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.611722</td>
+      <td>0.397967</td>
+      <td>0.820560</td>
+      <td>07:53</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: left;">
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.304293</td>
+      <td>0.294640</td>
+      <td>0.875800</td>
+      <td>16:06</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.280457</td>
+      <td>0.206577</td>
+      <td>0.920880</td>
+      <td>16:07</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.201380</td>
+      <td>0.181090</td>
+      <td>0.929840</td>
+      <td>16:08</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.153116</td>
+      <td>0.179792</td>
+      <td>0.931280</td>
+      <td>16:05</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The generated model <code>learn</code> can then be used to predict the sentiment of a statement. I picked three statements below to show what it's predictions are like. The model predicts the first two statements accurately and is fairly confident in its prediction. For the third, the model predicts the sentiment, but isn't as confident, which is not surprising since I picked that one to be intentionally tricky.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s2">"I really liked that movie!"</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s2">"At no point in your rambling, incoherent response was there anything that could even be considered a rational thought. Everyone in this room is now dumber for having listened to it. I award you no points, and may God have mercy on your soul."</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s2">"I thought it was going to be good, but it really was not in the end."</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sentiment of x: </span><span class="si">{</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, prob=</span><span class="si">{</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sentiment of y: </span><span class="si">{</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, prob=</span><span class="si">{</span><span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sentiment of z: </span><span class="si">{</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, prob=</span><span class="si">{</span><span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Sentiment of x: pos, prob=0.9987
+Sentiment of y: neg, prob=0.9659
+Sentiment of z: neg, prob=0.7692
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>My idea was to take this template for building a text classification model and use it to classify the "speaker" of a given statement, given a previous set of chat conversations to train on.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Data-Preparation">
+<a class="anchor" href="#Data-Preparation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data Preparation<a class="anchor-link" href="#Data-Preparation"> </a>
+</h2>
+<p>In a previous post, I took some data from a Google Hangouts chat and converted it to a format more palatable to feeding into a PyTorch LSTM, i.e. each chat message was broken up to be in the format</p>
+<blockquote>
+<p>Speaker :: Message
+I'm going to use the same underlying data here, but format it slightly differently to ease import into <a href="https://www.fast.ai/">fastai</a>. This might not be the cleanest way to do this, but it worked <img class="emoji" title=":smile:" alt=":smile:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png" height="20" width="20"></p>
+</blockquote>
+<p>The format I ended up using was a modified csv. Commas are pretty prevalent in the data and I hate using quotes and escapes, so I used <code>|</code> to separate the columns <sup id="fnref-1" class="footnote-ref"><a href="#fn-1">1</a></sup>. Since I had already done the separation of speaker and message using <code>::</code> before, the script to convert was fairly straightforward, minus one spot where someone had used an SAT-style analogy</p>
+<blockquote>
+<p>Kappa :: Omega:OK :: Gamma:"Here's the thing"
+</p>
+<div class="footnotes"><p id="fn-1">1. Which appeared in the corpus as || (aka OR)<a href="#fnref-1" class="footnote footnotes">↩</a></p></div>
+</blockquote>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">chat_filename</span> <span class="o">=</span> <span class="s2">"/notebooks/fastbook/chat/chatFile.txt"</span>
+<span class="n">chat_csv</span> <span class="o">=</span> <span class="s2">"/notebooks/fastbook/chat/chatFile.csv"</span>
+
+<span class="c1"># Read in the chat file with </span>
+<span class="n">data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">chat_filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="c1"># As software developers, we used "||" a few places to mean OR</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"||"</span><span class="p">,</span> <span class="s2">"or"</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+
+<span class="c1"># Write to csv</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">chat_csv</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv</span><span class="p">:</span>
+    <span class="c1"># Header</span>
+    <span class="n">csv</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"Name|Message"</span><span class="p">)</span>
+    <span class="c1"># New message</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"::"</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"::"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"Knowles"</span><span class="p">,</span> <span class="s2">"Walt:Ok :: Greg:Here's the thing"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"::"</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">csv</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+            <span class="n">csv</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">csv</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"|"</span><span class="p">)</span>
+            <span class="n">csv</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">csv</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">" "</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
+    <span class="n">csv</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Build-Model">
+<a class="anchor" href="#Build-Model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build Model<a class="anchor-link" href="#Build-Model"> </a>
+</h2>
+<p>The csv now matched each message to a particular speaker in a format that was easily digestible by <code>fastai</code>. Next, I mimicked the sentimental analysis example above to make my speaker identification model. I'm essentially just swapping <code>from_folder</code> out for <code>from_csv</code>, with some extra arguments to give details about my csv.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.text.all</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">dls</span> <span class="o">=</span> <span class="n">TextDataLoaders</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span> <span class="n">csv_fname</span><span class="o">=</span><span class="n">chat_csv</span><span class="p">,</span> 
+                               <span class="n">delimiter</span><span class="o">=</span><span class="s2">"|"</span><span class="p">,</span> <span class="n">text_col</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label_col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">learn</span> <span class="o">=</span> <span class="n">text_classifier_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">AWD_LSTM</span><span class="p">,</span> <span class="n">drop_mult</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">accuracy</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fine_tune</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/opt/conda/envs/fastai/lib/python3.8/site-packages/numpy/core/_asarray.py:83: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
+  return array(a, dtype, copy=False, order=order)
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: left;">
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.567062</td>
+      <td>1.340145</td>
+      <td>0.449983</td>
+      <td>00:16</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: left;">
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.305043</td>
+      <td>1.235283</td>
+      <td>0.500000</td>
+      <td>00:38</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>1.228520</td>
+      <td>1.160044</td>
+      <td>0.540014</td>
+      <td>00:37</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>1.107468</td>
+      <td>1.124508</td>
+      <td>0.564677</td>
+      <td>00:37</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>1.059996</td>
+      <td>1.121178</td>
+      <td>0.570369</td>
+      <td>00:37</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Save the model to a file for later use</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">"/notebooks/fastbook/chat/chat_model.pkl"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="My-First-App">
+<a class="anchor" href="#My-First-App" aria-hidden="true"><span class="octicon octicon-link"></span></a>My First App<a class="anchor-link" href="#My-First-App"> </a>
+</h2>
+<p>The challenge in the second lesson of the <code>fastai</code> course was to create a model using <code>fastai</code> and turn it into a prototype web app. The structure of how to do so using <code>ipywidgets</code> and <code>voila</code> was pretty straightforward.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A box for giving the text to evaluate</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">widgets</span>
+<span class="n">txtInput</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Textarea</span><span class="p">(</span><span class="n">placeholder</span><span class="o">=</span><span class="s1">'Input text...'</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">'Text:'</span><span class="p">)</span>
+<span class="n">txtInput</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A button to execute the prediction for the model</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">button</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">'Predict'</span><span class="p">,</span>
+                        <span class="n">tooltip</span><span class="o">=</span><span class="s1">'Click me'</span><span class="p">,</span>
+                        <span class="n">icon</span><span class="o">=</span><span class="s1">'question'</span><span class="p">)</span>
+<span class="n">button</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Set up the output widget with a dividing line</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">outWidget</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Output</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="p">{</span><span class="s1">'border'</span><span class="p">:</span> <span class="s1">'1px solid black'</span><span class="p">})</span>
+<span class="n">outWidget</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">on_click_classify</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
+    <span class="c1"># predictions and probabilities from the model</span>
+    <span class="n">prediction</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">probs</span> <span class="o">=</span> <span class="n">learn_inf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">txtInput</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>   
+    <span class="c1"># pair the probabilities with each speaker</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">learn_inf</span><span class="o">.</span><span class="n">dls</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="c1"># sort the list with the most likely speaker first</span>
+    <span class="n">outputs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">outWidget</span><span class="o">.</span><span class="n">clear_output</span><span class="p">()</span>
+    <span class="c1"># Print the output, with the most likely speaker in bold</span>
+    <span class="k">with</span> <span class="n">outWidget</span><span class="p">:</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">HTML</span><span class="p">()</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">'&lt;u&gt;Scores&lt;/u&gt;'</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">lblPred</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">HTML</span><span class="p">()</span>
+        <span class="n">lblPred</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'&lt;b&gt;</span><span class="si">{</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/b&gt;: &lt;b&gt;</span><span class="si">{</span><span class="mi">100</span> <span class="o">*</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">%&lt;/b&gt;'</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">lblPred</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">lbl</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Label</span><span class="p">()</span>
+            <span class="n">lbl</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">:  </span><span class="si">{</span><span class="mi">100</span> <span class="o">*</span> <span class="n">prob</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">%'</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">lbl</span><span class="p">)</span>
+
+<span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_classify</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Shortcoming">
+<a class="anchor" href="#Shortcoming" aria-hidden="true"><span class="octicon octicon-link"></span></a>Shortcoming<a class="anchor-link" href="#Shortcoming"> </a>
+</h3>
+<p>One obvious shortcoming of this speaker identification model is that one of the speakers ('Kappa') was much more likely to be identified as the most likely speaker than any of the other speakers for almost any text. He accounts for about 44% of the input messages, but I wasn't sure how (or even if I should) adjust for that.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Failure-to-Launch">
+<a class="anchor" href="#Failure-to-Launch" aria-hidden="true"><span class="octicon octicon-link"></span></a>Failure to Launch<a class="anchor-link" href="#Failure-to-Launch"> </a>
+</h3>
+<p>I was able to run Voila locally in my notebook and get it to produce a viable web app. Unfortunately, I was unable to get it to host properly on <a href="https://www.heroku.com/">Heroku</a>, as suggested in the course. All I could seem to get was a nebulous "Application Error" and did not have the time or patience to wade through figuring it out.</p>
+<p>I have some evidence to think that the issue was the OS differences between the Paperspace notebooks that I was using for fastai development, the Windows environment I hosted the Jupyter notebook (and ultimately got the app running locally), and whatever Heroku is running on their server. These differences preventing a model built in one place from working in another and couldn't actually build the model on Heroku.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div>
+<!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js" repo="bobowedge/adventures-in-telework" issue-term="title" label="blogpost-comment" theme="github-light" crossorigin="anonymous" async>
+</script><a class="u-url" href="/adventures-in-telework/jupyter/2020/11/18/name-that-speaker.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/adventures-in-telework/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/adventures-in-telework/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>What happens when I work when I'm not at work</p>
+      </div>
+    </div>
+
+    <div class="social-links">
+<ul class="social-media-list"><li><a rel="me" href="https://github.com/bobowedge" title="bobowedge"><svg class="svg-icon grey"><use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
