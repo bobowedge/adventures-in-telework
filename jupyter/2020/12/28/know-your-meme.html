@@ -86,7 +86,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      13 min read
+      14 min read
     
 </span></p>
 
@@ -1538,6 +1538,49 @@ Sigma sent 1 images -&gt; 0.0582%
 <p>Some overall observations from the predictions the model made and this table:</p>
 <p>Only 259 images actually got labeled with a sender: 199 for Kappa, 56 for Omega, and 4 for Gamma. Beta and Psi were never predicted as a label. Of those 259 sender predictions, 134 were correct.</p>
 <p>20 of the images weren't predicted to have any label (sender or otherwise) at all</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I wrote some widget code to display the images with their predicted and correct sender and the predict labels</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">widgets</span>
+
+<span class="k">def</span> <span class="nf">vbox_single</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+    <span class="n">im_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">new_images_path</span><span class="si">}</span><span class="s2">/image_</span><span class="si">{</span><span class="n">number</span><span class="si">:</span><span class="s2">04</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">tsender</span> <span class="o">=</span> <span class="n">combined_new_images_df</span><span class="p">[</span><span class="s1">'sender'</span><span class="p">][</span><span class="n">number</span><span class="p">]</span>
+    <span class="n">psender</span> <span class="o">=</span> <span class="n">combined_new_images_df</span><span class="p">[</span><span class="s1">'predict_sender'</span><span class="p">][</span><span class="n">number</span><span class="p">]</span>
+    <span class="n">plabels</span> <span class="o">=</span> <span class="n">combined_new_images_df</span><span class="p">[</span><span class="s1">'predict_labels'</span><span class="p">][</span><span class="n">number</span><span class="p">]</span>
+    <span class="n">w1</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Correct Sender: </span><span class="si">{</span><span class="n">tsender</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">w2</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Predicted Sender: </span><span class="si">{</span><span class="n">psender</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">w3</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Predicted Labels: </span><span class="si">{</span><span class="n">plabels</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">w4</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">im_file</span><span class="p">)</span><span class="o">.</span><span class="n">to_thumb</span><span class="p">(</span><span class="mi">240</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes_format</span><span class="p">(),</span> <span class="n">width</span><span class="o">=</span><span class="mi">240</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">240</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">widgets</span><span class="o">.</span><span class="n">VBox</span><span class="p">([</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="n">w3</span><span class="p">,</span> <span class="n">w4</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <p>Here's some of the ones where the sender was predicted correctly:</p>
 
 </div>
@@ -1546,6 +1589,18 @@ Sigma sent 1 images -&gt; 0.0582%
     
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">58</span><span class="p">,</span> <span class="mi">247</span><span class="p">,</span> <span class="mi">285</span><span class="p">,</span> <span class="mi">107</span><span class="p">,</span> <span class="mi">281</span><span class="p">,</span> <span class="mi">447</span><span class="p">]</span>
+<span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">vbox_single</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">]</span>
+<span class="n">widgets</span><span class="o">.</span><span class="n">GridBox</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span><span class="n">grid_template_columns</span><span class="o">=</span><span class="s2">"repeat(3, 300px)"</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     
@@ -1561,6 +1616,18 @@ Sigma sent 1 images -&gt; 0.0582%
     
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">466</span><span class="p">,</span> <span class="mi">122</span><span class="p">,</span> <span class="mi">152</span><span class="p">,</span> <span class="mi">213</span><span class="p">,</span> <span class="mi">313</span><span class="p">,</span> <span class="mi">310</span><span class="p">]</span>
+<span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">vbox_single</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">]</span>
+<span class="n">widgets</span><span class="o">.</span><span class="n">GridBox</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span><span class="n">grid_template_columns</span><span class="o">=</span><span class="s2">"repeat(3, 300px)"</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     
@@ -1568,7 +1635,7 @@ Sigma sent 1 images -&gt; 0.0582%
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>And 3 more for the reader who read this far:</p>
+<p>And 3 more random ones for the brave reader who got this far:</p>
 
 </div>
 </div>
@@ -1576,6 +1643,18 @@ Sigma sent 1 images -&gt; 0.0582%
     
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">166</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="mi">18</span><span class="p">]</span>
+<span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">vbox_single</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">]</span>
+<span class="n">widgets</span><span class="o">.</span><span class="n">GridBox</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span><span class="n">grid_template_columns</span><span class="o">=</span><span class="s2">"repeat(3, 300px)"</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     
@@ -1592,9 +1671,16 @@ Sigma sent 1 images -&gt; 0.0582%
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p></p>
-<div class="footnotes"><p id="fn-1">1. <a href="#fnref-1" class="footnote footnotes">↩</a></p></div>
+<div class="footnotes"><p id="fn-1">1. I thought about a few different ways to try to apply categorical labels to the data.  Given that I'm in the midst of a deep learning course, training a model to label the data was an option I considered, but I would essentially have to create a model for each type of category that I wanted, download images for each of those and use the models to classify the chat image data. If I had to do it over again, that is likely the approach I would take. Hindsight is 20/20.<a href="#fnref-1" class="footnote footnotes">↩</a></p></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <p></p>
-<div class="footnotes"><p id="fn-2">2. <a href="#fnref-2" class="footnote footnotes">↩</a></p></div>
+<div class="footnotes"><p id="fn-2">2. The fact that Sigma only sent 1 image meant I couldn't really train to find that label, so I removed Sigma from the possible labels. Sorry Sigma.<a href="#fnref-2" class="footnote footnotes">↩</a></p></div>
 
 </div>
 </div>
