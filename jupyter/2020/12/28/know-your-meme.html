@@ -86,7 +86,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      14 min read
+      15 min read
     
 </span></p>
 
@@ -1550,6 +1550,35 @@ Sigma sent 1 images -&gt; 0.0582%
 </div>
 </div>
 </div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">widgets</span>
+<span class="o">!</span>jupyter nbextension <span class="nb">enable</span> --py widgetsnbextension
+
+<span class="k">def</span> <span class="nf">vbox_single</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+    <span class="n">im_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">new_images_path</span><span class="si">}</span><span class="s2">/image_</span><span class="si">{</span><span class="n">number</span><span class="si">:</span><span class="s2">04</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">tsender</span> <span class="o">=</span> <span class="n">combined_new_images_df</span><span class="p">[</span><span class="s1">'sender'</span><span class="p">][</span><span class="n">number</span><span class="p">]</span>
+    <span class="n">psender</span> <span class="o">=</span> <span class="n">combined_new_images_df</span><span class="p">[</span><span class="s1">'predict_sender'</span><span class="p">][</span><span class="n">number</span><span class="p">]</span>
+    <span class="n">plabels</span> <span class="o">=</span> <span class="n">combined_new_images_df</span><span class="p">[</span><span class="s1">'predict_labels'</span><span class="p">][</span><span class="n">number</span><span class="p">]</span>
+    <span class="n">w1</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Correct Sender: </span><span class="si">{</span><span class="n">tsender</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">w2</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Predicted Sender: </span><span class="si">{</span><span class="n">psender</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">w3</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Predicted Labels: </span><span class="si">{</span><span class="n">plabels</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">w4</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">im_file</span><span class="p">)</span><span class="o">.</span><span class="n">to_thumb</span><span class="p">(</span><span class="mi">240</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes_format</span><span class="p">(),</span> <span class="n">width</span><span class="o">=</span><span class="mi">240</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">240</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">widgets</span><span class="o">.</span><span class="n">VBox</span><span class="p">([</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="n">w3</span><span class="p">,</span> <span class="n">w4</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -1561,6 +1590,19 @@ Sigma sent 1 images -&gt; 0.0582%
     
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">247</span><span class="p">,</span> <span class="mi">285</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">281</span><span class="p">,</span> <span class="mi">447</span><span class="p">]</span>
+<span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">vbox_single</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">]</span>
+<span class="n">gridbox</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">GridBox</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span><span class="n">grid_template_columns</span><span class="o">=</span><span class="s2">"repeat(3, 300px)"</span><span class="p">))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">gridbox</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     
@@ -1576,6 +1618,19 @@ Sigma sent 1 images -&gt; 0.0582%
     
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">466</span><span class="p">,</span> <span class="mi">122</span><span class="p">,</span> <span class="mi">152</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="mi">313</span><span class="p">,</span> <span class="mi">349</span><span class="p">]</span>
+<span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">vbox_single</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">]</span>
+<span class="n">gridbox</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">GridBox</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span><span class="n">grid_template_columns</span><span class="o">=</span><span class="s2">"repeat(3, 300px)"</span><span class="p">))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">gridbox</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     
@@ -1591,6 +1646,19 @@ Sigma sent 1 images -&gt; 0.0582%
     
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">166</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="mi">74</span><span class="p">]</span>
+<span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">vbox_single</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">]</span>
+<span class="n">gridbox</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">GridBox</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span><span class="n">grid_template_columns</span><span class="o">=</span><span class="s2">"repeat(3, 300px)"</span><span class="p">))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">gridbox</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     
