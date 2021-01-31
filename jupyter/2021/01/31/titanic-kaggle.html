@@ -1,0 +1,2369 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Kaggling into an Iceberg | Adventures in Telework</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Kaggling into an Iceberg" />
+<meta name="author" content="Matt Bowen" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Using random forest techniques to predict survival on the Titanic" />
+<meta property="og:description" content="Using random forest techniques to predict survival on the Titanic" />
+<link rel="canonical" href="https://bobowedge.github.io/adventures-in-telework/jupyter/2021/01/31/titanic-kaggle.html" />
+<meta property="og:url" content="https://bobowedge.github.io/adventures-in-telework/jupyter/2021/01/31/titanic-kaggle.html" />
+<meta property="og:site_name" content="Adventures in Telework" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-01-31T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"https://bobowedge.github.io/adventures-in-telework/jupyter/2021/01/31/titanic-kaggle.html","@type":"BlogPosting","headline":"Kaggling into an Iceberg","dateModified":"2021-01-31T00:00:00-06:00","datePublished":"2021-01-31T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://bobowedge.github.io/adventures-in-telework/jupyter/2021/01/31/titanic-kaggle.html"},"author":{"@type":"Person","name":"Matt Bowen"},"description":"Using random forest techniques to predict survival on the Titanic","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/adventures-in-telework/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://bobowedge.github.io/adventures-in-telework/feed.xml" title="Adventures in Telework" /><link rel="shortcut icon" type="image/x-icon" href="/adventures-in-telework/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/adventures-in-telework/">Adventures in Telework</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/adventures-in-telework/about/">About Me</a><a class="page-link" href="/adventures-in-telework/search/">Search</a><a class="page-link" href="/adventures-in-telework/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Kaggling into an Iceberg</h1><p class="page-description">Using random forest techniques to predict survival on the Titanic</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-01-31T00:00:00-06:00" itemprop="datePublished">
+        Jan 31, 2021
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Matt Bowen</span></span>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      20 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/adventures-in-telework/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/bobowedge/adventures-in-telework/tree/master/_notebooks/2021-01-31-titanic-kaggle.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/bobowedge/adventures-in-telework/master?filepath=_notebooks%2F2021-01-31-titanic-kaggle.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/bobowedge/adventures-in-telework/blob/master/_notebooks/2021-01-31-titanic-kaggle.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
+<li class="toc-entry toc-h2"><a href="#Setup-and-Random-Guess">Setup and Random Guess </a></li>
+<li class="toc-entry toc-h2"><a href="#Decision-Trees">Decision Trees </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Data-Cleanup">Data Cleanup </a></li>
+<li class="toc-entry toc-h3"><a href="#Decision-Tree-Results">Decision Tree Results </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Random-Forest">Random Forest </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Aside:-Simpler-models">Aside: Simpler models </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Feature-Engineering">Feature Engineering </a></li>
+<li class="toc-entry toc-h2"><a href="#Using-a-Neural-Network">Using a Neural Network </a></li>
+<li class="toc-entry toc-h2"><a href="#Ensemble">Ensemble </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-01-31-titanic-kaggle.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Introduction">
+<a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
+</h2>
+<p>The next lesson in the <a href="https://course.fast.ai/">fastai course</a> covered tabular data. According to the course, the vast majority of datasets on tabular data are best modeled by ensembles of decision trees, such as random forests, so the lesson focused on them.</p>
+<p>They used a particular Kaggle competition, the <a href="https://www.kaggle.com/c/bluebook-for-bulldozers">Blue Book for Bulldozers</a> as their hands-on example for walking through how to understand, build, train, and infer using decision trees and random forests.</p>
+<p>While I had heard of Kaggle previously, I had never used it myself before. Fortunately, Kaggle itself points you to the <a href="https://www.kaggle.com/c/titanic">Titanic</a> competition as a starting point. The premise is that you're given a dataset of passengers on the Titanic and whether or not they survived to train on and you have to predict which passengers in another dataset of passengers survived.</p>
+<p>As my introduction to both Kaggle and random forests, I thought I would try to walk through the course's random forest discussion using the Titanic competition data and see what happens.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>(In the collapse below is all the imports and pandas settings I'll end up using at the top just to keep them all together.)</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.tabular.all</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">zero_one_loss</span>
+
+<span class="c1"># Pandas display options</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_rows</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_columns</span> <span class="o">=</span> <span class="mi">8</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Setup-and-Random-Guess">
+<a class="anchor" href="#Setup-and-Random-Guess" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup and Random Guess<a class="anchor-link" href="#Setup-and-Random-Guess"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The competition provides three files:</p>
+<ul>
+<li>training set (passenger data with 'Survived' column)</li>
+<li>test set (passenger data with no 'Survived' column)</li>
+<li>sample submission assuming all and only female passengers survived</li>
+</ul>
+<p>Since I'll use it often, I'll set up the dependent variable ('Survived') here as well.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dep_var</span> <span class="o">=</span> <span class="s1">'Survived'</span>
+<span class="n">train_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"titanic_train.csv"</span><span class="p">,</span> <span class="n">low_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">test_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"titanic_test.csv"</span><span class="p">,</span> <span class="n">low_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here's what the training data looks like:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_df</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>PassengerId</th>
+      <th>Survived</th>
+      <th>Pclass</th>
+      <th>Name</th>
+      <th>...</th>
+      <th>Ticket</th>
+      <th>Fare</th>
+      <th>Cabin</th>
+      <th>Embarked</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>0</td>
+      <td>3</td>
+      <td>Braund, Mr. Owen Harris</td>
+      <td>...</td>
+      <td>A/5 21171</td>
+      <td>7.2500</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>Cumings, Mrs. John Bradley (Florence Briggs Thayer)</td>
+      <td>...</td>
+      <td>PC 17599</td>
+      <td>71.2833</td>
+      <td>C85</td>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>Heikkinen, Miss. Laina</td>
+      <td>...</td>
+      <td>STON/O2. 3101282</td>
+      <td>7.9250</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>1</td>
+      <td>1</td>
+      <td>Futrelle, Mrs. Jacques Heath (Lily May Peel)</td>
+      <td>...</td>
+      <td>113803</td>
+      <td>53.1000</td>
+      <td>C123</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>0</td>
+      <td>3</td>
+      <td>Allen, Mr. William Henry</td>
+      <td>...</td>
+      <td>373450</td>
+      <td>8.0500</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>886</th>
+      <td>887</td>
+      <td>0</td>
+      <td>2</td>
+      <td>Montvila, Rev. Juozas</td>
+      <td>...</td>
+      <td>211536</td>
+      <td>13.0000</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>887</th>
+      <td>888</td>
+      <td>1</td>
+      <td>1</td>
+      <td>Graham, Miss. Margaret Edith</td>
+      <td>...</td>
+      <td>112053</td>
+      <td>30.0000</td>
+      <td>B42</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>888</th>
+      <td>889</td>
+      <td>0</td>
+      <td>3</td>
+      <td>Johnston, Miss. Catherine Helen "Carrie"</td>
+      <td>...</td>
+      <td>W./C. 6607</td>
+      <td>23.4500</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>889</th>
+      <td>890</td>
+      <td>1</td>
+      <td>1</td>
+      <td>Behr, Mr. Karl Howell</td>
+      <td>...</td>
+      <td>111369</td>
+      <td>30.0000</td>
+      <td>C148</td>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>890</th>
+      <td>891</td>
+      <td>0</td>
+      <td>3</td>
+      <td>Dooley, Mr. Patrick</td>
+      <td>...</td>
+      <td>370376</td>
+      <td>7.7500</td>
+      <td>NaN</td>
+      <td>Q</td>
+    </tr>
+  </tbody>
+</table>
+<p>891 rows × 12 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The competition page has a description of each of the columns, so I won't rehash those here.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As a first pass to give something to compare against, I built a randomly chosen set where the survival was determined at random based on the survival rate of the training data. The score for this random set ended up being 52.39%.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Submit random set</span>
+<span class="n">total_died</span><span class="p">,</span> <span class="n">total_survived</span> <span class="o">=</span> <span class="n">train_df</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">dep_var</span><span class="p">)</span>
+<span class="n">ratio</span> <span class="o">=</span> <span class="n">total_died</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_survived</span> <span class="o">+</span> <span class="n">total_died</span><span class="p">)</span>
+<span class="n">test_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_df</span><span class="p">)</span>
+<span class="n">random_survived</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">test_length</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">[</span><span class="n">ratio</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">ratio</span><span class="p">])</span>
+<span class="n">random_data_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'PassengerId'</span><span class="p">:</span> <span class="n">test_df</span><span class="p">[</span><span class="s1">'PassengerId'</span><span class="p">],</span> <span class="s1">'Survived'</span> <span class="p">:</span> <span class="n">random_survived</span><span class="p">})</span>
+<span class="n">random_data_frame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"titanic_random.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_random.csv -m "Random based on survival rate"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Score: 0.52392
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Decision-Trees">
+<a class="anchor" href="#Decision-Trees" aria-hidden="true"><span class="octicon octicon-link"></span></a>Decision Trees<a class="anchor-link" href="#Decision-Trees"> </a>
+</h2>
+<p>Now, it's time to do something other than just guess. I started by splitting the categorical and continuous columns using a <code>fastai</code> designed specifically for that. Then, I split the provided training data into training and validation sets using <code>TabularPandas</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Split the columns into categorical and continuous</span>
+<span class="n">cont_cols</span><span class="p">,</span> <span class="n">cat_cols</span> <span class="o">=</span> <span class="n">cont_cat_split</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dep_var</span><span class="o">=</span><span class="n">dep_var</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Continuous columns: </span><span class="si">{</span><span class="n">cont_cols</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Categorical columns: </span><span class="si">{</span><span class="n">cat_cols</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Continuous columns: ['PassengerId', 'Pclass', 'Age', 'SibSp', 'Parch', 'Fare']
+Categorical columns: ['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked']
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Operations for columns</span>
+<span class="n">column_ops</span> <span class="o">=</span> <span class="p">[</span><span class="n">Categorify</span><span class="p">,</span> <span class="n">FillMissing</span><span class="p">]</span>
+<span class="c1"># Split the training data randomly</span>
+<span class="n">splits</span> <span class="o">=</span> <span class="n">RandomSplitter</span><span class="p">()(</span><span class="n">range_of</span><span class="p">(</span><span class="n">train_df</span><span class="p">))</span>
+<span class="n">tab_panda</span> <span class="o">=</span> <span class="n">TabularPandas</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">column_ops</span> <span class="p">,</span><span class="n">cat_cols</span><span class="p">,</span> <span class="n">cont_cols</span><span class="p">,</span> <span class="n">y_names</span><span class="o">=</span><span class="n">dep_var</span><span class="p">,</span> <span class="n">splits</span><span class="o">=</span><span class="n">splits</span><span class="p">)</span>
+<span class="n">trainxs</span><span class="p">,</span> <span class="n">trainy</span> <span class="o">=</span> <span class="n">tab_panda</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="n">tab_panda</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">y</span>
+<span class="n">validxs</span><span class="p">,</span> <span class="n">validy</span> <span class="o">=</span> <span class="n">tab_panda</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="n">tab_panda</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">y</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">trainxs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">validxs</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(713, 178)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tab_panda</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>Sex</th>
+      <th>Ticket</th>
+      <th>Cabin</th>
+      <th>Embarked</th>
+      <th>Age_na</th>
+      <th>PassengerId</th>
+      <th>Pclass</th>
+      <th>Age</th>
+      <th>SibSp</th>
+      <th>Parch</th>
+      <th>Fare</th>
+      <th>Survived</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>420</th>
+      <td>Gheorgheff, Mr. Stanio</td>
+      <td>male</td>
+      <td>349254</td>
+      <td>#na#</td>
+      <td>C</td>
+      <td>True</td>
+      <td>421</td>
+      <td>3</td>
+      <td>28.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>7.8958</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>392</th>
+      <td>Gustafsson, Mr. Johan Birger</td>
+      <td>male</td>
+      <td>3101277</td>
+      <td>#na#</td>
+      <td>S</td>
+      <td>False</td>
+      <td>393</td>
+      <td>3</td>
+      <td>28.0</td>
+      <td>2</td>
+      <td>0</td>
+      <td>7.9250</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>238</th>
+      <td>Pengelly, Mr. Frederick William</td>
+      <td>male</td>
+      <td>28665</td>
+      <td>#na#</td>
+      <td>S</td>
+      <td>False</td>
+      <td>239</td>
+      <td>2</td>
+      <td>19.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>10.5000</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The lesson used a <code>DecisionTreeRegressor</code>, but since 'Survived' is a categorical and not continuous variable, I used <code>DecisionTreeClassifier</code> instead. For the same reason, <code>zero_one_loss</code> makes more sense to be the loss function rather than using the mean square error.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Simple decision tree classifier</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">trainxs</span><span class="p">,</span> <span class="n">trainy</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="n">zero_one_loss</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">validxs</span><span class="p">),</span> <span class="n">validy</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Error: 0.1966292134831461
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Error: 0.2415730337078652
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Essentially, this is saying the model got ~24% of the validation passenger set wrong when predicting their survival.</p>
+<p>In the default, the model can split a node as long as there is at least 1 sample for each leaf. Following the lesson, I checked to see how many leaves for my model were created vs. how many rows in the training data</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainxs</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(117, 713)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The Titanic dataset is much, much smaller than the Blue Book of Bulldozers dataset, but this number of leaves seemed reasonable to me (6 per leaf or so). However, because it was easy to do so, I decided to iterate the <code>min_samples_leaf</code> parameter to try to get a better model:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># min_samples_leaf optimization</span>
+<span class="n">best_error</span><span class="p">,</span> <span class="n">best_min_samples</span><span class="p">,</span> <span class="n">best_model</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">min_samples</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">min_samples_leaf</span><span class="o">=</span><span class="n">min_samples</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">trainxs</span><span class="p">,</span> <span class="n">trainy</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">zero_one_loss</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">validxs</span><span class="p">),</span> <span class="n">validy</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">best_error</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">best_error</span> <span class="o">&gt;</span> <span class="n">error</span><span class="p">:</span>
+        <span class="n">best_error</span><span class="p">,</span> <span class="n">best_min_samples</span><span class="p">,</span> <span class="n">best_model</span> <span class="o">=</span> <span class="p">(</span><span class="n">error</span><span class="p">,</span>  <span class="n">min_samples</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Best model error: </span><span class="si">{</span><span class="n">best_error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Min samples per leaf: </span><span class="si">{</span><span class="n">best_min_samples</span><span class="si">}</span><span class="s2">, Number leaves: </span><span class="si">{</span><span class="n">best_model</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Best model error: 0.1853932584269663
+Min samples per leaf: 8, Number leaves: 48
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Best model error: 0.1966292134831461
+Min samples per leaf: 3, Number leaves: 70
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The default minimum samples per leaf is 1 for DecisionTreeClassifier, but it seems the optimization helped. A minimum of 3 samples per leaf yields a better result on the validation, so I'll use that model to submit to kaggle.</p>
+<h3 id="Data-Cleanup">
+<a class="anchor" href="#Data-Cleanup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data Cleanup<a class="anchor-link" href="#Data-Cleanup"> </a>
+</h3>
+<p>Before I could predict using that model, there is an issue with the test data that had to be addressed. The 'Fare' column had a null value for one of the test passengers, while neither the test or valid set had any null values in that column.</p>
+<p>A standard way to fill in that value is to use the mean of the training set, so that's what I did. Pandas makes this substitution pretty easy, once you figure out the proper syntax.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Find the null row(s) in the 'Fare' column</span>
+<span class="n">nan_row</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="n">test_df</span><span class="p">[</span><span class="s1">'Fare'</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()]</span>
+<span class="c1"># Set the fare in that row to the mean of the training data</span>
+<span class="n">test_df</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">nan_row</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s1">'Fare'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_df</span><span class="p">[</span><span class="s1">'Fare'</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="c1"># Print the newly fixed row</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">test_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">nan_row</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>     PassengerId  Pclass                Name   Sex  ...  Ticket       Fare  \
+152         1044       3  Storey, Mr. Thomas  male  ...    3701  32.204208   
+
+     Cabin Embarked  
+152    NaN        S  
+
+[1 rows x 11 columns]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>With the row fixed, I converted the test data to a <code>TabularPandas</code>. We'll use this again and again to feed into our models for survival prediction.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Convert test data to TabularPandas</span>
+<span class="n">test_tab</span> <span class="o">=</span> <span class="n">TabularPandas</span><span class="p">(</span><span class="n">test_df</span><span class="p">,</span> <span class="p">[</span><span class="n">Categorify</span><span class="p">,</span> <span class="n">FillMissing</span><span class="p">],</span> <span class="n">cat_cols</span><span class="p">,</span> <span class="n">cont_cols</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Decision-Tree-Results">
+<a class="anchor" href="#Decision-Tree-Results" aria-hidden="true"><span class="octicon octicon-link"></span></a>Decision Tree Results<a class="anchor-link" href="#Decision-Tree-Results"> </a>
+</h3>
+<p>With the test data cleaned up, I used the best decision tree model that I found to predict the survivors on the test set and submit the results to kaggle:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Decision Tree Classifier set (Score: 0.70813)</span>
+<span class="c1"># Predict the survivors</span>
+<span class="n">dt_survived</span> <span class="o">=</span> <span class="n">best_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_tab</span><span class="o">.</span><span class="n">xs</span><span class="p">)</span>
+
+<span class="n">test_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_df</span><span class="p">)</span>
+<span class="n">dt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'PassengerId'</span><span class="p">:</span> <span class="n">test_df</span><span class="p">[</span><span class="s1">'PassengerId'</span><span class="p">],</span> <span class="s1">'Survived'</span> <span class="p">:</span> <span class="n">dt_survived</span><span class="p">})</span>
+<span class="n">dt_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"titanic_dt.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_dt.csv -m "Single decision tree"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Score: 0.70813
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Random-Forest">
+<a class="anchor" href="#Random-Forest" aria-hidden="true"><span class="octicon octicon-link"></span></a>Random Forest<a class="anchor-link" href="#Random-Forest"> </a>
+</h2>
+<p>If one decision tree is good, how about more? Next, I'll walk through the random forests of decision trees that create to tackle this competition.</p>
+<p>Following the course approach, I made a function to make creating a random forest and fit it in single step. Similar to above, since I'm looking for a yes or no answer, instead of a continuous one, I'll use <code>RandomForestClassifier</code> instead of a regression model.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># create random forest and fit it</span>
+<span class="k">def</span> <span class="nf">create_rf</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="n">max_features</span><span class="p">,</span> 
+                                  <span class="n">min_samples_leaf</span><span class="o">=</span><span class="n">min_samples_leaf</span><span class="p">,</span> <span class="n">oob_score</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>With that function, I can create a random forest, fit it to the training data, and score it against the validation data:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># First pass model with error</span>
+<span class="c1"># Model error: 0.1797752808988764</span>
+<span class="c1"># Model oob error: 0.18513323983169705</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">create_rf</span><span class="p">(</span><span class="n">trainxs</span><span class="p">,</span> <span class="n">trainy</span><span class="p">)</span>
+<span class="n">error</span> <span class="o">=</span> <span class="n">zero_one_loss</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">validxs</span><span class="p">),</span> <span class="n">validy</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Model error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Model oob error: </span><span class="si">{</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">oob_score_</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Model error: 0.1685393258426966
+Model oob error: 0.18232819074333806
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Model error: 0.1797752808988764
+Model oob error: 0.18513323983169705
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If 40 trees (<code>n_estimators</code>) is good, how about <a href="https://imgflip.com/i/4u7pgw">more</a>?</p>
+<p>Let's look at models with more trees (<code>n_estimators</code>) and see how they do.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Number of trees (n_estimators) optimization</span>
+<span class="n">best_error</span><span class="p">,</span> <span class="n">best_trees</span><span class="p">,</span> <span class="n">best_model</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">num_trees</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">create_rf</span><span class="p">(</span><span class="n">trainxs</span><span class="p">,</span> <span class="n">trainy</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">num_trees</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">zero_one_loss</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">validxs</span><span class="p">),</span> <span class="n">validy</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">best_error</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">best_error</span> <span class="o">&gt;</span> <span class="n">error</span><span class="p">:</span>
+        <span class="n">best_error</span><span class="p">,</span> <span class="n">best_trees</span><span class="p">,</span> <span class="n">best_model</span> <span class="o">=</span> <span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">num_trees</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Num trees: </span><span class="si">{</span><span class="n">num_trees</span><span class="si">}</span><span class="s2">, error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">, oob: </span><span class="si">{</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">oob_score_</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Best model error: </span><span class="si">{</span><span class="n">best_error</span><span class="si">}</span><span class="s2">, num trees: </span><span class="si">{</span><span class="n">best_trees</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Num trees: 40, error: 0.1797752808988764, oob: 0.18232819074333806
+Num trees: 60, error: 0.1741573033707865, oob: 0.16690042075736322
+Num trees: 80, error: 0.151685393258427, oob: 0.17251051893408131
+Num trees: 100, error: 0.1741573033707865, oob: 0.17251051893408131
+Num trees: 120, error: 0.1629213483146067, oob: 0.17531556802244042
+Num trees: 140, error: 0.1629213483146067, oob: 0.17110799438990187
+Num trees: 160, error: 0.1629213483146067, oob: 0.17531556802244042
+Num trees: 180, error: 0.1629213483146067, oob: 0.1781206171107994
+Num trees: 200, error: 0.1629213483146067, oob: 0.16830294530154277
+Num trees: 220, error: 0.1741573033707865, oob: 0.17671809256661997
+Num trees: 240, error: 0.1573033707865169, oob: 0.17251051893408131
+Num trees: 260, error: 0.1629213483146067, oob: 0.16549789621318378
+Num trees: 280, error: 0.1573033707865169, oob: 0.17391304347826086
+Best model error: 0.151685393258427, num trees: 80
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Num trees: 40, error: 0.1797752808988764, oob: 0.18513323983169705
+Num trees: 60, error: 0.1685393258426966, oob: 0.18793828892005615
+Num trees: 80, error: 0.1741573033707865, oob: 0.1893408134642356
+Num trees: 100, error: 0.1797752808988764, oob: 0.1837307152875175
+Num trees: 120, error: 0.1629213483146067, oob: 0.18793828892005615
+Num trees: 140, error: 0.1685393258426966, oob: 0.1837307152875175
+Num trees: 160, error: 0.1685393258426966, oob: 0.1865357643758766
+Num trees: 180, error: 0.1685393258426966, oob: 0.1865357643758766
+Num trees: 200, error: 0.1629213483146067, oob: 0.1893408134642356
+Num trees: 220, error: 0.1629213483146067, oob: 0.18513323983169705
+Num trees: 240, error: 0.1685393258426966, oob: 0.1837307152875175
+Num trees: 260, error: 0.1685393258426966, oob: 0.18232819074333806
+Num trees: 280, error: 0.1741573033707865, oob: 0.1781206171107994
+Best model error: 0.1629213483146067, num trees: 120
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The model with 120 (or 200 or 220) trees seems to fare best, but all that much better than the model with 40 trees. I'm no expert, I think it is due to the 
+<a href="https://en.wikipedia.org/wiki/Out-of-bag_error"><em>out-of-bag error</em></a>. For all of the models, the <code>oob error</code> is more than the validation error. That would seem to indicate that the model can't really improve with more adding more trees, but could just be better by random chance.</p>
+<p>That said, since they are easy to create and the submission rules for the Titanic competition are generous, I submitted the predictions from the 40-tree, 120-tree, 140-tree, 160-tree, and 220-tree models just to see how they would do.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># A few models with different numbers of trees</span>
+<span class="k">for</span> <span class="n">num_trees</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">220</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">create_rf</span><span class="p">(</span><span class="n">trainxs</span><span class="p">,</span> <span class="n">trainy</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">num_trees</span><span class="p">)</span>
+    <span class="n">rf_survived</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_tab</span><span class="o">.</span><span class="n">xs</span><span class="p">)</span>
+    <span class="n">rf_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'PassengerId'</span><span class="p">:</span> <span class="n">test_df</span><span class="p">[</span><span class="s1">'PassengerId'</span><span class="p">],</span> <span class="s1">'Survived'</span> <span class="p">:</span> <span class="n">rf_survived</span><span class="p">})</span>
+    <span class="n">rf_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">"titanic_rf_</span><span class="si">{</span><span class="n">num_trees</span><span class="si">}</span><span class="s2">.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_rf_40.csv -m "Random forest classifier with 40 trees"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>40-tree model score: 0.75598
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_rf_120.csv -m "Random forest classifier with 120 trees"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>120-tree model score: 0.76794
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_rf_140.csv -m "Random forest classifier with 140 trees"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>140-tree model score: 0.76076
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_rf_160.csv -m "Random forest classifier with 160 trees"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>160-tree model score: 0.76555
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_rf_220.csv -m "Random forest classifier with 220 trees"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>220-tree model score: 0.77272
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Although the 220-tree model ended up doing the best, increasing the number of trees didn't significantly improve the results. (For reference, the percentage difference between the 40-tree and 220-tree model corresponds to 8 people.) I'm not convinced it's anything other than random chance.</p>
+<p>That said, how about <a href="https://memegenerator.net/instance/76641465/billy-mays-but-wait-but-wait-theres-even-more">even more</a> trees? 3000-tree model inbound:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model3000</span> <span class="o">=</span> <span class="n">create_rf</span><span class="p">(</span><span class="n">trainxs</span><span class="p">,</span> <span class="n">trainy</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="mi">3000</span><span class="p">)</span>
+<span class="n">rf_survived</span> <span class="o">=</span> <span class="n">model3000</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_tab</span><span class="o">.</span><span class="n">xs</span><span class="p">)</span>
+<span class="n">rf_rf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'PassengerId'</span><span class="p">:</span> <span class="n">test_df</span><span class="p">[</span><span class="s1">'PassengerId'</span><span class="p">],</span> <span class="s1">'Survived'</span> <span class="p">:</span> <span class="n">rf_survived</span><span class="p">})</span>
+<span class="n">rf_rf</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">"titanic_rf_3000.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_rf_300.csv -m "Random forest classifier with 3000 trees"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>3000-tree model score: 0.76555
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And, it's worse than 220-tree model. I think this supports my earlier assertion that some of the models with more trees are better than the 40 tree model by random chance, rather than anything learned within the models.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Aside:-Simpler-models">
+<a class="anchor" href="#Aside:-Simpler-models" aria-hidden="true"><span class="octicon octicon-link"></span></a>Aside: Simpler models<a class="anchor-link" href="#Aside:-Simpler-models"> </a>
+</h3>
+<p>At this point, before getting into some feature engineering, I went back and read on Kaggle a little bit more about the Titanic competition. As I mentioned above, one of the provided files was a sample submission file where the survivors were assumed to be only and all the female passengers (as determined by the 'Sex' column). How does that submission score?</p>
+<p><code>!kaggle competitions submit -c titanic -f gender_submssion.csv -m "Only and all female passengers survive"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Female only model score: 0.76555
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This simple model achieved the same score as the 3000-tree model! Let's take a look at the importance of each feature, according to that 3000-tree model. (Again, this is adapted directly from the course.)</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">feature_importance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'cols'</span><span class="p">:</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s1">'imp'</span><span class="p">:</span><span class="n">m</span><span class="o">.</span><span class="n">feature_importances_</span><span class="p">})</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">'imp'</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">fi</span> <span class="o">=</span> <span class="n">feature_importance</span><span class="p">(</span><span class="n">model3000</span><span class="p">,</span> <span class="n">trainxs</span><span class="p">)</span>
+<span class="n">fi</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">'cols'</span><span class="p">,</span> <span class="s1">'imp'</span><span class="p">,</span> <span class="s1">'barh'</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;AxesSubplot:ylabel='cols'&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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%0A">
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>From the bar chart, it is abundantly clear that 'Sex' is the most telling feature, with everything else trailing. That said, the 3000-tree model and female-only model actual differ in 62 (of 418) predictions, so they are finding slightly different spaces with the same score.</p>
+<p>Because I haven't been able to get the <a href="https://youtu.be/2rP1gD9xXkU?t=32">song</a> (no, not <a href="https://en.wikipedia.org/wiki/My_Heart_Will_Go_On">that one</a>) out of my head, I also tried "the women and children fled to the lifeboats put to sea" (wac) model. That is, all the women and children survived (but no one else).</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Women and children (wac) survival model</span>
+<span class="n">wac_test_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">test_df</span><span class="p">)</span>
+<span class="n">wac_test_df</span><span class="p">[</span><span class="s1">'Survived'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wac_test_df</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">wac_cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">wac_test_df</span><span class="o">.</span><span class="n">Sex</span> <span class="o">==</span> <span class="s1">'female'</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">wac_test_df</span><span class="o">.</span><span class="n">Age</span> <span class="o">&lt;</span> <span class="mi">18</span><span class="p">)</span>
+<span class="n">wac_test_df</span><span class="p">[</span><span class="s1">'Survived'</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">wac_cond</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">wac_submit</span> <span class="o">=</span> <span class="n">wac_test_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s1">'PassengerId'</span><span class="p">,</span><span class="s1">'Survived'</span><span class="p">]]</span>
+<span class="n">wac_submit</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"titanic_wac.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>#!kaggle competitions submit -c titanic -f titanic_wac.csv -m "Women and children fled to the lifeboats put to sea"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Women and children model score: 0.74641
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This model scores worse, but not dramatically so.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Feature-Engineering">
+<a class="anchor" href="#Feature-Engineering" aria-hidden="true"><span class="octicon octicon-link"></span></a>Feature Engineering<a class="anchor-link" href="#Feature-Engineering"> </a>
+</h2>
+<p>The next step was to improve the random forest models above by extracting, modifying, or deleting some of the given columns to create new, hopefully more relevant ones by <a href="https://en.wikipedia.org/wiki/Feature_engineering">feature engineering</a>.</p>
+<p>I tried lots of different modifications that I came up with on my own, but, in actuality, I couldn't come up with anything that definitely improved on the previous random forests. (The best score I ended up getting was 0.77751.)</p>
+<p>Since I couldn't seem to improve, I ended up reading a number of the discussion posts on Kaggle, particularly those that dealt with random forests and feature engineering. My favorite was <a href="https://www.kaggle.com/zlatankr/titanic-random-forest-82-78">this one</a>, so I decided to adapt it to the syntax I was using. The function I came up with is in the collapse below:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">edit_features</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">mod_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    
+    <span class="c1"># PassengerId - not meaningful for learning</span>
+    <span class="k">del</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"PassengerId"</span><span class="p">]</span>
+    
+    <span class="c1"># Pclass - treat passenger class as category</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s2">"Pclass"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"Pclass"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"category"</span><span class="p">)</span>
+    
+    <span class="c1"># Name - Split into name length and title</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'NameLength'</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'NameTitle'</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'NameTitle'</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"NameTitle"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"category"</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">]</span>
+    
+    <span class="c1"># Age - fill Age with mean grouped by title and class</span>
+    <span class="n">age_data</span> <span class="o">=</span> <span class="n">mod_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">'NameTitle'</span><span class="p">,</span> <span class="s1">'Pclass'</span><span class="p">])[</span><span class="s1">'Age'</span><span class="p">]</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Age_na'</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Age'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Age_na'</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Age_na'</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"category"</span><span class="p">)</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Age'</span><span class="p">]</span> <span class="o">=</span> <span class="n">age_data</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+    
+    <span class="c1"># SibSp + Parch =&gt; Family size category</span>
+    <span class="n">passengers</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"SibSp"</span><span class="p">]</span> <span class="o">+</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"Parch"</span><span class="p">]</span> 
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'FamilySize'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">passengers</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'Solo'</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">passengers</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Nuclear'</span><span class="p">,</span> <span class="s1">'Big'</span><span class="p">))</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s2">"FamilySize"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"FamilySize"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"category"</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'SibSp'</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Parch'</span><span class="p">]</span>
+    
+    <span class="c1"># Ticket - Split into two categories, </span>
+    <span class="c1">#  one based on the first letter of the ticket and </span>
+    <span class="c1">#  one based on the length</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s2">"TicketLetter"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"Ticket"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s2">"TicketLetter"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"TicketLetter"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">highTicket</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'TicketLetter'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'3'</span><span class="p">,</span> <span class="s1">'S'</span><span class="p">,</span> <span class="s1">'P'</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">])</span>
+    <span class="n">lowTicket</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'TicketLetter'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'W'</span><span class="p">,</span> <span class="s1">'4'</span><span class="p">,</span> <span class="s1">'7'</span><span class="p">,</span> <span class="s1">'6'</span><span class="p">,</span> <span class="s1">'L'</span><span class="p">,</span> <span class="s1">'5'</span><span class="p">,</span> <span class="s1">'8'</span><span class="p">])</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'TicketLetter'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">highTicket</span><span class="p">,</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"TicketLetter"</span><span class="p">],</span>
+                                      <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lowTicket</span><span class="p">,</span> <span class="s2">"LowTicket"</span><span class="p">,</span> <span class="s2">"OtherTicket"</span><span class="p">))</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'TicketLength'</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Ticket'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">del</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Ticket'</span><span class="p">]</span>
+    
+    <span class="c1"># Cabin - Split into the prefix and bin the number</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s2">"CabinPrefix"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Cabin'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s2">"CabinPrefix"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"CabinPrefix"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"category"</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">mod_df</span><span class="p">[</span><span class="s2">"Cabin"</span><span class="p">]</span>
+        
+    <span class="c1"># Embarked - Fill missing data with most common value ('S')</span>
+    <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Embarked'</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_df</span><span class="p">[</span><span class="s1">'Embarked'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">'S'</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">mod_df</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># New data frame with modified features</span>
+<span class="n">fe_train_df</span> <span class="o">=</span> <span class="n">edit_features</span><span class="p">(</span><span class="n">train_df</span><span class="p">)</span>
+<span class="n">fe_train_df</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Index(['Survived', 'Pclass', 'Sex', 'Age', 'Fare', 'Embarked', 'NameLength',
+       'NameTitle', 'Age_na', 'FamilySize', 'TicketLetter', 'TicketLength',
+       'CabinPrefix'],
+      dtype='object')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>With the modified features, I ran the training data through the same mechanism as before for creating a random forest</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Identify categorical and continuous columns and prep training data</span>
+<span class="n">fe_cont</span><span class="p">,</span> <span class="n">fe_cat</span> <span class="o">=</span> <span class="n">cont_cat_split</span><span class="p">(</span><span class="n">fe_train_df</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dep_var</span><span class="o">=</span><span class="n">dep_var</span><span class="p">)</span>
+<span class="n">fe_splits</span> <span class="o">=</span> <span class="n">RandomSplitter</span><span class="p">()(</span><span class="n">range_of</span><span class="p">(</span><span class="n">fe_train_df</span><span class="p">))</span>
+<span class="n">fe_tab_panda</span> <span class="o">=</span> <span class="n">TabularPandas</span><span class="p">(</span><span class="n">fe_train_df</span><span class="p">,</span> <span class="n">column_ops</span><span class="p">,</span> <span class="n">fe_cat</span><span class="p">,</span> <span class="n">fe_cont</span><span class="p">,</span> <span class="n">y_names</span><span class="o">=</span><span class="n">dep_var</span><span class="p">,</span> <span class="n">splits</span><span class="o">=</span><span class="n">fe_splits</span><span class="p">)</span>
+
+<span class="c1"># Alias training and validation data</span>
+<span class="n">fetrainxs</span><span class="p">,</span> <span class="n">fetrainy</span> <span class="o">=</span> <span class="n">fe_tab_panda</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="n">fe_tab_panda</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">y</span>
+<span class="n">fevalidxs</span><span class="p">,</span> <span class="n">fevalidy</span> <span class="o">=</span> <span class="n">fe_tab_panda</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="n">fe_tab_panda</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">y</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Categorical columns: </span><span class="si">{</span><span class="n">fe_cat</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Continuous columns: </span><span class="si">{</span><span class="n">fe_cont</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">fe_tab_panda</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Categorical columns: ['Pclass', 'Sex', 'Embarked', 'NameTitle', 'Age_na', 'FamilySize', 'TicketLetter', 'CabinPrefix']
+Continuous columns: ['Age', 'Fare', 'NameLength', 'TicketLength']
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Pclass</th>
+      <th>Sex</th>
+      <th>Embarked</th>
+      <th>NameTitle</th>
+      <th>Age_na</th>
+      <th>FamilySize</th>
+      <th>TicketLetter</th>
+      <th>CabinPrefix</th>
+      <th>Age</th>
+      <th>Fare</th>
+      <th>NameLength</th>
+      <th>TicketLength</th>
+      <th>Survived</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>769</th>
+      <td>3</td>
+      <td>male</td>
+      <td>S</td>
+      <td>Mr.</td>
+      <td>0</td>
+      <td>Solo</td>
+      <td>LowTicket</td>
+      <td>n</td>
+      <td>32.0</td>
+      <td>8.362500</td>
+      <td>32</td>
+      <td>4</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>49</th>
+      <td>3</td>
+      <td>female</td>
+      <td>S</td>
+      <td>Mrs.</td>
+      <td>0</td>
+      <td>Nuclear</td>
+      <td>3</td>
+      <td>n</td>
+      <td>18.0</td>
+      <td>17.799999</td>
+      <td>45</td>
+      <td>6</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>704</th>
+      <td>3</td>
+      <td>male</td>
+      <td>S</td>
+      <td>Mr.</td>
+      <td>0</td>
+      <td>Nuclear</td>
+      <td>3</td>
+      <td>n</td>
+      <td>26.0</td>
+      <td>7.854200</td>
+      <td>23</td>
+      <td>6</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Create a random forest model classifier</span>
+<span class="n">fe_model</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">oob_score</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">fe_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">fetrainxs</span><span class="p">,</span> <span class="n">fetrainy</span><span class="p">)</span>
+<span class="n">fe_test_df</span> <span class="o">=</span> <span class="n">edit_features</span><span class="p">(</span><span class="n">test_df</span><span class="p">)</span>
+<span class="n">fe_test_tab</span> <span class="o">=</span> <span class="n">TabularPandas</span><span class="p">(</span><span class="n">fe_test_df</span><span class="p">,</span> <span class="n">column_ops</span><span class="p">,</span> <span class="n">fe_cat</span><span class="p">,</span> <span class="n">fe_cont</span><span class="p">)</span>
+<span class="n">error</span> <span class="o">=</span> <span class="n">zero_one_loss</span><span class="p">(</span><span class="n">fe_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">fevalidxs</span><span class="p">),</span> <span class="n">fevalidy</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Model error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Model oob error: </span><span class="si">{</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">fe_model</span><span class="o">.</span><span class="n">oob_score_</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Model error: 0.1573033707865169
+Model oob error: 0.15568022440392704
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Model error: 0.1685393258426966
+Model oob error: 0.16830294530154277
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Make and submit predictions</span>
+<span class="n">fe_survived</span> <span class="o">=</span> <span class="n">fe_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">fe_test_tab</span><span class="o">.</span><span class="n">xs</span><span class="p">)</span>
+<span class="n">fe_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'PassengerId'</span><span class="p">:</span> <span class="n">test_df</span><span class="p">[</span><span class="s1">'PassengerId'</span><span class="p">],</span> <span class="s1">'Survived'</span> <span class="p">:</span> <span class="n">fe_survived</span><span class="p">})</span>
+<span class="n">fe_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"titanic_fe.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_fe.csv -m "Random forest classifier with feature engineering"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Random forest with feature engineering model score: 0.78708
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This model did score a little bit better than the random forest model<sup id="fnref-1" class="footnote-ref"><a href="#fn-1">1</a></sup>. I'm not entirely convinced it's actually better than the non-engineered models though. However, plotting the feature importance, it's pretty easy to see that it is likely the added 'NameTitle' and 'NameLength' features are providing something beyond what 'Name' did.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fi</span> <span class="o">=</span> <span class="n">feature_importance</span><span class="p">(</span><span class="n">fe_model</span><span class="p">,</span> <span class="n">fetrainxs</span><span class="p">)</span>
+<span class="n">fi</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">'cols'</span><span class="p">,</span> <span class="s1">'imp'</span><span class="p">,</span> <span class="s1">'barh'</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;AxesSubplot:ylabel='cols'&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAwAAAAGbCAYAAABzv/cnAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjMuMSwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/d3fzzAAAACXBIWXMAAAsTAAALEwEAmpwYAAAqrUlEQVR4nO3dfZRddX3v8feHEONDIKhEOkbrKDeiQGiEQAWVgrX2arwKGqtWb7E+ROpTpQvb3D4o3oqNtSpKtRItqK1PVcstgiVYVBRFJYGQIShaNbSkIEXbCIqA4Xv/OHvkMEwyM5lz5kxmv19rnZVz9t6/vb/7t8462Z/5/fY5qSokSZIktcNegy5AkiRJ0swxAEiSJEktYgCQJEmSWsQAIEmSJLWIAUCSJElqkb0HXUDb7L///jU8PDzoMiRJkjTHbdy48eaqWjx2uQFghg0PD7Nhw4ZBlyFJkqQ5Lsl14y13CpAkSZLUIgYASZIkqUUMAJIkSVKLGAAkSZKkFjEASJIkSS1iAJAkSZJaxK8BnWEj27YzvOaCQZchSZKkPtu6duWgSxiXIwCSJElSixgAJEmSpBYxAEiSJEktYgCQJEmSWsQAMI4kf5JkS5LNSTYl+dVB1yRJkiT1gt8CNEaSo4FnAIdX1e1J9gfuM+CyJEmSpJ5wBODehoCbq+p2gKq6uar+I8kRSS5JsjHJ+iRDSRYluTbJQQBJPpbk5QOtXpIkSdoFA8C9XQQ8PMm3k7w3ya8lmQ+cCayqqiOAs4HTq2o78Grgg0meDzywqt4/dodJVifZkGTDjp9un8lzkSRJku7BKUBjVNWtSY4AngQcD3wCeDNwKPC5JADzgBua7T+X5LnAe4Bf2ck+1wHrABYMLa1+n4MkSZK0MwaAcVTVDuCLwBeTjACvArZU1dFjt02yF/BY4DbgQcD1M1iqJEmSNCVOARojyUFJlnYtWg58E1jc3CBMkvlJDmnWn9KsfwFwdjNdSJIkSZqVHAG4t4XAmUn2A34O/Cuwms4UnncnWUSn385IcifwMuCoqrolyZeAPwXeOJDKJUmSpAkYAMaoqo3AMeOsuhk4dpzlj+1q+wf9qkuSJEnqBacASZIkSS1iAJAkSZJaxClAM2zZkkVsWLty0GVIkiSppRwBkCRJklrEACBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklrEACBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQW2XvQBbTNyLbtDK+5YNBlSJKkGbR17cpBlyD9giMAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklrEm4CBJDuAka5FJ1TV1gGVI0mSJPWNAaDjtqpaPpUGSQKkqu7qT0mSJElS7zkFaBxJFia5OMkVSUaSPKtZPpzkm0neC1wBPDzJ65NcnmRzkjcNtnJJkiRp1wwAHfdLsql5nAv8DDixqg4Hjgfe3vzFH+Ag4MNV9bjm+VLgKGA5cESSY8fuPMnqJBuSbNjx0+0zcT6SJEnSuJwC1HGPKUBJ5gNvaS7m7wKWAAc0q6+rqq81z5/aPK5sXi+kEwi+1L3zqloHrANYMLS0+nQOkiRJ0oQMAON7IbAYOKKq7kyyFbhvs+4nXdsF+IuqOmuG65MkSZJ2i1OAxrcIuKm5+D8eeMROtlsPvCTJQoAkS5I8ZKaKlCRJkqbKEYDxfQT4TJINwCbgW+NtVFUXJXkscFlzi8CtwIuAm2aoTkmSJGlKDABAVS0c8/pm4OidbH7omG3fBbyrT6VJkiRJPeUUIEmSJKlFDACSJElSizgFaIYtW7KIDWtXDroMSZIktZQjAJIkSVKLGAAkSZKkFjEASJIkSS1iAJAkSZJaxAAgSZIktYgBQJIkSWoRA4AkSZLUIgYASZIkqUUMAJIkSVKLGAAkSZKkFjEASJIkSS1iAJAkSZJaxAAgSZIktYgBQJIkSWoRA4AkSZLUInsPuoC2Gdm2neE1Fwy6DEmSWmPr2pWDLkGaVRwBkCRJklrEACBJkiS1iAFAkiRJahEDwBhJTkxSSR4z6FokSZKkXjMA3NsLgEuB5w+6EEmSJKnXDABdkiwEngC8lCYAJNkryXuTbElyfpLPJlnVrDsiySVJNiZZn2RogOVLkiRJEzIA3NMJwIVV9W3gR0kOB54NDAPLgJcBRwMkmQ+cCayqqiOAs4HTB1CzJEmSNGn+DsA9vQA4o3n+8eb1fOCTVXUXcGOSLzTrDwIOBT6XBGAecMN4O02yGlgNMG/fxf2qXZIkSZqQAaCR5MHAk4FDkxSdC/oCzt1ZE2BLVR090b6rah2wDmDB0NLqTcWSJEnS1DkF6G6rgA9X1SOqariqHg58H7gZeE5zL8ABwHHN9tcCi5P8YkpQkkMGUbgkSZI0WQaAu72Ae/+1/9PAQ4HrgauBs4CvA9ur6g46oeGtSa4CNgHHzFi1kiRJ0m5wClCjqo4bZ9m7ofPtQFV1azNN6BvASLN+E3DsDJYpSZIkTYsBYHLOT7IfcB/gz6vqxgHXI0mSJO0WA8AkjDc6IEmSJO2JDAAzbNmSRWxYu3LQZUiSJKmlvAlYkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklrEACBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklpk70EX0DYj27YzvOaCQZchSdKM27p25aBLkIQjAJIkSVKrGAAkSZKkFjEASJIkSS1iAJAkSZJapG8BIEkleXvX61OTnNav4zXH+GCSVX3c/3FJjpmp40mSJEm91s8RgNuBZyfZv4/HmGnHAcdMtJEkSZI0W/UzAPwcWAecMnZFkv+V5OtJrkzyL0kOaJafluRDSS5KsjXJs5P8ZZKRJBcmmd9sd0SSS5JsTLI+ydDOikgyL8nbklyeZHOSVzTLj0vyxSSfSvKtJB9Jkmbd05tllyZ5d5LzkwwDJwOnJNmU5EnNIY5N8tUk33M0QJIkSbNdv+8BeA/wwiSLxiy/FHh8VT0O+Djwh13rDgRWAs8C/h74QlUtA24DVjYh4ExgVVUdAZwNnL6LGl4KbK+qI4EjgZcneWSz7nHA64CDgUcBT0hyX+As4GlV9URgMUBVbQXeB7yzqpZX1ZebfQwBTwSeAawdr4Akq5NsSLJhx0+376JUSZIkqb/6+kNgVfXjJB8GXkvnAn7Uw4BPNH+5vw/w/a51/1xVdyYZAeYBFzbLR4Bh4CDgUOBzzR/s5wE37KKMpwKHdf11fhGwFLgD+EZVXQ+QZFOz/1uB71XVaE0fA1bvYv//r6ruAq4ZHckYq6rW0RkNYcHQ0trFviRJkqS+molfAj4DuAI4p2vZmcA7quq8JMcBp3Wtux2gqu5KcmdVjV4w30Wn3gBbquroSR4/wGuqav09FnaOe3vXoh1d+5+K7n1Mta0kSZI0o/r+NaBV9SPgH+hMxRm1CNjWPD9piru8Flic5GiAJPOTHLKL7dcDv9d1/8CjkzxgF9t/C3hUM+cf4Hld624B9plivZIkSdKsMVO/A/B2oPvbgE4DPpnky8DNU9lRVd0BrALemuQqYBP3/Gaes5Jc3zwuAz4AXANckeRqOvP7dzryUVW3Aa8ELkxyKfADYHTi/meAE8fcBCxJkiTtMXL3DBuNSrKwqm5tvhXoPcB3quqdvdj3gqGlNXTSGb3YlSRJe5Sta1cOugSpVZJsrKoVY5f7S8Dje3lzU/AWOtOVzhpsOZIkSVJvzMRNwHuc5q/9PfmLvyRJkjSbGABm2LIli9jgEKgkSZIGxClAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklrEACBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklrEACBJkiS1iAFAkiRJahEDgCRJktQiew+6gLYZ2bad4TUXDLoMSdI0bF27ctAlSNJucwRAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUovMqgCQpJK8vev1qUlO6+Px3pNkU5JrktzWPN+UZFWSzybZr3m8sqvNcJKr+1WTJEmS1E+zKgAAtwPPTrL/TBysql5VVcuBpwPfrarlzeNTVfX0qvpvYD/glbvYjSRJkrTHmG0B4OfAOuCUsSuS/K8kX09yZZJ/SXJAs/y0JB9KclGSrUmeneQvk4wkuTDJ/Ga7I5JckmRjkvVJhnZVSLOv/YG1wIHNyMDbxmwzL8nbklyeZHOSV/SqIyRJkqR+mG0BAOA9wAuTLBqz/FLg8VX1OODjwB92rTsQWAk8C/h74AtVtQy4DVjZhIAzgVVVdQRwNnD6JOtZw92jA68fs+6lwPaqOhI4Enh5kkeO3UGS1Uk2JNmw46fbJ3lYSZIkqfdm3Q+BVdWPk3wYeC2dC/hRDwM+0fzl/j7A97vW/XNV3ZlkBJgHXNgsHwGGgYOAQ4HPJaHZ5oYelPtU4LAkq5rXi4ClY2qjqtbRGdlgwdDS6sFxJUmSpN0y6wJA4wzgCuCcrmVnAu+oqvOSHAec1rXudoCquivJnVU1epF9F51zDLClqo7ucZ0BXlNV63u8X0mSJKkvZuMUIKrqR8A/0JliM2oRsK15ftIUd3ktsDjJ0QBJ5ic5ZJJtbwH22cm69cDvdd1n8OgkD5hibZIkSdKMmZUBoPF2oPvbgE4DPpnky8DNU9lRVd0BrALemuQqYBNwzCTb/hD4SpKrx94EDHwAuAa4ovlq0LOYvaMqkiRJErl7toxmwoKhpTV00hmDLkOSNA1b164cdAmSNKEkG6tqxdjls3kEQJIkSVKPGQAkSZKkFnG++gxbtmQRGxw6liRJ0oA4AiBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklrEACBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLbL3oAtom5Ft2xlec8Ggy5DUZ1vXrhx0CZIkjcsRAEmSJKlFDACSJElSixgAJEmSpBYxAEiSJEktMqcDQJIdSTYluTrJJ5Pcfxfbnpbk1JmsT5IkSZppczoAALdV1fKqOhS4Azh50AVJkiRJgzTXA0C3LwP/AyDJ7yTZnOSqJH83dsMkL09yebP+06MjB0me24wmXJXkS82yQ5J8oxlp2Jxk6YyelSRJkjQFrfgdgCR7A08DLkxyCPAnwBOq6uYkDxqnyT9W1fubtm8GXgqcCbwB+M2q2pZkv2bbk4F3VdVHktwHmDfO8VcDqwHm7bu4tycnSZIkTcFcHwG4X5JNwAbg34C/BZ4MfKqqbgaoqh+N0+7QJF9OMgK8EDikWf4V4INJXs7dF/qXAX+c5I+AR1TVbWN3VlXrqmpFVa2Yd/9FPTw9SZIkaWrm+gjAbVW1vHtBkgA1QbsPAidU1VVJXgwcB1BVJyf5VWAlsCnJ8qr6aJKvN8vWJ3lZVX2+t6chSZIk9cZcHwEYz8XAbyV5MMBOpgDtA9yQZD6dEQCabQ+sqq9X1RuAm4GHJ3kU8L2qejdwHnBY389AkiRJ2k1zfQTgXqpqS5LTgUuS7ACuBF48ZrM/A74OXAeM0AkEAG9rbvINnSBxFbAGeFGSO4Ebgf/b95OQJEmSdlOqJpoNo15aMLS0hk46Y9BlSOqzrWtXDroESVLLJdlYVSvGLm/jFCBJkiSptQwAkiRJUotM+R6AJHsBC6vqx32oZ85btmQRG5waIEmSpAGZ1AhAko8m2TfJA4BrgGuTvL6/pUmSJEnqtclOATq4+Yv/CcBngV8G/ne/ipIkSZLUH5MNAPOb78Q/AfinqrqTiX9MS5IkSdIsM9kAcBawFXgA8KUkjwC8B0CSJEnaw0zqJuDmV27f3bXouiTH96ckSZIkSf2yywCQ5A8maP+OHtYiSZIkqc8mGgHYZ0aqkCRJkjQjdhkAqupNM1WIJEmSpP6b7O8APCzJuUluSvKDJJ9O8rB+FydJkiSptyb7LUDnAOcBDwWWAJ9plkmSJEnag0w2ACyuqnOq6ufN44PA4j7WJUmSJKkPJhsAbk7yoiTzmseLgB/2szBJkiRJvTfZAPAS4LeAG4EbgFXA7/arKEmSJEn9MakfAgP+HDipqv4LIMmDgL+iEwwkSZIk7SEmGwAOG734B6iqHyV5XJ9qmtNGtm1neM0Fgy5D2qNsXbty0CVIkjRnTHYK0F5JHjj6ohkBmGx4kCRJkjRLTPYi/u3AV5N8Cig69wOc3reqJEmSJPXFpAJAVX04yQbgyUCAZ1fVNX2tTJIkSVLPTXoaT3PB70W/JEmStAeb7D0APZfkl5J8PMl3k1yT5LNJHr2TbYeTXL2TdR9IcvAExzotybYkm5JcneSZU6z1MU3bK5McmOSrU2kvSZIkzRYDCQBJApwLfLGqDqyqg4E/Bg6Y6r6q6mWTnI70zqpaDjwXODvJPc49ya5GQ04A/qmqHldV362qY6ZapyRJkjQbDGoE4Hjgzqp63+iCqtoEXJnk4iRXJBlJ8qyuNnsn+VCSzUk+leT+AEm+mGRF8/zWJKcnuSrJ15LcK1BU1TeBnwP7N23fkuQS4PeTHJHkkiQbk6xPMpTk6cDrgJcl+cLocZp/T0zyL+kYSvLtJL/Ujw6TJEmSemFQAeBQYOM4y38GnFhVh9MJCW9vRgsADgLWVdVhwI+BV47T/gHA16rqV4AvAS8fu0GSXwXuAv6zWbRfVf0a8G7gTGBVVR0BnA2cXlWfBd5HZwTh+O59VdW5dH4d+VXA+4E3VtWN4xxzdZINSTbs+On2nXaKJEmS1G+z7bv8A7wlybF0LtKXcPe0oH+vqq80z/8eeC2dXyPudgdwfvN8I/AbXetOSfIi4BbgeVVVTbb4RLP+IDrB5HPN8nnADZOo+TXA1XSCx8fG26Cq1gHrABYMLa1J7FOSJEnqi0EFgC3AqnGWvxBYDBxRVXcm2Qrct1k39sJ5vAvpO6tqdPkO7nl+76yqsYEB4CfNvwG2VNXRk6i/2xI6YeWAJHtV1V1TbC9JkiTNmEFNAfo8sCDJL6boJDkSeARwU3Pxf3zzetQvJxm9OH8BcGmPa7oWWDx6jCTzkxyyqwbNjcPnAL8NfBP4gx7XJEmSJPXUQAJA81f6E4HfaL4GdAtwGvBZYEXzo2MvBL7V1eybwElJNgMPAv6mxzXdQWdU4q1JrgI2ARN9288fA1+uqi/Tufh/WZLH9rIuSZIkqZdy94wZzYQFQ0tr6KQzBl2GtEfZunbloEuQJGmPk2RjVa0Yu3xgPwQmSZIkaeYZACRJkqQWmW1fAzrnLVuyiA1OZ5AkSdKAOAIgSZIktYgBQJIkSWoRA4AkSZLUIgYASZIkqUUMAJIkSVKLGAAkSZKkFjEASJIkSS1iAJAkSZJaxAAgSZIktYgBQJIkSWoRA4AkSZLUIgYASZIkqUUMAJIkSVKLGAAkSZKkFjEASJIkSS2y96ALaJuRbdsZXnPBoMuQemrr2pWDLkGSJE2SIwCSJElSixgAJEmSpBYxAEiSJEktYgCQJEmSWmTGAkCSByfZ1DxuTLKteX5rkvdO0PbWKRznuCTHdL0+Lcmpk2y7X5JXdr0eTvLbkz22JEmSNNvNWACoqh9W1fKqWg68D3hn83phVb1yguZTcRxwzEQb7cR+QHctw8CUAkCSebt5bEmSJKnvBj4FqPmL/fnN84VJzkkykmRzkueM2Xb/JJclWZlkcZJPJ7m8eTwhyTBwMnBKM7rwpF0c9/VNu81J3tQsXgsc2LR9W/P6Sc3rU5LMS/K2rnav6DqHLyT5KDDS+16SJEmSemO2/Q7AnwHbq2oZQJIHjq5IcgBwHvCnVfW55mL7nVV1aZJfBtZX1WOTvA+4tar+qmn362MPkuSpwFLgKCDAeUmOBdYAhzajFCQ5Dji1qp7RvF7d1HdkkgXAV5Jc1Oz2qKbt98c53mpgNcC8fRdPq4MkSZKk6ZhtAeApwPNHX1TVfzVP5wMXA6+qqku6tj04yejm+ybZZ5LHeWrzuLJ5vZBOIPi3SbQ7LMmq5vWipt0dwDfGu/hvzmMdsA5gwdDSmmSNkiRJUs/NtgAQYLwL5J8DG4HfBEYDwF7A0VV12z12cHcgmOg4f1FVZ41pOzyJdq+pqvVj2h0H/GQyB5YkSZIGaeD3AIxxEfDq0RddU4AKeAnwmCRrdrLt8ubpLcBEIwHrgZckWdi0XZLkIeO0Hft6PfB7SeY37R6d5AGTPjtJkiRpwGZbAHgz8MAkVye5Cjh+dEVV7aAzPej45qs6XwusaG7GvYbOzb8AnwFOHHMT8J8muX70UVUXAR8FLksyAnwK2KeqfkhnXv/VzU3Am4GfJ7kqySnAB4BrgCuSXA2cxewbRZEkSZJ2KlVOSZ9JC4aW1tBJZwy6DKmntq5dOegSJEnSGEk2VtWKsctn2wiAJEmSpD4yAEiSJEkt4vz1GbZsySI2OF1CkiRJA+IIgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklrEACBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklrEACBJkiS1yN6DLqBtRrZtZ3jNBYMuQwJg69qVgy5BkiTNMEcAJEmSpBYxAEiSJEktYgCQJEmSWsQAIEmSJLVIXwJAkgcn2dQ8bkyyrXl+a5L3TtD21ikc57gkx3S9Pi3JqdOpfYLjLU/y9Jk6niRJktRrffkWoKr6IbAcOhfJwK1V9Vd9ONRxwK3AV/uw7/EsB1YAn52h40mSJEk9NaNTgJq/2J/fPF+Y5JwkI0k2J3nOmG33T3JZkpVJFif5dJLLm8cTkgwDJwOnNKMLT9rFcV/ftNuc5E3NsuEk30zy/iRbklyU5H7NuiObbS9L8rYkVye5D/B/gec1x3tes/uDk3wxyfeSvLb3vSZJkiT1ziDvAfgzYHtVLauqw4DPj65IcgBwAfCGqroAeBfwzqo6EngO8IGq2gq8r1m+vKq+PN5BkjwVWAocRecv+EckObZZvRR4T1UdAvx3s2+Ac4CTq+poYAdAVd0BvAH4RHO8TzTbPgb4zWb/b0wyf5waVifZkGTDjp9un2o/SZIkST0zyB8Cewrw/NEXVfVfzdP5wMXAq6rqkq5tD04yuvm+SfaZ5HGe2jyubF4vpHPh/2/A96tqU7N8IzCcZD9gn6oanVb0UeAZu9j/BVV1O3B7kpuAA4DruzeoqnXAOoAFQ0trknVLkiRJPTfIABBgvIvhn9O5GP9NYDQA7AUcXVW33WMHdweCiY7zF1V11pi2w8DtXYt2APdrtp+Ksfvw15UlSZI0aw1yCtBFwKtHXyR5YPO0gJcAj0myZifbLm+e3gJMNBKwHnhJkoVN2yVJHrKzjZuRiFuSPL5Z9Pyu1ZM5niRJkjRrDTIAvBl4YHOD7VXA8aMrqmoHnQvv45O8EngtsKK5MfcaOjf/AnwGOHHMTcB/muT60UdVXURnGs9lSUaATzHxRfxLgXVJLqMzIjA6cf8LdKYidd8ELEmSJO0xUuWU9LGSLKyqW5vna4Chqvr9Xux7wdDSGjrpjF7sSpq2rWtXDroESZLUJ0k2VtWKscudrz6+lUn+D53+uQ548WDLkSRJknrDADCO5is+PzHhhpIkSdIexgAww5YtWcQGp11IkiRpQAZ5E7AkSZKkGWYAkCRJklrEACBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklrEACBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRQwAkiRJUovsPegC2mZk23aG11ww6DI0x2xdu3LQJUiSpD2EIwCSJElSixgAJEmSpBYxAEiSJEktMmsCQJIdSTZ1PYanub9nJlnTPD8tyakTbP+MJFcmuSrJNUle0Sw/OcnvTKcWSZIkabaYTTcB31ZVy3u1s6o6DzhvMtsmmQ+sA46qquuTLACGm/28r1c1SZIkSYM2a0YAxkqyMMnFSa5IMpLkWc3y4STfSvKBJFcn+UiSpyT5SpLvJDmq2e7FSf56zD4PTHJF1+ulSTYC+9AJQz8EqKrbq+raZpvTkpya5KFjRih2JHlEksVJPp3k8ubxhBnqIkmSJGnKZtMIwP2SbGqefx94LnBiVf04yf7A15KM/kX/fzTrVwOXA78NPBF4JvDHwAnjHaCqvptke5LlVbUJ+F3gg1X1o2bf1yW5GDgf+FhV3dXV9j+A5QBJXgX8WlVdl+SjwDur6tIkvwysBx7bkx6RJEmSemw2BYB7TAFqpuW8JcmxwF3AEuCAZvX3q2qk2W4LcHFVVZIRmqk7u/AB4HeT/AHwPOAogKp6WZJlwFOAU4HfAF48tnHzF/6XAU9qFj0FODjJ6Cb7Jtmnqm7parOaTlhh3r6LJ+wISZIkqV9mUwAY64XAYuCIqrozyVbgvs2627u2u6vr9V1MfE6fBt4IfB7YWFU/HF3RhIqRJH9HZxTixd0NkwwBfws8s6pubRbvBRxdVbft7IBVtY7OPQYsGFpaE9QnSZIk9c2svQcAWATc1Fz8Hw88ohc7raqf0Zmm8zfAOfCL+w2O69psOXBdd7tmROIfgD+qqm93rboIeHXXdst7UackSZLUD7M5AHwEWJFkA53RgG/1eN9F5+IdIMAfJrm2uQ/hTdx7+s8xwJHAm7puBH4o8Nqmzs1JrgFO7mGdkiRJUk+lqn0zUprfBFhUVX8208deMLS0hk46Y6YPqzlu69qVgy5BkiTNMkk2VtWKsctn8z0AfZHkXOBA4MmDrkWSJEmaaa0LAFV14qBrkCRJkgaldQFg0JYtWcQGp2tIkiRpQGbzTcCSJEmSeswAIEmSJLWIAUCSJElqEQOAJEmS1CIGAEmSJKlFDACSJElSixgAJEmSpBYxAEiSJEktYgCQJEmSWsQAIEmSJLWIAUCSJElqEQOAJEmS1CIGAEmSJKlFDACSJElSixgAJEmSpBbZe9AFtM3Itu0Mr7lg0GW01ta1KwddgiRJ0kA5AiBJkiS1iAFAkiRJahEDgCRJktQiBgBJkiSpRWZdAEiyI8mmrseaKbQ9Lsn50zz+F5Os2M22H0yyajrHlyRJkvppNn4L0G1VtXwQB04ybxDHlSRJkmbKrBsB2JkkW5O8JcllSTYkOTzJ+iTfTXJy16b7Jjk3yTVJ3pdkr6b93zTttiR505j9viHJpcBzu5bvleRDSd6cZF6StyW5PMnmJK9otkmSv26OdQHwkBnqDkmSJGm3zMYRgPsl2dT1+i+q6hPN83+vqqOTvBP4IPAE4L7AFuB9zTZHAQcD1wEXAs8GPgX8SVX9qPkr/8VJDquqzU2bn1XVEwGaMLE38BHg6qo6PclqYHtVHZlkAfCVJBcBjwMOApYBBwDXAGePPaGm/WqAefsunl7vSJIkSdMwGwPArqYAndf8OwIsrKpbgFuS/CzJfs26b1TV9wCSfAx4Ip0A8FvNhfjewBCdkDAaAEYDxqizgH+oqtOb108FDuua378IWAocC3ysqnYA/5Hk8+MVXVXrgHUAC4aW1gTnL0mSJPXNHjMFqHF78+9dXc9HX4+GmbEX2JXkkcCpwK9X1WHABXRGDkb9ZEybrwLHJxndJsBrqmp583hkVV20k+NJkiRJs9aeFgAm46gkj2zm/j8PuBTYl85F/vYkBwBPm2Affwt8Fvhkkr2B9cDvJZkPkOTRSR4AfAl4fnOPwBBwfH9OSZIkSeqN2TgFaOw9ABdW1aS/ChS4DFhLZ17+l4Bzq+quJFfSuVfge8BXJtpJVb0jySLg74AXAsPAFUkC/CdwAnAu8GQ6U5K+DVwyhTolSZKkGZcqZ7DMpAVDS2vopDMGXUZrbV27ctAlSJIkzYgkG6vqXr9vNRenAEmSJEnaCQOAJEmS1CKz8R6AOW3ZkkVscBqKJEmSBsQRAEmSJKlFDACSJElSixgAJEmSpBYxAEiSJEktYgCQJEmSWsQAIEmSJLWIAUCSJElqEQOAJEmS1CIGAEmSJKlFDACSJElSixgAJEmSpBYxAEiSJEktYgCQJEmSWsQAIEmSJLWIAUCSJElqkb0HXUDbjGzbzvCaCwZdxi9sXbty0CVIkiRpBjkCIEmSJLWIAUCSJElqEQOAJEmS1CIGAEmSJKlFDACSJElSi8yZAJDkxCSV5DGDrkWSJEmareZMAABeAFwKPH/QhUiSJEmz1ZwIAEkWAk8AXkoTAJLsleS9SbYkOT/JZ5OsatYdkeSSJBuTrE8ytIt9fzHJW5N8I8m3kzypWT6c5MtJrmgex+xiH6uTbEiyYcdPt/f03CVJkqSpmBMBADgBuLCqvg38KMnhwLOBYWAZ8DLgaIAk84EzgVVVdQRwNnD6BPvfu6qOAl4HvLFZdhPwG1V1OPA84N07a1xV66pqRVWtmHf/Rbt1gpIkSVIvzJVfAn4BcEbz/OPN6/nAJ6vqLuDGJF9o1h8EHAp8LgnAPOCGCfb/j82/G+mECpr9/3WS5cAO4NHTPQlJkiSp3/b4AJDkwcCTgUOTFJ0L+gLO3VkTYEtVHT2Fw9ze/LuDu/vsFOAHwK/QGUn52RRLlyRJkmbcXJgCtAr4cFU9oqqGq+rhwPeBm4HnNPcCHAAc12x/LbA4yS+mBCU5ZDeOuwi4oRlh+N90gockSZI0q82FAPAC7v3X/k8DDwWuB64GzgK+DmyvqjvohIa3JrkK2ATs9AbeXXgvcFKSr9GZ/vOT3apekiRJmkF7/BSgqjpunGXvhs63A1XVrc00oW8AI836TcCxU91/Vd1Mcw9AVX0HOKxr0/+zO/VLkiRJM2mPDwATOD/JfsB9gD+vqhsHXI8kSZI0UHM6AIw3OrAzSd5D57cEur2rqs7pZU3Llixiw9qVvdylJEmSNGlzOgBMRVW9atA1SJIkSf02F24CliRJkjRJBgBJkiSpRQwAkiRJUosYACRJkqQWMQBIkiRJLWIAkCRJklokVTXoGlolyS3AtYOuY47bH7h50EXMYfZvf9m//WX/9p993F/2b3/Ntf59RFUtHrvQ3wGYeddW1YpBFzGXJdlgH/eP/dtf9m9/2b/9Zx/3l/3bX23pX6cASZIkSS1iAJAkSZJaxAAw89YNuoAWsI/7y/7tL/u3v+zf/rOP+8v+7a9W9K83AUuSJEkt4giAJEmS1CIGAEmSJKlFDADTkOR/Jrk2yb8mWTPO+iR5d7N+c5LDJ2qb5EFJPpfkO82/D5yp85mNdrePkzw8yReSfDPJliS/39XmtCTbkmxqHk+fyXOaTab5Ht6aZKTpww1dy30PN6bx/j2o6/25KcmPk7yuWef7t8sk+vgxSS5LcnuSUyfT1vfw3Xa3f/0Mnpxpvn/9DJ6EabyH5/bncFX52I0HMA/4LvAo4D7AVcDBY7Z5OvDPQIDHA1+fqC3wl8Ca5vka4K2DPtc9tI+HgMOb5/sA3+7q49OAUwd9foN+TKd/m3Vbgf3H2a/v4R7075j93Ejnx1x8/069jx8CHAmc3t1vfg73vX/9DO5j/zbr/Azucx+P2c+c+hx2BGD3HQX8a1V9r6ruAD4OPGvMNs8CPlwdXwP2SzI0QdtnAR9qnn8IOKHP5zGb7XYfV9UNVXUFQFXdAnwTWDKTxe8BpvMe3hXfwx296t9fB75bVdf1v+Q9zoR9XFU3VdXlwJ1TaOt7uGO3+9fP4EmZzvt3V3z/3q1XfTznPocNALtvCfDvXa+v594fbjvbZldtD6iqG6DzAUonmbbVdPr4F5IMA48Dvt61+NXNlIuzWzw8Ot3+LeCiJBuTrO7axvdwR0/ev8DzgY+NWeb7t2My/bc7bX0Pd0ynf3/Bz+Cdmm7/+hk8sZ68h5mDn8MGgN2XcZaN/U7VnW0zmbaaXh93ViYLgU8Dr6uqHzeL/wY4EFgO3AC8fdqV7pmm279PqKrDgacBr0pybC+LmwN68f69D/BM4JNd633/3m06n6V+Dk9s2n3kZ/AuTbd//QyeWC/ew3Pyc9gAsPuuBx7e9fphwH9Mcptdtf3B6BSA5t+beljznmY6fUyS+XT+4/lIVf3j6AZV9YOq2lFVdwHvpzNE2EbT6t+qGv33JuBc7u5H38Md0+rfxtOAK6rqB6MLfP/ew2T6eHfa+h7umE7/+hk8sWn1r5/BkzKtPm7Myc9hA8DuuxxYmuSRTTp8PnDemG3OA34nHY8HtjfDcbtqex5wUvP8JOCf+n0is9hu93GSAH8LfLOq3tHdYMwc6xOBq/t3CrPadPr3AUn2AUjyAOCp3N2Pvoc7pvMZMeoFjBl29v17D5Pp491p63u4Y7f718/gSZlO//oZPDnT+YwYNTc/hwd9F/Ke/KDzDR7fpnOH+Z80y04GTm6eB3hPs34EWLGrts3yBwMXA99p/n3QoM9zT+xj4Il0hvk2A5uax9ObdX/XbLuZzgfB0KDPcw/s30fR+TaFq4Atvod727/NuvsDPwQWjdmn79+p9fEv0fkr4I+B/26e77uzts1y38PT7F8/g/vev34G97mPm3Vz9nM4zYlIkiRJagGnAEmSJEktYgCQJEmSWsQAIEmSJLWIAUCSJElqEQOAJEmS1CIGAEmSJKlFDACSJElSi/x/L1Jo0fvYhecAAAAASUVORK5CYII=%0A">
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In any case, even though this feature engineering did not produce a model that blew the other models away, I really liked the justification and the write-up of the author for each change that he made. I think it's good insight on how I might use feature engineering on a less studied dataset.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Using-a-Neural-Network">
+<a class="anchor" href="#Using-a-Neural-Network" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using a Neural Network<a class="anchor-link" href="#Using-a-Neural-Network"> </a>
+</h2>
+<p>Changing gears, let's see if a neural network would garner better results.</p>
+<p>First, I needed to set up the data. I dropped the <code>PassengerId</code> column, since it's just an index, and set up the <code>TabularPandas</code> similar to before, the only major change is the addition of the <code>Normalize</code> operation.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Split the columns by cardinality of 500</span>
+<span class="n">nn_cont_cols</span><span class="p">,</span> <span class="n">nn_cat_cols</span> <span class="o">=</span> <span class="n">cont_cat_split</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">dep_var</span><span class="o">=</span><span class="n">dep_var</span><span class="p">)</span>
+<span class="c1"># Drop the counter variable</span>
+<span class="n">nn_cont_cols</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">'PassengerId'</span><span class="p">)</span>
+<span class="c1"># Added the Normalize operation</span>
+<span class="n">nn_procs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Categorify</span><span class="p">,</span> <span class="n">FillMissing</span><span class="p">,</span> <span class="n">Normalize</span><span class="p">]</span>
+<span class="c1"># Make the TabularPandas object</span>
+<span class="n">nn_train_tab</span> <span class="o">=</span> <span class="n">TabularPandas</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">nn_procs</span><span class="p">,</span> <span class="n">nn_cat_cols</span><span class="p">,</span> <span class="n">nn_cont_cols</span><span class="p">,</span> 
+                             <span class="n">splits</span><span class="o">=</span><span class="n">splits</span><span class="p">,</span> <span class="n">y_names</span><span class="o">=</span><span class="n">dep_var</span><span class="p">,</span> <span class="n">y_block</span><span class="o">=</span><span class="n">CategoryBlock</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Next, I set up the <code>DataLoader</code> and the learner itself and made a stab at finding an appropriate learning rate.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nn_dls</span> <span class="o">=</span> <span class="n">nn_train_tab</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="mi">512</span><span class="p">)</span>
+<span class="n">learn</span> <span class="o">=</span> <span class="n">tabular_learner</span><span class="p">(</span><span class="n">nn_dls</span><span class="p">,</span> <span class="n">loss_func</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">l1_loss</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>After experimenting with a number of different epochs, I found that 300 epochs with a learning rate of 0.04 seemed to give reasonable results on the validation set and not take forever (~5 seconds).</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lr</span> <span class="o">=</span> <span class="mf">4e-2</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="k">with</span> <span class="n">learn</span><span class="o">.</span><span class="n">no_logging</span><span class="p">():</span> <span class="c1"># Prevents display of the 300 rows of epochs</span>
+    <span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
+<span class="n">train_error</span><span class="p">,</span> <span class="n">valid_error</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">recorder</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Training error: </span><span class="si">{</span><span class="n">train_error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Validation error: </span><span class="si">{</span><span class="n">valid_error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Training error: 0.014065220020711422
+Validation error: 0.1932232528924942
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>From there, it was fairly easy to make predictions, once I found the right incantation to get the test data in the right format (<code>learn.dls.test_dl</code>), call the right prediction function (<code>get_preds</code>), and flatten the predictions to a single vector:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Make and submit predictions</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">nn_predictions</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">get_preds</span><span class="p">(</span><span class="n">dl</span><span class="o">=</span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="o">.</span><span class="n">test_dl</span><span class="p">(</span><span class="n">test_df</span><span class="p">))</span>
+<span class="n">nn_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'PassengerId'</span><span class="p">:</span> <span class="n">test_df</span><span class="p">[</span><span class="s1">'PassengerId'</span><span class="p">],</span> <span class="s1">'Survived'</span> <span class="p">:</span> <span class="n">nn_predictions</span><span class="o">.</span><span class="n">flatten</span><span class="p">()})</span>
+<span class="n">nn_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"titanic_nn.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_nn.csv -m "Neural network predictions"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Neural network score: 0.74641
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As you can see, the neural network didn't score that much worse that the random forest models.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Ensemble">
+<a class="anchor" href="#Ensemble" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ensemble<a class="anchor-link" href="#Ensemble"> </a>
+</h2>
+<p>Now, I've got a handful of models that take slightly different approaches (or at least use different numbers of trees). I can combine them all into a single model. There may be other ways to approach this, but the simplest thing that came to my mind was to use a majority vote to decide who survived. Below is the ensemble that scored best on the competition test set of the ones that I tried.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Gather the models</span>
+<span class="n">model_files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"titanic_rf_220.csv"</span><span class="p">,</span> <span class="c1"># 220-tree Random Forest</span>
+               <span class="s2">"titanic_rffe.csv"</span><span class="p">,</span> <span class="c1"># RF with feature engineering</span>
+               <span class="s2">"titanic_nn.csv"</span><span class="p">,</span> <span class="c1"># Neural network model</span>
+               <span class="s2">"gender_submission.csv"</span> <span class="c1"># Women only survival</span>
+              <span class="p">]</span>
+
+<span class="c1"># Combined the models into a table</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mfile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model_files</span><span class="p">):</span>
+    <span class="n">model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">mfile</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_df</span><span class="p">[</span><span class="s1">'Survived'</span><span class="p">])</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># Majority vote</span>
+<span class="n">ensemble_survived</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">mode</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">downcast</span><span class="o">=</span><span class="s1">'integer'</span><span class="p">)</span>
+
+<span class="c1"># Save to csv and submit</span>
+<span class="n">ensemble_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'PassengerId'</span><span class="p">:</span> <span class="n">test_df</span><span class="p">[</span><span class="s1">'PassengerId'</span><span class="p">],</span> <span class="s1">'Survived'</span> <span class="p">:</span> <span class="n">ensemble_survived</span><span class="p">})</span>
+<span class="n">ensemble_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"titanic_ensemble.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>!kaggle competitions submit -c titanic -f titanic_ensemble.csv -m "Ensemble"</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Ensemble score: 0.78468
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this case, the ensembles didn't score any better than the best individual models. It appears I have reached the limits of what I able to do with the approaches directly mentioned in the <code>fastai</code> lesson. I'm going to end my adventure with the Titanic here, since I worked the entire way through the lesson, but I have to say that was fun.</p>
+<p>If I were to continue, I would be taking a much closer look at <a href="https://www.kaggle.com/startover205/fastai-2-titanic-rf">this notebook</a>, which used a very similar <code>fastai</code> approach and achieved a score above 98%. They supplemented their data with <a href="https://www.kaggle.com/pavlofesenko/titanic-extended">this extended set</a>, however.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p></p>
+<div class="footnotes"><p id="fn-1">1. Interestingly, though, I couldn't get it to quite match the claimed success of the notebook I borrowed it from (82%). I don't think it's my code though, since when I ran their &lt;a href=<a href="#fnref-1" class="footnote footnotes">↩</a></p></div>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="bobowedge/adventures-in-telework"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/adventures-in-telework/jupyter/2021/01/31/titanic-kaggle.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/adventures-in-telework/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/adventures-in-telework/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>What happens when I work when I&#39;m not at work</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/bobowedge" title="bobowedge"><svg class="svg-icon grey"><use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
