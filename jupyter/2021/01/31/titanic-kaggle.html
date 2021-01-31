@@ -80,7 +80,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      20 min read
+      19 min read
     
 </span></p>
 
@@ -721,20 +721,6 @@ Categorical columns: ['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked']
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Error: 0.1966292134831461
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     
 
@@ -832,21 +818,6 @@ Categorical columns: ['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked']
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Best model error: 0.1853932584269663
-Min samples per leaf: 8, Number leaves: 48
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     
 
@@ -896,8 +867,8 @@ Min samples per leaf: 3, Number leaves: 70
 <span class="n">nan_row</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="n">test_df</span><span class="p">[</span><span class="s1">'Fare'</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()]</span>
 <span class="c1"># Set the fare in that row to the mean of the training data</span>
 <span class="n">test_df</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">nan_row</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s1">'Fare'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_df</span><span class="p">[</span><span class="s1">'Fare'</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="c1"># Print the newly fixed row</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">test_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">nan_row</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
+<span class="c1"># Display the newly fixed row</span>
+<span class="n">display</span><span class="p">(</span><span class="n">test_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nan_row</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -909,16 +880,56 @@ Min samples per leaf: 3, Number leaves: 70
 
 <div class="output_area">
 
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>     PassengerId  Pclass                Name   Sex  ...  Ticket       Fare  \
-152         1044       3  Storey, Mr. Thomas  male  ...    3701  32.204208   
 
-     Cabin Embarked  
-152    NaN        S  
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-[1 rows x 11 columns]
-</pre>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>PassengerId</th>
+      <th>Pclass</th>
+      <th>Name</th>
+      <th>Sex</th>
+      <th>...</th>
+      <th>Ticket</th>
+      <th>Fare</th>
+      <th>Cabin</th>
+      <th>Embarked</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>152</th>
+      <td>1044</td>
+      <td>3</td>
+      <td>Storey, Mr. Thomas</td>
+      <td>male</td>
+      <td>...</td>
+      <td>3701</td>
+      <td>32.204208</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+  </tbody>
+</table>
+<p>1 rows × 11 columns</p>
 </div>
+</div>
+
 </div>
 
 </div>
@@ -1076,21 +1087,6 @@ Min samples per leaf: 3, Number leaves: 70
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Model error: 0.1685393258426966
-Model oob error: 0.18232819074333806
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     
 
@@ -1144,33 +1140,6 @@ Model oob error: 0.18513323983169705
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Num trees: 40, error: 0.1797752808988764, oob: 0.18232819074333806
-Num trees: 60, error: 0.1741573033707865, oob: 0.16690042075736322
-Num trees: 80, error: 0.151685393258427, oob: 0.17251051893408131
-Num trees: 100, error: 0.1741573033707865, oob: 0.17251051893408131
-Num trees: 120, error: 0.1629213483146067, oob: 0.17531556802244042
-Num trees: 140, error: 0.1629213483146067, oob: 0.17110799438990187
-Num trees: 160, error: 0.1629213483146067, oob: 0.17531556802244042
-Num trees: 180, error: 0.1629213483146067, oob: 0.1781206171107994
-Num trees: 200, error: 0.1629213483146067, oob: 0.16830294530154277
-Num trees: 220, error: 0.1741573033707865, oob: 0.17671809256661997
-Num trees: 240, error: 0.1573033707865169, oob: 0.17251051893408131
-Num trees: 260, error: 0.1629213483146067, oob: 0.16549789621318378
-Num trees: 280, error: 0.1573033707865169, oob: 0.17391304347826086
-Best model error: 0.151685393258427, num trees: 80
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -1545,7 +1514,7 @@ Best model error: 0.1629213483146067, num trees: 120
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>From the bar chart, it is abundantly clear that 'Sex' is the most telling feature, with everything else trailing. That said, the 3000-tree model and female-only model actual differ in 62 (of 418) predictions, so they are finding slightly different spaces with the same score.</p>
-<p>Because I haven't been able to get the <a href="https://youtu.be/2rP1gD9xXkU?t=32">song</a> (no, not <a href="https://en.wikipedia.org/wiki/My_Heart_Will_Go_On">that one</a>) out of my head, I also tried "the women and children fled to the lifeboats put to sea" (wac) model. That is, all the women and children survived (but no one else).</p>
+<p>Because I haven't been able to get <a href="https://youtu.be/2rP1gD9xXkU?t=32">this song</a> (no, not <a href="https://en.wikipedia.org/wiki/My_Heart_Will_Go_On">that one</a>) out of my head, I also tried "the women and children fled to the lifeboats put to sea" model. That is, all the women and children survived (but no one else).</p>
 
 </div>
 </div>
@@ -1557,7 +1526,7 @@ Best model error: 0.1629213483146067, num trees: 120
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Women and children (wac) survival model</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Women and children survival model</span>
 <span class="n">wac_test_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">test_df</span><span class="p">)</span>
 <span class="n">wac_test_df</span><span class="p">[</span><span class="s1">'Survived'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wac_test_df</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 <span class="n">wac_cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">wac_test_df</span><span class="o">.</span><span class="n">Sex</span> <span class="o">==</span> <span class="s1">'female'</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">wac_test_df</span><span class="o">.</span><span class="n">Age</span> <span class="o">&lt;</span> <span class="mi">18</span><span class="p">)</span>
@@ -1879,21 +1848,6 @@ Continuous columns: ['Age', 'Fare', 'NameLength', 'TicketLength']
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Model error: 0.1573033707865169
-Model oob error: 0.15568022440392704
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -2318,7 +2272,7 @@ Validation error: 0.1932232528924942
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p></p>
-<div class="footnotes"><p id="fn-1">1. Interestingly, though, I couldn't get it to quite match the claimed success of the notebook I borrowed it from (82%). I don't think it's my code though, since when I ran their &lt;a href=<a href="#fnref-1" class="footnote footnotes">↩</a></p></div>
+<div class="footnotes"><p id="fn-1">1. Interestingly, though, I couldn't get it to quite match the claimed success of the notebook I borrowed it from (82%). I don't think it's my code though, since when I ran their exact code: &lt;a href=<a href="#fnref-1" class="footnote footnotes">↩</a></p></div>
 
 </div>
 </div>
