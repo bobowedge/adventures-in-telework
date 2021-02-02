@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Chat Generation 2: Electric Bugaloo | Adventures in Telework</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Chat Generation 2: Electric Bugaloo" />
+<meta name="author" content="Matt Bowen" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Revisiting chat generation after the fastai NLP lesson" />
+<meta property="og:description" content="Revisiting chat generation after the fastai NLP lesson" />
+<link rel="canonical" href="https://bobowedge.github.io/adventures-in-telework/jupyter/2021/02/02/chat_bugaloo.html" />
+<meta property="og:url" content="https://bobowedge.github.io/adventures-in-telework/jupyter/2021/02/02/chat_bugaloo.html" />
+<meta property="og:site_name" content="Adventures in Telework" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-02-02T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"https://bobowedge.github.io/adventures-in-telework/jupyter/2021/02/02/chat_bugaloo.html","@type":"BlogPosting","headline":"Chat Generation 2: Electric Bugaloo","dateModified":"2021-02-02T00:00:00-06:00","datePublished":"2021-02-02T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://bobowedge.github.io/adventures-in-telework/jupyter/2021/02/02/chat_bugaloo.html"},"author":{"@type":"Person","name":"Matt Bowen"},"description":"Revisiting chat generation after the fastai NLP lesson","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/adventures-in-telework/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://bobowedge.github.io/adventures-in-telework/feed.xml" title="Adventures in Telework" /><link rel="shortcut icon" type="image/x-icon" href="/adventures-in-telework/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/adventures-in-telework/">Adventures in Telework</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/adventures-in-telework/about/">About Me</a><a class="page-link" href="/adventures-in-telework/search/">Search</a><a class="page-link" href="/adventures-in-telework/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Chat Generation 2: Electric Bugaloo</h1><p class="page-description">Revisiting chat generation after the fastai NLP lesson</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-02-02T00:00:00-06:00" itemprop="datePublished">
+        Feb 2, 2021
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Matt Bowen</span></span>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      10 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/adventures-in-telework/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/bobowedge/adventures-in-telework/tree/master/_notebooks/2021-02-02-chat_bugaloo.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/bobowedge/adventures-in-telework/master?filepath=_notebooks%2F2021-02-02-chat_bugaloo.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/bobowedge/adventures-in-telework/blob/master/_notebooks/2021-02-02-chat_bugaloo.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/adventures-in-telework/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
+<li class="toc-entry toc-h2"><a href="#Data-Prep">Data Prep </a></li>
+<li class="toc-entry toc-h2"><a href="#Training-a-model">Training a model </a></li>
+<li class="toc-entry toc-h2"><a href="#Output-Cleanup">Output Cleanup </a></li>
+<li class="toc-entry toc-h2"><a href="#Chat-Generation">Chat Generation </a></li>
+<li class="toc-entry toc-h2"><a href="#Takeaway">Takeaway </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-02-02-chat_bugaloo.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Introduction">
+<a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
+</h2>
+<p>In my <a href="https://bobowedge.github.io/adventures-in-telework/pytorch/jupyter/2020/11/12/chat_generation.html">first real post</a>, I tried my hand at generating fake chat logs using PyTorch. The corpus I used was a private Google Hangouts chatroom that I'm in and my idea was ostensibly to generate something that resembled the message in that room. I adapted one of the PyTorch examples to attempt to do so. I was able to generate a model, but, as you can see from the results at the bottom of the post, the result wasn't all that great.</p>
+<p>Today, I'm going to try again, now armed with the last lesson in the <a href="https://course.fast.ai/">fastai course</a>, which covers natural language processing (NLP).</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.text.all</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Data-Prep">
+<a class="anchor" href="#Data-Prep" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data Prep<a class="anchor-link" href="#Data-Prep"> </a>
+</h2>
+<p></p>
+<div class="flash flash-error">
+    <svg class="octicon octicon-alert octicon octicon-alert" viewbox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg>
+    <strong>Warning: </strong>Some of the chat content may contain profanity or stupidity.
+</div>
+The previous post on chat generation did most of the leg work in terms of prepping the data to interact nicely with the <code>fastai</code> interface, but I did a couple of more things to make training and generation easier.
+<p>First, I added in a couple of special marker words to indicate the speaker (<code>xxsender</code>) and the start (<code>xxsom</code>) and the end (<code>xxeom</code>) of messages. Then, I combined them into a single string for each message</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Special marker words</span>
+<span class="n">mark1</span> <span class="o">=</span> <span class="s2">"xxsender"</span>
+<span class="n">mark2</span> <span class="o">=</span> <span class="s2">"xxsom"</span>
+<span class="n">mark3</span> <span class="o">=</span> <span class="s2">"xxeom"</span>
+
+<span class="c1"># Read in the data and create</span>
+<span class="n">chat_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"chat_file.csv"</span><span class="p">)</span>
+<span class="n">chat_df</span><span class="p">[</span><span class="s1">'Text'</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dlm1</span><span class="si">}</span><span class="s2"> "</span> <span class="o">+</span> <span class="n">chat_df</span><span class="p">[</span><span class="s1">'Sender'</span><span class="p">]</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">" </span><span class="si">{</span><span class="n">dlm2</span><span class="si">}</span><span class="s2"> "</span> <span class="o">+</span> <span class="n">chat_df</span><span class="p">[</span><span class="s2">"Message"</span><span class="p">]</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">" </span><span class="si">{</span><span class="n">dlm3</span><span class="si">}</span><span class="s2">"</span>
+<span class="n">chat_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Sender</th>
+      <th>Message</th>
+      <th>Text</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Kappa</td>
+      <td>Rsvp allo</td>
+      <td>xxsender Kappa xxsom Rsvp allo xxeom</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Omega</td>
+      <td>Is it dead, did you get my last AliExpress find?</td>
+      <td>xxsender Omega xxsom Is it dead, did you get my last AliExpress find? xxeom</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Kappa</td>
+      <td>I didn't see it and it wouldn't let me send anything</td>
+      <td>xxsender Kappa xxsom I didn't see it and it wouldn't let me send anything xxeom</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Omega</td>
+      <td>&lt;MEME&gt;</td>
+      <td>xxsender Omega xxsom &lt;MEME&gt; xxeom</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Kappa</td>
+      <td>I need this</td>
+      <td>xxsender Kappa xxsom I need this xxeom</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>From there, I needed to break up the corpus into training and validation sets. I made each training and validation file to be a chunk of 100 consecutive messages concatenated together. Hopefully, this will preserve some of the inter-message dynamics, but keep each file reasonably sized. (The number 100 is quite arbitrary.)</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Somewhat arbitrary parameters</span>
+<span class="n">msgs_per_chunk</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">train_percent</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">valid_percent</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">train_percent</span>
+
+<span class="n">total_msgs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_df</span><span class="p">)</span>
+<span class="n">train_msgs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_msgs</span> <span class="o">*</span> <span class="n">train_percent</span><span class="p">)</span>
+<span class="n">valid_msgs</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="n">train_msgs</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">total_msgs</span><span class="p">,</span> <span class="n">train_msgs</span><span class="p">,</span> <span class="n">valid_msgs</span><span class="p">)</span>
+
+<span class="c1"># Chunk messages into separate files</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">total_msgs</span><span class="p">,</span> <span class="n">msgs_per_chunk</span><span class="p">):</span>
+    <span class="n">subset</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chat_df</span><span class="p">[</span><span class="s1">'Text'</span><span class="p">][</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">msgs_per_chunk</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">train_msgs</span><span class="p">:</span>
+        <span class="n">txt_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"data/train/</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.txt"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">txt_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"data/valid/</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.txt"</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">txt_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">subset</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>29000 23200 5800
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Training-a-model">
+<a class="anchor" href="#Training-a-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Training a model<a class="anchor-link" href="#Training-a-model"> </a>
+</h2>
+<p>With the data prep done, the next step is to train a language model. First, I created a <code>DataLoaders</code> object based on the training and validation sets to batch to give it to the language model learner</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="s2">"data"</span>
+<span class="n">get_data</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">get_text_files</span><span class="p">,</span> <span class="n">folders</span><span class="o">=</span><span class="p">[</span><span class="s1">'train'</span><span class="p">,</span> <span class="s1">'valid'</span><span class="p">])</span>
+<span class="n">dls_lm</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="n">TextBlock</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">is_lm</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">get_items</span><span class="o">=</span><span class="n">get_data</span><span class="p">,</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">seq_len</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls_lm</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>text_</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>xxbos xxsender xxmaj gamma xxsom no one is in chat today and it 's terrible xxeom xxsender xxmaj kappa xxsom xxup sad xxeom xxsender xxmaj gamma xxsom so xxeom xxsender xxmaj kappa xxsom xxmaj why even have rules of we do nt follow them xxeom xxsender xxmaj gamma xxsom better idea for the end of last night 's episode xxeom xxsender xxmaj kappa xxsom xxmaj this country is a dump xxeom xxsender xxmaj gamma xxsom jon tells dany who he</td>
+      <td>xxsender xxmaj gamma xxsom no one is in chat today and it 's terrible xxeom xxsender xxmaj kappa xxsom xxup sad xxeom xxsender xxmaj gamma xxsom so xxeom xxsender xxmaj kappa xxsom xxmaj why even have rules of we do nt follow them xxeom xxsender xxmaj gamma xxsom better idea for the end of last night 's episode xxeom xxsender xxmaj kappa xxsom xxmaj this country is a dump xxeom xxsender xxmaj gamma xxsom jon tells dany who he really</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>time until the election voting against their other xxunk until they get to him xxeom xxsender xxmaj beta xxsom xxmaj it seems that it 's convention for xxmaj senators to xxunk from voting in conflict of interest cases , not law or even xxmaj senate rules . xxmaj so , xxmaj cruz could vote for himself . xxmaj he does n't have to resign as senator until he 's actually xxunk xxeom xxsender xxmaj kappa xxsom &lt; meme &gt; xxeom</td>
+      <td>until the election voting against their other xxunk until they get to him xxeom xxsender xxmaj beta xxsom xxmaj it seems that it 's convention for xxmaj senators to xxunk from voting in conflict of interest cases , not law or even xxmaj senate rules . xxmaj so , xxmaj cruz could vote for himself . xxmaj he does n't have to resign as senator until he 's actually xxunk xxeom xxsender xxmaj kappa xxsom &lt; meme &gt; xxeom xxsender</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Then, I fed that object into the language model learner to create a language model to train. As with other <code>fastai</code> models, this sets up a pretrained model that can be fine tuned to based on the particular context.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">language_model_learner</span><span class="p">(</span><span class="n">dls_lm</span><span class="p">,</span> <span class="n">AWD_LSTM</span><span class="p">,</span> <span class="n">drop_mult</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">Perplexity</span><span class="p">()])</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I used the learning rate finder to pick an apporpriate learning rate:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">lr_find</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>SuggestedLRs(lr_min=0.13182567358016967, lr_steep=0.0831763744354248)</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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%0A">
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now, I fit the model, using that learning rate and 10 epochs:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="mf">1e-1</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: left;">
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>perplexity</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>4.602012</td>
+      <td>3.350408</td>
+      <td>0.388268</td>
+      <td>28.514360</td>
+      <td>00:58</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>3.726574</td>
+      <td>3.723708</td>
+      <td>0.366895</td>
+      <td>41.417671</td>
+      <td>00:58</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>3.399452</td>
+      <td>3.705886</td>
+      <td>0.370592</td>
+      <td>40.686092</td>
+      <td>00:57</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>3.176552</td>
+      <td>3.566556</td>
+      <td>0.382298</td>
+      <td>35.394474</td>
+      <td>00:57</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>2.986681</td>
+      <td>3.432734</td>
+      <td>0.391250</td>
+      <td>30.961184</td>
+      <td>00:58</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>2.807675</td>
+      <td>3.359524</td>
+      <td>0.406797</td>
+      <td>28.775505</td>
+      <td>00:57</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>2.646611</td>
+      <td>3.322854</td>
+      <td>0.415332</td>
+      <td>27.739414</td>
+      <td>00:59</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>2.482075</td>
+      <td>3.298300</td>
+      <td>0.421074</td>
+      <td>27.066593</td>
+      <td>00:57</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>2.355381</td>
+      <td>3.294302</td>
+      <td>0.422982</td>
+      <td>26.958590</td>
+      <td>00:58</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>2.265341</td>
+      <td>3.295616</td>
+      <td>0.423320</td>
+      <td>26.994041</td>
+      <td>00:58</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Again, 10 epochs is arbitrary, merely based on the fact that epoch took about a minute and 10 minutes isn't an eternity to wait.</p>
+<h2 id="Output-Cleanup">
+<a class="anchor" href="#Output-Cleanup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output Cleanup<a class="anchor-link" href="#Output-Cleanup"> </a>
+</h2>
+<p>Before I generated text, I need a routine to clean the output to make it look reasonable. In particular, I had added those extra <code>xx</code> markers that needed to be removed. Additionally, there were some modifications that the default tokenizer for <code>fastai</code> uses (e.g. <code>It's</code> to <code>It 's</code>) that needed to be undone. One thing I couldn't find in the <code>fastai</code> library was something to completely undo that tokenization.</p>
+<p>For those reasons, the collapse below has the <code>output_cleanup</code> function that I wrote to make the generated text prettier. It's not very interesting, but I included it for completeness</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Chat-Generation">
+<a class="anchor" href="#Chat-Generation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Chat Generation<a class="anchor-link" href="#Chat-Generation"> </a>
+</h2>
+<p>With the model tuned, I have everything I need to generate some chat. The main function for doing so is <code>learn.predict</code>, which generates some words based on some seed text. Here's the generation function that I came up with:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Generate some chat</span>
+<span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">num_words</span><span class="p">):</span>
+    <span class="c1"># If seed is just a sender, add the sender marker</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"Kappa"</span><span class="p">,</span> <span class="s2">"Gamma"</span><span class="p">,</span> <span class="s2">"Psi"</span><span class="p">,</span> <span class="s2">"Omega"</span><span class="p">,</span> <span class="s2">"Beta"</span><span class="p">,</span> <span class="s2">"Sigma"</span><span class="p">]:</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="s2">"xxsender "</span> <span class="o">+</span> <span class="n">seed</span>
+    <span class="c1"># Predict slightly past the number of requested words</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">num_words</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
+    <span class="c1"># Clean the output</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">output_cleanup</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># Trim back to the last complete message</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">x</span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">generate</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> Gamma :: it iirc made MIL as ron burgundy
+ Gamma :: well, they all don't have their own non white children
+ Omega :: They've been there since last year
+ Beta :: If they do nt have a non - emergency situation, that's gold
+ Kappa :: It's a silent auction
+ Kappa :: It's a shame that that's not the origin for this
+ Kappa :: Does that matter?
+ Kappa :: is this it?
+ Kappa :: I'm beginning to doubt her dad as a conservative but that doesn't mean it is a good one
+ Gamma :: i think it's not a nut roll
+ Omega :: i'mean the maybe i assume that's the third time i was being a retard
+ Kappa :: it's like a fighting chance to remember it
+ Gamma :: It's really good
+ Kappa :: I'm out of my house
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>It's pretty easy to see that this generated chat is better than the previous text generation that I did. At a minimum, each message is much more likely to be coherent as English. There is also some continuity between messages, where there was none before.</p>
+<p>For fun, I also generated some text seeded based on who the first sender was</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"Kappa"</span><span class="p">,</span> <span class="s2">"Gamma"</span><span class="p">,</span> <span class="s2">"Psi"</span><span class="p">,</span> <span class="s2">"Omega"</span><span class="p">,</span> <span class="s2">"Beta"</span><span class="p">,</span> <span class="s2">"Sigma"</span><span class="p">]:</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"--------------------------------"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> Kappa :: But i can not keep forgetting 
+ Gamma :: i guess it's not illegal if you don't think we're gonna go to the gov't 
+ Kappa :: The pediatrician said it was never before 
+ Kappa :: There s a spider in the CO 
+ Kappa :: just the fuck 
+ Kappa :: Fucking retarded 
+ Kappa :: Maybe i'm also retarded 
+ Gamma :: It's a retarded demon 
+ Kappa :: i was retarded 
+ Kappa :: That s a good word 
+--------------------------------
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> Gamma :: Too accurate 
+ Kappa :: This is one of the most advanced things i've ever seen 
+ Kappa :: how are you going to take the call? 
+ Gamma :: Fuck this country 
+ Kappa :: Fuck this country 
+ Kappa :: My question is how to get on 
+ Kappa :: The question from the south is why someone said there's a higher school 
+ Kappa :: Oh and i'mean, people in the south are going to wait for the Canadian man who lives there 
+--------------------------------
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> Psi :: JFC 
+ Psi :: &lt;MEME&gt; 
+ Kappa :: Is this a fun time, don't have a job? 
+ Gamma :: The fuck 
+ Kappa :: Lol 
+ Kappa :: i hate this world 
+ Gamma :: Boris might always have COVID 
+ Kappa :: I'm not going to buy it 
+ Kappa :: i'm like being real and retarded 
+ Kappa :: i assume that's some good social commentary 
+ Kappa :: and then it's called someone's 
+--------------------------------
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> Omega :: So i can get a pass to bring myself to a free crab event today 
+ Omega :: Yeah i have a fever, so, just because of a fever, i need the best for my life 
+ Kappa :: It's like a normal person 
+ Omega :: There's a lot of thoughts on what you've done 
+ Omega :: Ok 
+ Omega :: Maybe they're a family 
+ Omega :: Or the other way 
+--------------------------------
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> Beta :: Damn it, it's so easy to do 
+ Omega :: Everyone is like a lot of people playing at the prison 
+ Omega :: That's you really about putting no Clown on the table 
+ Psi :: Also, he's the end of America :: i think it's the narrative"
+ Kappa :: That s a good cartoon for "hot people "he's "to be "so very wise of point 
+ Kappa :: Good spin on this web comic 
+--------------------------------
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> Sigma :: i have no clue what the assignment is 
+ Omega :: The ravens are not playing their game 
+ Gamma :: They are going to vote for him, and nothing else will be shady 
+ Omega :: He needs to be dead 
+ Gamma :: And he's not subtle 
+ Kappa :: Is the game reopened? 
+ Psi :: Lighting beacons 
+ Omega :: Yes it is 
+ Omega :: But the beacons are lit 
+ Kappa :: Beacon lit 
+--------------------------------
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Takeaway">
+<a class="anchor" href="#Takeaway" aria-hidden="true"><span class="octicon octicon-link"></span></a>Takeaway<a class="anchor-link" href="#Takeaway"> </a>
+</h2>
+<p>My primary takeaway is that this version of text generation is better in multiple ways. First, it generates objectively more reasonable text. It's not perfect and still identifiable as machine-generated, but it is definitely better than my previous attempt. Second, the entire process was much easier and there's a lot less code to write.  With my first attempt with PyTorch, training a model took a lot of work to adapt their example to my data. For this attempt, it's less than 20 lines of actual code (ignoring the output cleanup).</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="bobowedge/adventures-in-telework"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/adventures-in-telework/jupyter/2021/02/02/chat_bugaloo.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/adventures-in-telework/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/adventures-in-telework/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>What happens when I work when I&#39;m not at work</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/bobowedge" title="bobowedge"><svg class="svg-icon grey"><use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
