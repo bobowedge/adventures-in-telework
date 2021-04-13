@@ -497,7 +497,7 @@ The problem was to find the 40th (Part 1) and 50th (Part 2) iterations of a
 
 Here's a meme to distract you from the lack of code for this problem:
 
-![Programming Pain](images/ross_meme.jpg){:class="img-responsive"}
+![Programming Pain]({{site.baseurl}}/images/ross_meme.jpg){:class="img-responsive"}
 
 ## [Day 11: Corporate Policy](https://adventofcode.com/2015/day/11)
 
@@ -1139,11 +1139,11 @@ This is decidedly not a parallel problem.  As such, I'm skipping any discussion 
 
 As recompense, here's a meme:
 
-![NVIDIA Master Plan](../images/NVIDIAs-Master-Plan.jpg){:class="img-responsive"}
+![NVIDIA Master Plan]({{site.baseurl}}/images/NVIDIAs-Master-Plan.jpg){:class="img-responsive"}
 
 And another:
 
-![Captain America NVIDIA](../images/Cap_NVIDIA.jpeg){:class="img-responsive"}
+![Captain America NVIDIA]({{site.baseurl}}/images/Cap_NVIDIA.jpeg){:class="img-responsive"}
 
 ## [Day 24: It Hangs in the Balance](https://adventofcode.com/2015/day/24)
 
