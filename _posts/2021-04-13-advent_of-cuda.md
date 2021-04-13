@@ -1482,7 +1482,7 @@ Thanks to anyone who actually read the entire way down here. I owe you a hearty 
 
 <b id="f5">5</b> This seems to be the "hello world" equivalent for CUDA. In addition to being the example that NVIDIA uses, it's the first meaningful example in the book I mentioned above,and pretty much all of the video examples if you search for "Introduction to CUDA". [↩](#a5)
 
-<b id="f6">6</b> Opinions are like my friends, they're all assholes. :fire:[↩](#a6)
+<b id="f6">6</b> Opinions are like my friends, they're all assholes. :fire:  That's how the saying goes, right?[↩](#a6)
 
 <b id="f7">7</b> Ternary statements are the devil's code, in case you're wondering.[↩](#a7)
 
