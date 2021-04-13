@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://bobowedge.github.io/adventures-in-telework/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bobowedge.github.io/adventures-in-telework/" rel="alternate" type="text/html" /><updated>2021-04-13T14:13:43-05:00</updated><id>https://bobowedge.github.io/adventures-in-telework/feed.xml</id><title type="html">Adventures in Telework</title><subtitle>What happens when I work when I'm not at work</subtitle><entry><title type="html">Advent of Cuda 2015</title><link href="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html" rel="alternate" type="text/html" title="Advent of Cuda 2015" /><published>2021-04-13T00:00:00-05:00</published><updated>2021-04-13T00:00:00-05:00</updated><id>https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda</id><content type="html" xml:base="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html">&lt;h1 id=&quot;advent-of-cuda&quot;&gt;Advent of Cuda&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://bobowedge.github.io/adventures-in-telework/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bobowedge.github.io/adventures-in-telework/" rel="alternate" type="text/html" /><updated>2021-04-13T14:24:56-05:00</updated><id>https://bobowedge.github.io/adventures-in-telework/feed.xml</id><title type="html">Adventures in Telework</title><subtitle>What happens when I work when I'm not at work</subtitle><entry><title type="html">Advent of Cuda 2015</title><link href="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html" rel="alternate" type="text/html" title="Advent of Cuda 2015" /><published>2021-04-13T00:00:00-05:00</published><updated>2021-04-13T00:00:00-05:00</updated><id>https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda</id><content type="html" xml:base="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html">&lt;h1 id=&quot;advent-of-cuda&quot;&gt;Advent of Cuda&lt;/h1&gt;
 
 &lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
 
@@ -470,7 +470,7 @@ Its constructor is the enumeration via division and modular arithmetic (takes in
 
 &lt;p&gt;Here’s a meme to distract you from the lack of code for this problem:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;images/ross_meme.jpg&quot; alt=&quot;Programming Pain&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/adventures-in-telework/images/ross_meme.jpg&quot; alt=&quot;Programming Pain&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;day-11-corporate-policy&quot;&gt;&lt;a href=&quot;https://adventofcode.com/2015/day/11&quot;&gt;Day 11: Corporate Policy&lt;/a&gt;&lt;/h2&gt;
 
@@ -1256,11 +1256,11 @@ string of 8 letters in alphabetical order:&lt;/p&gt;
 
 &lt;p&gt;As recompense, here’s a meme:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/NVIDIAs-Master-Plan.jpg&quot; alt=&quot;NVIDIA Master Plan&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/adventures-in-telework/images/NVIDIAs-Master-Plan.jpg&quot; alt=&quot;NVIDIA Master Plan&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;And another:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/Cap_NVIDIA.jpeg&quot; alt=&quot;Captain America NVIDIA&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/adventures-in-telework/images/Cap_NVIDIA.jpeg&quot; alt=&quot;Captain America NVIDIA&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;day-24-it-hangs-in-the-balance&quot;&gt;&lt;a href=&quot;https://adventofcode.com/2015/day/24&quot;&gt;Day 24: It Hangs in the Balance&lt;/a&gt;&lt;/h2&gt;
 
