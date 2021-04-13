@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://bobowedge.github.io/adventures-in-telework/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bobowedge.github.io/adventures-in-telework/" rel="alternate" type="text/html" /><updated>2021-04-13T13:56:49-05:00</updated><id>https://bobowedge.github.io/adventures-in-telework/feed.xml</id><title type="html">Adventures in Telework</title><subtitle>What happens when I work when I'm not at work</subtitle><entry><title type="html">Advent of Cuda 2015</title><link href="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html" rel="alternate" type="text/html" title="Advent of Cuda 2015" /><published>2021-04-13T00:00:00-05:00</published><updated>2021-04-13T00:00:00-05:00</updated><id>https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda</id><content type="html" xml:base="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html">&lt;h1 id=&quot;advent-of-cuda&quot;&gt;Advent of Cuda&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://bobowedge.github.io/adventures-in-telework/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bobowedge.github.io/adventures-in-telework/" rel="alternate" type="text/html" /><updated>2021-04-13T14:09:16-05:00</updated><id>https://bobowedge.github.io/adventures-in-telework/feed.xml</id><title type="html">Adventures in Telework</title><subtitle>What happens when I work when I'm not at work</subtitle><entry><title type="html">Advent of Cuda 2015</title><link href="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html" rel="alternate" type="text/html" title="Advent of Cuda 2015" /><published>2021-04-13T00:00:00-05:00</published><updated>2021-04-13T00:00:00-05:00</updated><id>https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda</id><content type="html" xml:base="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html">&lt;h1 id=&quot;advent-of-cuda&quot;&gt;Advent of Cuda&lt;/h1&gt;
 
 &lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
 
@@ -470,7 +470,7 @@ Its constructor is the enumeration via division and modular arithmetic (takes in
 
 &lt;p&gt;Here’s a meme to distract you from the lack of code for this problem:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/ross_meme.jpg&quot; alt=&quot;Programming Pain&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/ross_meme.jpg&quot; alt=&quot;Programming Pain&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;day-11-corporate-policy&quot;&gt;&lt;a href=&quot;https://adventofcode.com/2015/day/11&quot;&gt;Day 11: Corporate Policy&lt;/a&gt;&lt;/h2&gt;
 
@@ -1256,11 +1256,11 @@ string of 8 letters in alphabetical order:&lt;/p&gt;
 
 &lt;p&gt;As recompense, here’s a meme:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/NVIDIAs-Master-Plan.jpg&quot; alt=&quot;NVIDIA Master Plan&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/NVIDIAs-Master-Plan.jpg&quot; alt=&quot;NVIDIA Master Plan&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;And another:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/Cap_America_NVIDIA.jpeg&quot; alt=&quot;Captain America NVIDIA&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/Cap_NVIDIA.jpeg&quot; alt=&quot;Captain America NVIDIA&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;day-24-it-hangs-in-the-balance&quot;&gt;&lt;a href=&quot;https://adventofcode.com/2015/day/24&quot;&gt;Day 24: It Hangs in the Balance&lt;/a&gt;&lt;/h2&gt;
 
@@ -1427,7 +1427,7 @@ string of 8 letters in alphabetical order:&lt;/p&gt;
 
 &lt;p&gt;Next, I made a second heap that corresponded to all other groups that could co-exist with at least one group in the first heap. It plays very similar to Steps 1-3:&lt;/p&gt;
 
-&lt;ol&gt;
+&lt;ol start=&quot;5&quot;&gt;
   &lt;li&gt;Find the number of possible other groups (by looping over all non-negative integers &amp;lt; 2**28): those groups that sum to 1/4 of the total weight and have at least one non-overlapping group in the first heap whose cardinality is not bigger than its cardinality.&lt;/li&gt;
   &lt;li&gt;Allocate a second heap of integers of the size found in step 5.&lt;/li&gt;
   &lt;li&gt;Add each valid integer from step 5 to the second heap.&lt;/li&gt;
@@ -1435,13 +1435,13 @@ string of 8 letters in alphabetical order:&lt;/p&gt;
 
 &lt;p&gt;The last step in Part 2 is a bit different than the last step in Part 1:&lt;/p&gt;
 
-&lt;ol&gt;
+&lt;ol start=&quot;8&quot;&gt;
   &lt;li&gt;For every possible pair of groups in the second heap (“second” and “third” groups), find the non-overlapping groups in the first heap (“first” groups). If none of the 3 groups overlap, this also gives a “fourth” group of the remaining unused weights to specify a valid arrangement. If so, test the cardinality and product of the “first” group against the best arrangement found so far.&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;p&gt;In terms of device code, steps 1-4 are basically identical to Part 1. For the remaining steps:&lt;/p&gt;
 
-&lt;ol start=&quot;6&quot;&gt;
+&lt;ol start=&quot;5&quot;&gt;
   &lt;li&gt;Find the possible second groups that have at least one valid first group:
     &lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// Heap of integers represeting sets of weights for other groups (Part 2 only)&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;__device__&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__managed__&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;otherHeap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -1503,8 +1503,6 @@ string of 8 letters in alphabetical order:&lt;/p&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
   &lt;/li&gt;
-&lt;/ol&gt;
-&lt;ol&gt;
   &lt;li&gt;
     &lt;p&gt;This is similar to step 2: no device code here, just allocate correct memory for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;otherHeap&lt;/code&gt;.&lt;/p&gt;
   &lt;/li&gt;
@@ -1602,8 +1600,7 @@ string of 8 letters in alphabetical order:&lt;/p&gt;
 
 &lt;p&gt;Like Day 23, this is definitely not a parallel problem. I wrote the solution in 30 lines of C++ code, though, if you want to look at that. I didn’t even bother with pretending to write CUDA for this problem.&lt;/p&gt;
 
-&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/watch?v=gcJjlL3izVc&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;
-&lt;/iframe&gt;
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/gcJjlL3izVc&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 
