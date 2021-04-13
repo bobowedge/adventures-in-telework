@@ -497,7 +497,7 @@ The problem was to find the 40th (Part 1) and 50th (Part 2) iterations of a
 
 Here's a meme to distract you from the lack of code for this problem:
 
-![Programming Pain](../images/ross_meme.jpg)
+![Programming Pain](/images/ross_meme.jpg){:class="img-responsive"}
 
 ## [Day 11: Corporate Policy](https://adventofcode.com/2015/day/11)
 
@@ -1139,11 +1139,11 @@ This is decidedly not a parallel problem.  As such, I'm skipping any discussion 
 
 As recompense, here's a meme:
 
-![NVIDIA Master Plan](../images/NVIDIAs-Master-Plan.jpg)
+![NVIDIA Master Plan](/images/NVIDIAs-Master-Plan.jpg){:class="img-responsive"}
 
 And another:
 
-![Captain America NVIDIA](../images/Cap_America_NVIDIA.jpeg)
+![Captain America NVIDIA](/images/Cap_NVIDIA.jpeg){:class="img-responsive"}
 
 ## [Day 24: It Hangs in the Balance](https://adventofcode.com/2015/day/24)
 
@@ -1302,16 +1302,19 @@ To tackle this problem, I used a similar approach as I did in Part 1 to start, h
 
 Next, I made a second heap that corresponded to all other groups that could co-exist with at least one group in the first heap. It plays very similar to Steps 1-3:
 
+{:start="5"}
 5. Find the number of possible other groups (by looping over all non-negative integers < 2**28): those groups that sum to 1/4 of the total weight and have at least one non-overlapping group in the first heap whose cardinality is not bigger than its cardinality.
 6. Allocate a second heap of integers of the size found in step 5.
 7. Add each valid integer from step 5 to the second heap.
 
 The last step in Part 2 is a bit different than the last step in Part 1:
 
+{:start="8"}
 8. For every possible pair of groups in the second heap ("second" and "third" groups), find the non-overlapping groups in the first heap ("first" groups). If none of the 3 groups overlap, this also gives a "fourth" group of the remaining unused weights to specify a valid arrangement. If so, test the cardinality and product of the "first" group against the best arrangement found so far. 
 
 In terms of device code, steps 1-4 are basically identical to Part 1. For the remaining steps:
 
+{:start="5"}
 5. Find the possible second groups that have at least one valid first group:
 ```c++
 // Heap of integers represeting sets of weights for other groups (Part 2 only)
@@ -1373,7 +1376,7 @@ __global__ void find_other_groups(bool addToHeap)
     }
 }
 ```
-{:start="6"}
+
 6. This is similar to step 2: no device code here, just allocate correct memory for `otherHeap`.
 
 7. Repeat step 5, but add the integers to the heap that has now been allocated, so I replaced the `atomicAdd` line above with 
@@ -1470,12 +1473,7 @@ Despite having several steps and being almost 600 lines of code for both parts f
 
 Like Day 23, this is definitely not a parallel problem. I wrote the solution in 30 lines of C++ code, though, if you want to look at that. I didn't even bother with pretending to write CUDA for this problem.
 
-<iframe width="560" height="315" 
-        src="https://www.youtube.com/watch?v=gcJjlL3izVc"
-        frameborder="0"
-        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-</iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gcJjlL3izVc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Conclusion
 
