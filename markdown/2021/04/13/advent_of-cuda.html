@@ -83,7 +83,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      58 min read
+      57 min read
     
 </span></p>
 
@@ -145,10 +145,10 @@ window.onload = wrap_img;
 <a href="#day-9-all-in-a-single-night">Day 9: All in a Single Night</a>
 <ul>
 <li class="toc-entry toc-h3"><a href="#part-1-4">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-4">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing-2">Timing</a></li>
 </ul>
 </li>
-<li class="toc-entry toc-h2"><a href="#part-2-4">Part 2</a></li>
-<li class="toc-entry toc-h2"><a href="#timing-2">Timing</a></li>
 <li class="toc-entry toc-h2"><a href="#day-10-elves-look-elves-say">Day 10: Elves Look, Elves Say</a></li>
 <li class="toc-entry toc-h2">
 <a href="#day-11-corporate-policy">Day 11: Corporate Policy</a>
@@ -232,12 +232,12 @@ window.onload = wrap_img;
 
 <p>There’s a <a href="https://github.com/bobowedge/advent-of-code-2015">github repo</a> with all of the code that I wrote (C++ CUDA and Python) for solving the problems. Also included is the input data<sup id="a4"><a href="#f4">4</a></sup> for the days that I didn’t incorporate it directly into the code.</p>
 
-<p>I would also be remiss if I didn’t mention that I used the <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html">NVIDA C++ Programming Guide</a> extensively.  In particular, I used this guide to look stuff up.</p>
+<p>I would also be remiss if I didn’t mention that I used the <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html">NVIDA C++ Programming Guide</a> pretty extensively. The guide is fairly comprehensive and useful for looking stuff up.</p>
 
 <h3 id="caveats">
 <a class="anchor" href="#caveats" aria-hidden="true"><span class="octicon octicon-link"></span></a>Caveats</h3>
 
-<p>My point for doing this was to learn C++ CUDA and then try to explain it. That means I won’t necessarily be taking the most efficient or direct approach to solving each problem:  I’m basically brand new to CUDA (so I won’t know the “best” approach a priori) and I wanted to learn new parts of the C++ CUDA syntax/library (so I won’t necessarily take the “best” approach even if I know it).</p>
+<p>My point for doing this was to learn C++ CUDA and then try to explain it. That means I won’t necessarily be taking the most efficient or direct approach to solving each problem:  I’m basically brand new to CUDA, so I won’t know the “best” approach a priori. Also, I wanted to learn new parts of the C++ CUDA syntax/library, so I won’t necessarily take the “best” approach even if I know it.</p>
 
 <p>My goal with the writing and explanation of each problem below are to write it at the level that someone who has seen the standard <a href="https://www.nvidia.com/docs/IO/116711/sc11-cuda-c-basics.pdf">vector addition example</a><sup id="a5"><a href="#f5">5</a></sup> can follow. That’s the level I was at when I started Day 1 in CUDA.</p>
 
@@ -248,7 +248,7 @@ window.onload = wrap_img;
 <h3 id="premise">
 <a class="anchor" href="#premise" aria-hidden="true"><span class="octicon octicon-link"></span></a>Premise</h3>
 
-<p>For Advent of Code 2015, the premise is that Santa’s weather machine can’t produce snow because it lacks the <strong><em>stars</em></strong> required. Each programming part you solve earns a star and collect 50 (2 for each day) gives you enough to power the snow machine.  Let’s see if I can save Christmas with CUDA.</p>
+<p>For Advent of Code 2015, the premise is that Santa’s weather machine can’t produce snow because it lacks the stars required. Each programming part you solve earns a star and collect 50 (2 for each day) gives you enough to power the snow machine.  Let’s see if I can save Christmas with CUDA.</p>
 
 <h2 id="day-1-not-quite-lisp">
 <a class="anchor" href="#day-1-not-quite-lisp" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/1">Day 1: Not Quite Lisp</a>
@@ -257,7 +257,7 @@ window.onload = wrap_img;
 <h3 id="part-1">
 <a class="anchor" href="#part-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
 
-<p>This problem boiled down to evaluating a string consisting of opening and closing parentheses, <code class="language-plaintext highlighter-rouge">+1</code> for each opening parenthesis in the string and <code class="language-plaintext highlighter-rouge">-1</code> for each closing parenthesis. Since it was all I seen so far, I decided to adapt the vector addition example to tackle this problem. The core device code (with multiple threads and multiple blocks) for summing two vectors , <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>, into the resultant vector <code class="language-plaintext highlighter-rouge">c</code> is</p>
+<p>This problem boiled down to evaluating a string consisting of opening and closing parentheses, <code class="language-plaintext highlighter-rouge">+1</code> for each opening parenthesis in the string and <code class="language-plaintext highlighter-rouge">-1</code> for each closing parenthesis. I decided to adapt the vector addition example to tackle this problem, since it was the only thing I had so far. For that problem, the core device code (with multiple threads and multiple blocks) for summing two vectors , <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>, into the resultant vector <code class="language-plaintext highlighter-rouge">c</code> is</p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
 <span class="k">while</span> <span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">)</span>
@@ -319,7 +319,7 @@ window.onload = wrap_img;
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Putting it together (where <code class="language-plaintext highlighter-rouge">sum</code> is the sum from each thread):</p>
+<p>Putting it together, where <code class="language-plaintext highlighter-rouge">sum</code> is the sum from each thread:</p>
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__shared__</span> <span class="kt">int64_t</span> <span class="n">cache</span><span class="p">[</span><span class="n">THREADS</span><span class="p">];</span>
 <span class="k">const</span> <span class="kt">int64_t</span> <span class="n">cacheIndex</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
 <span class="n">cache</span><span class="p">[</span><span class="n">cacheIndex</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
@@ -339,7 +339,7 @@ window.onload = wrap_img;
 <h3 id="part-2">
 <a class="anchor" href="#part-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
 
-<p>The problem was to find the first place the partial sum of <code class="language-plaintext highlighter-rouge">instructions</code> was negative (given the same <code class="language-plaintext highlighter-rouge">+1</code> and <code class="language-plaintext highlighter-rouge">-1</code> for <code class="language-plaintext highlighter-rouge">(</code> and <code class="language-plaintext highlighter-rouge">)</code>).  I skipped writing a solution in CUDA because it seemed too serial.</p>
+<p>The problem was to find the first place the partial sum of <code class="language-plaintext highlighter-rouge">instructions</code> was negative (given the same <code class="language-plaintext highlighter-rouge">+1</code> and <code class="language-plaintext highlighter-rouge">-1</code> for <code class="language-plaintext highlighter-rouge">(</code> and <code class="language-plaintext highlighter-rouge">)</code>).  I skipped writing a solution in CUDA because it seemed too serial of a problem.</p>
 
 <h2 id="day-2-i-was-told-there-would-be-no-math">
 <a class="anchor" href="#day-2-i-was-told-there-would-be-no-math" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/2">Day 2: I Was Told There Would Be No Math</a>
@@ -366,9 +366,9 @@ window.onload = wrap_img;
     <span class="k">return</span> <span class="n">dataLines</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
-<p>(I’ll end up using this quite often for the other days.)</p>
+<p>I ended up using this quite often for the other days to parse the input data lines.</p>
 
-<p>Second, I need those strings converted to integer values to calculate areas and volumes. I ended up with a <code class="language-plaintext highlighter-rouge">std::vector&lt;int64_t&gt;</code> of length 3 times the number of boxes: length, width, and height for each boxes.  From there, the device code looks very similar to Day 1:</p>
+<p>Second, I need those strings converted to integer values to calculate areas and volumes. I ended up with a <code class="language-plaintext highlighter-rouge">int64_t</code> array of length 3 times the number of boxes: length, width, and height for each boxes.  From there, the device code looks very similar to Day 1:</p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1">// Paper for this thread </span>
     <span class="kt">int64_t</span> <span class="n">sumPaper</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -424,7 +424,7 @@ window.onload = wrap_img;
 
 <p>The problem was to find the smallest integer where the MD5 hash of appending the integer to the given input secret key started with at least 5 zeros.</p>
 
-<p>The trickiest part of solving this problem was getting a MD5 hash algorithm that could run as device code. Of course, plenty of code exists that implements MD5, but I couldn’t get any of it to link via <code class="language-plaintext highlighter-rouge">nvcc</code>, so I ended up implementing my own in <code class="language-plaintext highlighter-rouge">md5_device.hh</code>.<sup id="a9"><a href="#f9">9</a></sup></p>
+<p>The trickiest part of solving this problem was getting a MD5 hash algorithm that could run as device code. Of course, plenty of code exists that implements MD5, but I couldn’t get any of it to link via <code class="language-plaintext highlighter-rouge">nvcc</code>, so I ended up implementing my own in <a href="https://github.com/bobowedge/advent-of-code-2015/blob/main/cuda/md5_device.hh"><code class="language-plaintext highlighter-rouge">md5_device.hh</code></a>.<sup id="a9"><a href="#f9">9</a></sup></p>
 
 <p>This problem was also the first (but not the last) time that I really lamented not having access to the C++ STL. This meant that I had to implement my own <code class="language-plaintext highlighter-rouge">itoa()</code> routine to convert an integer to a C-string<sup id="a10"><a href="#f10">10</a></sup> and my own routine for concatenating the secret key with an integer:</p>
 
@@ -457,7 +457,7 @@ window.onload = wrap_img;
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>After all of those were written, the solution was pretty straightforward: for each <code class="language-plaintext highlighter-rouge">N</code>, convert to it a string, concatenate to the key and take the MD5 hash. As Day 1 and 2, each thread is responsible for different integers:</p>
+<p>After all of those were written, the solution was pretty straightforward: for each <code class="language-plaintext highlighter-rouge">N</code>, convert to it a string, concatenate to the key and take the MD5 hash. Like in the code for Days 1 and 2, each thread is responsible for different integers:</p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
 <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">increment</span> <span class="o">=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
@@ -480,7 +480,7 @@ window.onload = wrap_img;
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>As you can see, one of the new CUDA concepts I incorporated was <code class="language-plaintext highlighter-rouge">atomicMin()</code>. This is an atomic operation on shared memory; that is, it blocks other threads and blocks from modifying the value until it’s done storing the minimum of the current value of <code class="language-plaintext highlighter-rouge">solution</code> and <code class="language-plaintext highlighter-rouge">N</code> back into solution.</p>
+<p>As you can see, one of the new CUDA concepts I incorporated was <code class="language-plaintext highlighter-rouge">atomicMin</code>. This is an atomic operation on shared memory; that is, it blocks other threads and blocks from modifying the value until it’s done storing the minimum of the current value of <code class="language-plaintext highlighter-rouge">solution</code> and <code class="language-plaintext highlighter-rouge">N</code> back into solution.</p>
 
 <p>In this case, <code class="language-plaintext highlighter-rouge">solution</code> is marked as <code class="language-plaintext highlighter-rouge">__managed__</code>, meaning it’s in the <em>global</em> memory shared by both the host and device, so I can access it in both. In this case, I calculate its value in the device and print it in the host. (This is contrasted with the <code class="language-plaintext highlighter-rouge">__shared__</code> tag from Days 1 and 2, which is shared <em>block</em> memory.)</p>
 
@@ -502,7 +502,7 @@ window.onload = wrap_img;
 <h3 id="timing">
 <a class="anchor" href="#timing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
 
-<p>In contrast to Days 1 and 2, this problem definitely benefited from being solved in parallel in CUDA. My Python solution (which is run entirely serially) takes about 15 seconds to generate both solutions. The corresponding CUDA program runs in less than a second; it probably takes longer to print the solution than to calculate it. :thumbs_up:</p>
+<p>In contrast to Days 1 and 2, this problem definitely benefited from being solved in parallel in CUDA. My Python solution (which is run entirely serially) takes about 15 seconds to generate both solutions. The corresponding CUDA program runs in less than a second; it probably takes longer to print the solution than to calculate it. <img class="emoji" title=":thumbsup:" alt=":thumbsup:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f44d.png" height="20" width="20"></p>
 
 <h2 id="day-6-probably-a-fire-hazard">
 <a class="anchor" href="#day-6-probably-a-fire-hazard" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/6">Day 6: Probably a Fire Hazard</a>
@@ -653,7 +653,7 @@ window.onload = wrap_img;
 <h3 id="timing-1">
 <a class="anchor" href="#timing-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
 
-<p>As in Day 4, the solution to this problem benefited from being done in parallel. My python solution took about 10 seconds, while the executable generated from the CUDA solution prints seemingly immediately.</p>
+<p>As in Day 4, the solution to this problem definitely benefited from being done in parallel. My python solution took about 10 seconds, while the executable generated from the CUDA solution prints the solution immediately.</p>
 
 <h2 id="day-9-all-in-a-single-night">
 <a class="anchor" href="#day-9-all-in-a-single-night" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/9">Day 9: All in a Single Night</a>
@@ -700,13 +700,13 @@ Its constructor is the enumeration via division and modular arithmetic (takes in
 </code></pre></div></div>
 <p>(<code class="language-plaintext highlighter-rouge">minDistance</code> is in global managed memory and initialized to <code class="language-plaintext highlighter-rouge">INT_MAX</code>.)</p>
 
-<h2 id="part-2-4">
-<a class="anchor" href="#part-2-4" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h2>
+<h3 id="part-2-4">
+<a class="anchor" href="#part-2-4" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
 
-<p>Part 2 flips the problem to calculate the longest route. The obvious trivial change works: change to using <code class="language-plaintext highlighter-rouge">atomicMax()</code> instead of <code class="language-plaintext highlighter-rouge">atomicMin()</code> after calculating the route’s distance (with a value intialized to 0.)</p>
+<p>Part 2 flips the problem to calculate the longest route. The obvious trivial change works: change to using <code class="language-plaintext highlighter-rouge">atomicMax()</code> instead of <code class="language-plaintext highlighter-rouge">atomicMin()</code> after calculating the route’s distance, with the global <code class="language-plaintext highlighter-rouge">maxDistance</code> initialized to 0.</p>
 
-<h2 id="timing-2">
-<a class="anchor" href="#timing-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h2>
+<h3 id="timing-2">
+<a class="anchor" href="#timing-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
 
 <p>My original Python code took about 9-10 seconds to enumerate the routes and find the minimum distance, but that’s because I used <code class="language-plaintext highlighter-rouge">itertools.product</code> to enumerate all <code class="language-plaintext highlighter-rouge">16777216</code> routes. When I swapped to using <code class="language-plaintext highlighter-rouge">itertools.permutation</code> (40320 valid routes), it complete immediately.  In any case, the CUDA solution once again runs almost instanteneously.</p>
 
@@ -719,7 +719,7 @@ Its constructor is the enumeration via division and modular arithmetic (takes in
 
 <p>Here’s a meme to distract you from the lack of code for this problem:</p>
 
-<p><img src="/images/ross_meme.jpg" alt="Programming Pain"></p>
+<p><img src="../images/ross_meme.jpg" alt="Programming Pain"></p>
 
 <h2 id="day-11-corporate-policy">
 <a class="anchor" href="#day-11-corporate-policy" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/11">Day 11: Corporate Policy</a>
@@ -737,31 +737,30 @@ string of 8 letters in alphabetical order:</p>
   <li>“aaaaaaab” is 1</li>
   <li>“aaaaaaac” is 2</li>
   <li>…</li>
-  <li>“zzzzzzzz” is 208827064575 (26^8 - 1)
-Each such string maps uniquely to a particular integer.<sup id="a15"><a href="#f15">15</a></sup> Denoting <code class="language-plaintext highlighter-rouge">int_to_pwd</code> (map integer to string) and <code class="language-plaintext highlighter-rouge">pwd_to_int</code> (map string to int) as functions to handle that mapping, the device code becomes:
-    <div class="language-c++ highlighter-rouge">
-<div class="highlight"><pre class="highlight"><code><span class="c1">// Find the next valid password</span>
+  <li>“zzzzzzzz” is 208827064575 (26^8 - 1)</li>
+</ul>
+
+<p>Each such string maps uniquely to a particular integer.<sup id="a15"><a href="#f15">15</a></sup> Denoting <code class="language-plaintext highlighter-rouge">int_to_pwd</code> (map integer to string) and <code class="language-plaintext highlighter-rouge">pwd_to_int</code> (map string to int) as functions to handle that mapping, the device code becomes:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Find the next valid password</span>
 <span class="n">__global__</span> <span class="kt">void</span> <span class="nf">next_valid_pwd</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">intPwd</span><span class="p">)</span>
 <span class="p">{</span>
-  <span class="c1">// Buffer for storing password string</span>
-  <span class="kt">char</span> <span class="n">pwd</span><span class="p">[</span><span class="n">PWDLEN</span><span class="p">];</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int64_t</span> <span class="n">N</span> <span class="o">=</span> <span class="n">intPwd</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="n">soln</span><span class="p">;</span> <span class="n">N</span> <span class="o">+=</span>  <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
-  <span class="p">{</span>
-      <span class="c1">// Convert password integer to string</span>
-      <span class="n">int_to_pwd</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">pwd</span><span class="p">);</span>
-      <span class="c1">// Check validity of password (password rules)</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">is_valid</span><span class="p">(</span><span class="n">pwd</span><span class="p">))</span>
-      <span class="p">{</span>
-          <span class="c1">// Set solution</span>
-          <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">soln</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
-          <span class="k">break</span><span class="p">;</span>
-      <span class="p">}</span>
-  <span class="p">}</span>
+    <span class="c1">// Buffer for storing password string</span>
+    <span class="kt">char</span> <span class="n">pwd</span><span class="p">[</span><span class="n">PWDLEN</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int64_t</span> <span class="n">N</span> <span class="o">=</span> <span class="n">intPwd</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="n">soln</span><span class="p">;</span> <span class="n">N</span> <span class="o">+=</span>  <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// Convert password integer to string</span>
+        <span class="n">int_to_pwd</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">pwd</span><span class="p">);</span>
+        <span class="c1">// Check validity of password (password rules)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">is_valid</span><span class="p">(</span><span class="n">pwd</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="c1">// Set solution</span>
+            <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">soln</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 <span class="p">}</span>
-</code></pre></div>    </div>
-    <p><code class="language-plaintext highlighter-rouge">intPwd</code> is set in the host code to correspond to the given input. <code class="language-plaintext highlighter-rouge">soln</code> (global shared value) is intialized to <code class="language-plaintext highlighter-rouge">208827064576</code> and becomes the integer corresponding to the next valid password string when the device code is done. Then, the host code can map <code class="language-plaintext highlighter-rouge">soln</code> back to a string.</p>
-  </li>
-</ul>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">intPwd</code> is set in the host code to correspond to the given input. <code class="language-plaintext highlighter-rouge">soln</code> (global shared value) is intialized to <code class="language-plaintext highlighter-rouge">208827064576</code> and becomes the integer corresponding to the next valid password string when the device code is done. Then, the host code can map <code class="language-plaintext highlighter-rouge">soln</code> back to a string.</p>
 
 <h3 id="part-2-5">
 <a class="anchor" href="#part-2-5" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
@@ -914,9 +913,7 @@ Each such string maps uniquely to a particular integer.<sup id="a15"><a href="#f
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">fabricate_molecules</code> produces all of the possible children from applying a single transformation to the input molecule. The next step is to count the unique strings produced, as the fabrication can produce some duplicates. That’s mostly handled in the same way I’ve been counting things in the previous problems, using the <code class="language-plaintext highlighter-rouge">reduction</code> routine to thread the counting. The <code class="language-plaintext highlighter-rouge">operator==</code> defined for <code class="language-plaintext highlighter-rouge">Molecule</code> is used to check for duplicates while each thread is going through the heap.</p>
 
-<blockquote>
-  <p><a name="atomicAddTrick"> I</a> wanted to highlight the bit of code around <code class="language-plaintext highlighter-rouge">heapIdx</code> and <code class="language-plaintext highlighter-rouge">atomicAdd</code> since I thought it was particularly slick. (I didn’t come up with it.) The <code class="language-plaintext highlighter-rouge">atomicAdd</code> increments the heapSize counter and returns the previous value of heapSize. It allows you to insert a new object into the heap without worrying about other threads or blocks conflicting, because they get the next increment (assuming <code class="language-plaintext highlighter-rouge">atomicAdd</code> is called in the same way before their insert).</p>
-</blockquote>
+<p><a name="atomicAddTrick"></a> I wanted to highlight the bit of code around <code class="language-plaintext highlighter-rouge">heapIdx</code> and <code class="language-plaintext highlighter-rouge">atomicAdd</code> since I thought it was particularly slick. (I didn’t come up with it.) The <code class="language-plaintext highlighter-rouge">atomicAdd</code> increments the heapSize counter and returns the previous value of heapSize. It allows you to insert a new object into the heap without worrying about other threads or blocks conflicting, because they get the next increment (assuming <code class="language-plaintext highlighter-rouge">atomicAdd</code> is called in the same way before their insert).</p>
 
 <h3 id="part-2-7">
 <a class="anchor" href="#part-2-7" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
@@ -953,7 +950,7 @@ Each such string maps uniquely to a particular integer.<sup id="a15"><a href="#f
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>A <a href="https://en.wikipedia.org/wiki/Bitonic_sorter">bitonic_sort</a> was a new concept to me. It is a sorting algorithm that can be implemented in parallel code, so <a name="bitonicSort">I did it</a>:</p>
+<p>A <a href="https://en.wikipedia.org/wiki/Bitonic_sorter">bitonic_sort</a> was a new concept to me. It is a sorting algorithm that can be implemented in parallel code, so I did it: <a name="bitonicSort"></a></p>
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Single step of the bitonic_sort()</span>
 <span class="n">__global__</span> <span class="kt">void</span> <span class="nf">bitonic_sort_step</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">j</span><span class="p">,</span> <span class="kt">int64_t</span> <span class="n">k</span><span class="p">)</span>
 <span class="p">{</span>
@@ -1058,7 +1055,7 @@ Each such string maps uniquely to a particular integer.<sup id="a15"><a href="#f
 <h3 id="timing-5">
 <a class="anchor" href="#timing-5" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
 
-<p>The solution to Part 1 runs almost instantly. The solution for Part 2 runs in less than half a second (with the <code class="language-plaintext highlighter-rouge">while</code> short circuit).</p>
+<p>The solution to Part 1 runs almost instantly. The solution for Part 2 runs in less than half a second with the <code class="language-plaintext highlighter-rouge">while</code> short circuit above.  Not quite instantly, but still satisfying.</p>
 
 <h2 id="day-20-infinite-elves-and-infinite-houses">
 <a class="anchor" href="#day-20-infinite-elves-and-infinite-houses" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/20">Day 20: Infinite Elves and Infinite Houses</a>
@@ -1149,49 +1146,209 @@ Each such string maps uniquely to a particular integer.<sup id="a15"><a href="#f
 
 <p>For this problem, I decided to interrogate how the number of ‘blocks’ and ‘threads’ influenced how long it took to solve the problem (in wall time).  The solution to both parts could be calculated  simultaneously, so I ran some timing code for the two different approaches (house-by-house and elf-by-elf) that I used to solve the problem.</p>
 
-<p>For the house-by-house approach, here’s what the timing looked like:
-| # of blocks | # of threads | Wall Time |
-| ———– | ———— | ———-|
-|          32 |          128 |   164 sec |
-|          64 |          128 |    87 sec |
-|         128 |          128 |    57 sec |
-|         256 |          128 |    54 sec |
-|         512 |          128 |    51 sec |
-|        1024 |          128 |    47 sec |
-|        2048 |          128 |    46 sec |
-|          32 |          256 |    93 sec |
-|          64 |          256 |    56 sec |
-|         128 |          256 |    53 sec |
-|         256 |          256 |    51 sec |
-|         512 |          256 |    48 sec |
-|        1024 |          256 |    47 sec |
-|        2048 |          256 |    46 sec |
-Obviously, more blocks or more threads is faster, but the speed gains are limited after a point.</p>
+<p>For the house-by-house approach, here’s what the timing looked like:</p>
 
-<p>For the elf-by-elf approach, here’s the timing table:
-| # of blocks | # of threads | Wall Time  |
-| ———– | ———— | ———  |
-|          32 |          128 |   0.91 sec |
-|          64 |          128 |   0.89 sec |
-|         128 |          128 |   0.90 sec |
-|         256 |          128 |   0.90 sec |
-|         512 |          128 |   0.90 sec |
-|        1024 |          128 |   0.90 sec |
-|          32 |          256 |   0.89 sec |
-|          64 |          256 |   0.90 sec |
-|         128 |          256 |   0.90 sec |
-|         256 |          256 |   0.90 sec |
-|         512 |          256 |   0.90 sec |
-|        1024 |          256 |   0.90 sec |
-These timings are all essentially identical. I also tried some smaller numbers for this case:
-| # of blocks | # of threads | Wall Time  |
-| ———– | ———— | ———  |
-|          64 |           32 |   0.92 sec |
-|          64 |           16 |   0.89 sec |
-|          64 |            8 |   0.89 sec |
-|          32 |           16 |   0.94 sec |
-|          16 |           16 |   0.96 sec |
-|           8 |            8 |   1.14 sec |</p>
+<table>
+  <thead>
+    <tr>
+      <th># of blocks</th>
+      <th># of threads</th>
+      <th>Wall Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>32</td>
+      <td>128</td>
+      <td>164 sec</td>
+    </tr>
+    <tr>
+      <td>64</td>
+      <td>128</td>
+      <td>87 sec</td>
+    </tr>
+    <tr>
+      <td>128</td>
+      <td>128</td>
+      <td>57 sec</td>
+    </tr>
+    <tr>
+      <td>256</td>
+      <td>128</td>
+      <td>54 sec</td>
+    </tr>
+    <tr>
+      <td>512</td>
+      <td>128</td>
+      <td>51 sec</td>
+    </tr>
+    <tr>
+      <td>1024</td>
+      <td>128</td>
+      <td>47 sec</td>
+    </tr>
+    <tr>
+      <td>2048</td>
+      <td>128</td>
+      <td>46 sec</td>
+    </tr>
+    <tr>
+      <td>32</td>
+      <td>256</td>
+      <td>93 sec</td>
+    </tr>
+    <tr>
+      <td>64</td>
+      <td>256</td>
+      <td>56 sec</td>
+    </tr>
+    <tr>
+      <td>128</td>
+      <td>256</td>
+      <td>53 sec</td>
+    </tr>
+    <tr>
+      <td>256</td>
+      <td>256</td>
+      <td>51 sec</td>
+    </tr>
+    <tr>
+      <td>512</td>
+      <td>256</td>
+      <td>48 sec</td>
+    </tr>
+    <tr>
+      <td>1024</td>
+      <td>256</td>
+      <td>47 sec</td>
+    </tr>
+    <tr>
+      <td>2048</td>
+      <td>256</td>
+      <td>46 sec</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Obviously, more blocks or more threads is faster, but the speed gains are limited after a point.</p>
+
+<p>For the elf-by-elf approach, here’s the timing table:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th># of blocks</th>
+      <th># of threads</th>
+      <th>Wall Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>32</td>
+      <td>128</td>
+      <td>0.91 sec</td>
+    </tr>
+    <tr>
+      <td>64</td>
+      <td>128</td>
+      <td>0.89 sec</td>
+    </tr>
+    <tr>
+      <td>128</td>
+      <td>128</td>
+      <td>0.90 sec</td>
+    </tr>
+    <tr>
+      <td>256</td>
+      <td>128</td>
+      <td>0.90 sec</td>
+    </tr>
+    <tr>
+      <td>512</td>
+      <td>128</td>
+      <td>0.90 sec</td>
+    </tr>
+    <tr>
+      <td>1024</td>
+      <td>128</td>
+      <td>0.90 sec</td>
+    </tr>
+    <tr>
+      <td>32</td>
+      <td>256</td>
+      <td>0.89 sec</td>
+    </tr>
+    <tr>
+      <td>64</td>
+      <td>256</td>
+      <td>0.90 sec</td>
+    </tr>
+    <tr>
+      <td>128</td>
+      <td>256</td>
+      <td>0.90 sec</td>
+    </tr>
+    <tr>
+      <td>256</td>
+      <td>256</td>
+      <td>0.90 sec</td>
+    </tr>
+    <tr>
+      <td>512</td>
+      <td>256</td>
+      <td>0.90 sec</td>
+    </tr>
+    <tr>
+      <td>1024</td>
+      <td>256</td>
+      <td>0.90 sec</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>These timings are all essentially identical. I also tried some smaller numbers for this case:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th># of blocks</th>
+      <th># of threads</th>
+      <th>Wall Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>64</td>
+      <td>32</td>
+      <td>0.92 sec</td>
+    </tr>
+    <tr>
+      <td>64</td>
+      <td>16</td>
+      <td>0.89 sec</td>
+    </tr>
+    <tr>
+      <td>64</td>
+      <td>8</td>
+      <td>0.89 sec</td>
+    </tr>
+    <tr>
+      <td>32</td>
+      <td>16</td>
+      <td>0.94 sec</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>16</td>
+      <td>0.96 sec</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>8</td>
+      <td>1.14 sec</td>
+    </tr>
+  </tbody>
+</table>
 
 <p>I don’t have anything groundbreaking to say about how many blocks or threads to use and the timing; I just wanted to see what it looked like if I changed them.</p>
 
@@ -1380,11 +1537,11 @@ These timings are all essentially identical. I also tried some smaller numbers f
 
 <p>As recompense, here’s a meme:</p>
 
-<p><img src="/images/NVIDIAs-Master-Plan.jpg" alt="NVIDIA Master Plan"></p>
+<p><img src="../images/NVIDIAs-Master-Plan.jpg" alt="NVIDIA Master Plan"></p>
 
 <p>And another:</p>
 
-<p><img src="images/Cap_America_NVIDIA.jpeg" alt="Captain America NVIDIA"></p>
+<p><img src="../images/Cap_America_NVIDIA.jpeg" alt="Captain America NVIDIA"></p>
 
 <h2 id="day-24-it-hangs-in-the-balance">
 <a class="anchor" href="#day-24-it-hangs-in-the-balance" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/24">Day 24: It Hangs in the Balance</a>
@@ -1572,7 +1729,7 @@ These timings are all essentially identical. I also tried some smaller numbers f
 
 <p>In terms of device code, steps 1-4 are basically identical to Part 1. For the remaining steps:</p>
 
-<ol>
+<ol start="6">
   <li>Find the possible second groups that have at least one valid first group:
     <div class="language-c++ highlighter-rouge">
 <div class="highlight"><pre class="highlight"><code><span class="c1">// Heap of integers represeting sets of weights for other groups (Part 2 only)</span>
@@ -1635,6 +1792,8 @@ These timings are all essentially identical. I also tried some smaller numbers f
 <span class="p">}</span>
 </code></pre></div>    </div>
   </li>
+</ol>
+<ol>
   <li>
     <p>This is similar to step 2: no device code here, just allocate correct memory for <code class="language-plaintext highlighter-rouge">otherHeap</code>.</p>
   </li>
@@ -1743,7 +1902,9 @@ These timings are all essentially identical. I also tried some smaller numbers f
 <h2 id="conclusion">
 <a class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h2>
 
-<p>Thanks to anyone who actually read the entire way down here. I owe you a hearty handshake once this pandemic is over. No real conclusions, just the smug satisfications of writing some code. <img class="emoji" title=":open_mouth:" alt=":open_mouth:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f62e.png" height="20" width="20"></p>
+<p>Thanks to anyone who actually read the entire way down here. I owe you a hearty handshake/hug once this pandemic is over.</p>
+
+<p>No real conclusions here, just the smug satisfications of writing some code that compiles. <img class="emoji" title=":open_mouth:" alt=":open_mouth:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f62e.png" height="20" width="20"></p>
 
 <h2 id="footnotes">
 <a class="anchor" href="#footnotes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Footnotes</h2>
@@ -1760,21 +1921,21 @@ These timings are all essentially identical. I also tried some smaller numbers f
 
 <p><b id="f6">6</b> Opinions are like my friends, they’re all assholes. <img class="emoji" title=":fire:" alt=":fire:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f525.png" height="20" width="20">  That’s how the saying goes, right?<a href="#a6">↩</a></p>
 
-<p><b id="f7">7</b> Ternary statements are the devil’s code, in case you’re wondering.<a href="#a7">↩</a></p>
+<p><b id="f7">7</b> Ternary statements are hot garbage, in case you’re wondering.<a href="#a7">↩</a></p>
 
-<p><b id="f8">8</b> If you look at the github code, the paper and ribbons calculations are done in the same loop<a href="#a8">↩</a></p>
+<p><b id="f8">8</b> If you look at the github code, the paper and ribbons calculations are done in the same loop. <a href="#a8">↩</a></p>
 
-<p><b id="f9">9</b> I don’t recommend that route either. I eventually got it to work, but debugging it required compiling and linking another C++ version and lots of print statements to figure out where I had put a <code class="language-plaintext highlighter-rouge">+</code> instead of a <code class="language-plaintext highlighter-rouge">-</code><a href="#a9">↩</a></p>
+<p><b id="f9">9</b> I don’t recommend that route either. I eventually got it to work, but debugging it required compiling and linking another C++ version and lots of print statements to figure out where I had put a <code class="language-plaintext highlighter-rouge">+</code> instead of a <code class="language-plaintext highlighter-rouge">-</code>. <a href="#a9">↩</a></p>
 
-<p><b id="f10">10</b> Perhaps more to the point, <code class="language-plaintext highlighter-rouge">itoa()</code> is not in the ANSI-C standard and not supported by <code class="language-plaintext highlighter-rouge">nvcc</code><a href="#a10">↩</a></p>
+<p><b id="f10">10</b> Perhaps more to the point, <code class="language-plaintext highlighter-rouge">itoa()</code> is not in the ANSI-C standard and not supported by <code class="language-plaintext highlighter-rouge">nvcc</code>. <a href="#a10">↩</a></p>
 
-<p><b id="f11">11</b> Those values are mostly arbitrary: I used a non-square grid to make sure that I was using the grid correctly, but kept it 2D to avoid unneeded complication.<a href="#a11">↩</a></p>
+<p><b id="f11">11</b> Those values are mostly arbitrary: I used a non-square grid to make sure that I was using the grid correctly, but kept it 2D to avoid unneeded complication. Cue obligatory Khan from Star Trek 2 joke. <a href="#a11">↩</a></p>
 
 <p><b id="f12">12</b> Definitely not the first or second or third approach, though.<a href="#a12">↩</a></p>
 
 <p><b id="f13">13</b> Of course, there are <code class="language-plaintext highlighter-rouge">8! = 40320</code> routes that visit each location exactly once. There is an <a href="https://en.wikipedia.org/wiki/Heap%27s_algorithm">algorithm</a> to efficiently enumerate those routes, but I don’t know it off-hand, so I took a different tack.<a href="#a13">↩</a></p>
 
-<p><b id="f14">14</b> I’m sparing you the function definitions here since they’re not particular interesting, but see github if you’re compelled to see them.<a href="#a14">↩</a></p>
+<p><b id="f14">14</b> I’ll spare you the function definitions here since they’re not particular interesting, but see the github repo if you’re compelled to see them.<a href="#a14">↩</a></p>
 
 <p><b id="f15">15</b> <code class="language-plaintext highlighter-rouge">int</code> will not suffice, <code class="language-plaintext highlighter-rouge">int64_t</code> is needed.<a href="#a15">↩</a></p>
 
@@ -1782,9 +1943,9 @@ These timings are all essentially identical. I also tried some smaller numbers f
 
 <p><b id="f17">17</b> I actually tried the forward way, too, but with less success.<a href="#a17">↩</a></p>
 
-<p><b id="f18">18</b> I probably should have done this earlier than I did, but I really wanted my code to work. <img class="emoji" title=":flushed:" alt=":flushed:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f633.png" height="20" width="20"> <a href="#a18">↩</a></p>
+<p><b id="f18">18</b> I probably should have done this earlier than I did, but I really wanted my code to work as is. <img class="emoji" title=":flushed:" alt=":flushed:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f633.png" height="20" width="20"> <a href="#a18">↩</a></p>
 
-<p><b id="f19">18</b> Strictly speaking, the atomics probably aren’t needed, but they don’t slow down the code enough to notice and feel safer. <a href="#a19">↩</a></p>
+<p><b id="f19">19</b> Strictly speaking, the atomics probably aren’t needed, but they don’t slow down the code enough to notice and feel safer in preventing overwrites. <a href="#a19">↩</a></p>
 
   </div>
 <a class="u-url" href="/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html" hidden></a>
