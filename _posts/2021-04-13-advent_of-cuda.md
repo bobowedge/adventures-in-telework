@@ -22,11 +22,11 @@ To start, though, I decided to do days [1](https://adventofcode.com/2015/day/1) 
 
 There's a [github repo](https://github.com/bobowedge/advent-of-code-2015) with all of the code that I wrote (C++ CUDA and Python) for solving the problems. Also included is the input data<sup id="a4">[4](#f4)</sup> for the days that I didn't incorporate it directly into the code.
 
-I would also be remiss if I didn't mention that I used the [NVIDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html) extensively.  In particular, I used this guide to look stuff up. 
+I would also be remiss if I didn't mention that I used the [NVIDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html) pretty extensively. The guide is fairly comprehensive and useful for looking stuff up.
 
 ### Caveats
 
-My point for doing this was to learn C++ CUDA and then try to explain it. That means I won't necessarily be taking the most efficient or direct approach to solving each problem:  I'm basically brand new to CUDA (so I won't know the "best" approach a priori) and I wanted to learn new parts of the C++ CUDA syntax/library (so I won't necessarily take the "best" approach even if I know it). 
+My point for doing this was to learn C++ CUDA and then try to explain it. That means I won't necessarily be taking the most efficient or direct approach to solving each problem:  I'm basically brand new to CUDA, so I won't know the "best" approach a priori. Also, I wanted to learn new parts of the C++ CUDA syntax/library, so I won't necessarily take the "best" approach even if I know it. 
 
 My goal with the writing and explanation of each problem below are to write it at the level that someone who has seen the standard [vector addition example](https://www.nvidia.com/docs/IO/116711/sc11-cuda-c-basics.pdf)<sup id="a5">[5](#f5)</sup> can follow. That's the level I was at when I started Day 1 in CUDA.
 
@@ -36,13 +36,13 @@ I'm a C++ programmer at heart, so I'm going to use C++ where I can and muddle my
 
 ### Premise
 
-For Advent of Code 2015, the premise is that Santa's weather machine can't produce snow because it lacks the ***stars*** required. Each programming part you solve earns a star and collect 50 (2 for each day) gives you enough to power the snow machine.  Let's see if I can save Christmas with CUDA.
+For Advent of Code 2015, the premise is that Santa's weather machine can't produce snow because it lacks the stars required. Each programming part you solve earns a star and collect 50 (2 for each day) gives you enough to power the snow machine.  Let's see if I can save Christmas with CUDA.
 
 ## [Day 1: Not Quite Lisp](https://adventofcode.com/2015/day/1)
 
 ### Part 1
 
-This problem boiled down to evaluating a string consisting of opening and closing parentheses, `+1` for each opening parenthesis in the string and `-1` for each closing parenthesis. Since it was all I seen so far, I decided to adapt the vector addition example to tackle this problem. The core device code (with multiple threads and multiple blocks) for summing two vectors , `a` and `b`, into the resultant vector `c` is
+This problem boiled down to evaluating a string consisting of opening and closing parentheses, `+1` for each opening parenthesis in the string and `-1` for each closing parenthesis. I decided to adapt the vector addition example to tackle this problem, since it was the only thing I had so far. For that problem, the core device code (with multiple threads and multiple blocks) for summing two vectors , `a` and `b`, into the resultant vector `c` is
 
 ```c++
 int index = threadIdx.x + blockIdx.x * blockDim.x;
@@ -102,7 +102,7 @@ __device__ void reduction(int64_t *cache, int64_t cacheIndex)
 }
 ```
 
-Putting it together (where `sum` is the sum from each thread):
+Putting it together, where `sum` is the sum from each thread:
 ```c++
 __shared__ int64_t cache[THREADS];
 const int64_t cacheIndex = threadIdx.x;
@@ -122,7 +122,7 @@ This gives the sum for each block. To combine the block sums, I returned that re
 
 ### Part 2
 
-The problem was to find the first place the partial sum of `instructions` was negative (given the same `+1` and `-1` for `(` and `)`).  I skipped writing a solution in CUDA because it seemed too serial.
+The problem was to find the first place the partial sum of `instructions` was negative (given the same `+1` and `-1` for `(` and `)`).  I skipped writing a solution in CUDA because it seemed too serial of a problem.
 
 ## [Day 2: I Was Told There Would Be No Math](https://adventofcode.com/2015/day/2)
 
@@ -147,9 +147,9 @@ std::vector<std::string> data_lines(const std::string& filename)
     return dataLines;
 }
 ```
-(I'll end up using this quite often for the other days.)
+I ended up using this quite often for the other days to parse the input data lines.
 
-Second, I need those strings converted to integer values to calculate areas and volumes. I ended up with a `std::vector<int64_t>` of length 3 times the number of boxes: length, width, and height for each boxes.  From there, the device code looks very similar to Day 1:
+Second, I need those strings converted to integer values to calculate areas and volumes. I ended up with a `int64_t` array of length 3 times the number of boxes: length, width, and height for each boxes.  From there, the device code looks very similar to Day 1:
 
 ```c++
     // Paper for this thread 
@@ -203,7 +203,7 @@ sumRibbon += length * width * height;
 
 The problem was to find the smallest integer where the MD5 hash of appending the integer to the given input secret key started with at least 5 zeros.
 
-The trickiest part of solving this problem was getting a MD5 hash algorithm that could run as device code. Of course, plenty of code exists that implements MD5, but I couldn't get any of it to link via `nvcc`, so I ended up implementing my own in `md5_device.hh`.<sup id="a9">[9](#f9)</sup>
+The trickiest part of solving this problem was getting a MD5 hash algorithm that could run as device code. Of course, plenty of code exists that implements MD5, but I couldn't get any of it to link via `nvcc`, so I ended up implementing my own in [`md5_device.hh`](https://github.com/bobowedge/advent-of-code-2015/blob/main/cuda/md5_device.hh).<sup id="a9">[9](#f9)</sup>
 
 This problem was also the first (but not the last) time that I really lamented not having access to the C++ STL. This meant that I had to implement my own `itoa()` routine to convert an integer to a C-string<sup id="a10">[10](#f10)</sup> and my own routine for concatenating the secret key with an integer:
 
@@ -237,7 +237,7 @@ __device__ void concat(char* str, const char* key, unsigned int keyLength,
 }
 ```
 
-After all of those were written, the solution was pretty straightforward: for each `N`, convert to it a string, concatenate to the key and take the MD5 hash. As Day 1 and 2, each thread is responsible for different integers:
+After all of those were written, the solution was pretty straightforward: for each `N`, convert to it a string, concatenate to the key and take the MD5 hash. Like in the code for Days 1 and 2, each thread is responsible for different integers:
 
 ```c++
 unsigned int N = threadIdx.x + blockIdx.x * blockDim.x;
@@ -261,7 +261,7 @@ while(N < solution)
 }
 ```
 
-As you can see, one of the new CUDA concepts I incorporated was `atomicMin()`. This is an atomic operation on shared memory; that is, it blocks other threads and blocks from modifying the value until it's done storing the minimum of the current value of `solution` and `N` back into solution.
+As you can see, one of the new CUDA concepts I incorporated was `atomicMin`. This is an atomic operation on shared memory; that is, it blocks other threads and blocks from modifying the value until it's done storing the minimum of the current value of `solution` and `N` back into solution.
 
 In this case, `solution` is marked as `__managed__`, meaning it's in the *global* memory shared by both the host and device, so I can access it in both. In this case, I calculate its value in the device and print it in the host. (This is contrasted with the `__shared__` tag from Days 1 and 2, which is shared *block* memory.)
 
@@ -282,7 +282,7 @@ if (hash[0] == 0 && hash[1] == 0 && hash[2] == 0)
 
 ### Timing
 
-In contrast to Days 1 and 2, this problem definitely benefited from being solved in parallel in CUDA. My Python solution (which is run entirely serially) takes about 15 seconds to generate both solutions. The corresponding CUDA program runs in less than a second; it probably takes longer to print the solution than to calculate it. :thumbs_up:
+In contrast to Days 1 and 2, this problem definitely benefited from being solved in parallel in CUDA. My Python solution (which is run entirely serially) takes about 15 seconds to generate both solutions. The corresponding CUDA program runs in less than a second; it probably takes longer to print the solution than to calculate it. :thumbsup:
 
 ## [Day 6: Probably a Fire Hazard](https://adventofcode.com/2015/day/6)
 
@@ -435,7 +435,7 @@ Everything else remained the same.
 
 ### Timing
 
-As in Day 4, the solution to this problem benefited from being done in parallel. My python solution took about 10 seconds, while the executable generated from the CUDA solution prints seemingly immediately.
+As in Day 4, the solution to this problem definitely benefited from being done in parallel. My python solution took about 10 seconds, while the executable generated from the CUDA solution prints the solution immediately.
 
 ## [Day 9: All in a Single Night](https://adventofcode.com/2015/day/9)
 
@@ -481,11 +481,11 @@ for (int rid = threadIdx.x + blockIdx.x * blockDim.x; rid < 16777216; rid += blo
 ```
 (`minDistance` is in global managed memory and initialized to `INT_MAX`.)
 
-## Part 2
+### Part 2
 
-Part 2 flips the problem to calculate the longest route. The obvious trivial change works: change to using `atomicMax()` instead of `atomicMin()` after calculating the route's distance (with a value intialized to 0.) 
+Part 2 flips the problem to calculate the longest route. The obvious trivial change works: change to using `atomicMax()` instead of `atomicMin()` after calculating the route's distance, with the global `maxDistance` initialized to 0.
 
-## Timing
+### Timing
 
 My original Python code took about 9-10 seconds to enumerate the routes and find the minimum distance, but that's because I used `itertools.product` to enumerate all `16777216` routes. When I swapped to using `itertools.permutation` (40320 valid routes), it complete immediately.  In any case, the CUDA solution once again runs almost instanteneously.
 
@@ -497,7 +497,7 @@ The problem was to find the 40th (Part 1) and 50th (Part 2) iterations of a
 
 Here's a meme to distract you from the lack of code for this problem:
 
-![Programming Pain](/images/ross_meme.jpg)
+![Programming Pain](../images/ross_meme.jpg)
 
 ## [Day 11: Corporate Policy](https://adventofcode.com/2015/day/11)
 
@@ -512,6 +512,7 @@ string of 8 letters in alphabetical order:
 - "aaaaaaac" is 2
 - ...
 - "zzzzzzzz" is 208827064575 (26^8 - 1)
+
 Each such string maps uniquely to a particular integer.<sup id="a15">[15](#f15)</sup> Denoting `int_to_pwd` (map integer to string) and `pwd_to_int` (map string to int) as functions to handle that mapping, the device code becomes:
 ```c++
 // Find the next valid password
@@ -681,7 +682,7 @@ __global__ void fabricate_molecules(Molecule* start)
 ```
 `fabricate_molecules` produces all of the possible children from applying a single transformation to the input molecule. The next step is to count the unique strings produced, as the fabrication can produce some duplicates. That's mostly handled in the same way I've been counting things in the previous problems, using the `reduction` routine to thread the counting. The `operator==` defined for `Molecule` is used to check for duplicates while each thread is going through the heap.
 
-> <a name="atomicAddTrick"> I</a> wanted to highlight the bit of code around `heapIdx` and `atomicAdd` since I thought it was particularly slick. (I didn't come up with it.) The `atomicAdd` increments the heapSize counter and returns the previous value of heapSize. It allows you to insert a new object into the heap without worrying about other threads or blocks conflicting, because they get the next increment (assuming `atomicAdd` is called in the same way before their insert).
+<a name="atomicAddTrick"></a> I wanted to highlight the bit of code around `heapIdx` and `atomicAdd` since I thought it was particularly slick. (I didn't come up with it.) The `atomicAdd` increments the heapSize counter and returns the previous value of heapSize. It allows you to insert a new object into the heap without worrying about other threads or blocks conflicting, because they get the next increment (assuming `atomicAdd` is called in the same way before their insert).
 
 ### Part 2
 
@@ -714,7 +715,7 @@ while (heapSize > 0 && heapSize < MAX_HEAP_SIZE)
 }
 ```
 
-A [bitonic_sort](https://en.wikipedia.org/wiki/Bitonic_sorter) was a new concept to me. It is a sorting algorithm that can be implemented in parallel code, so <a name="bitonicSort">I did it</a>:
+A [bitonic_sort](https://en.wikipedia.org/wiki/Bitonic_sorter) was a new concept to me. It is a sorting algorithm that can be implemented in parallel code, so I did it: <a name="bitonicSort"></a>
 ```c++
 // Single step of the bitonic_sort()
 __global__ void bitonic_sort_step(int64_t j, int64_t k)
@@ -823,7 +824,7 @@ Now, when it finds a path, the loop ends and `bestSteps` is returned. (With the 
 
 ### Timing
 
-The solution to Part 1 runs almost instantly. The solution for Part 2 runs in less than half a second (with the `while` short circuit).
+The solution to Part 1 runs almost instantly. The solution for Part 2 runs in less than half a second with the `while` short circuit above.  Not quite instantly, but still satisfying.
 
 ## [Day 20: Infinite Elves and Infinite Houses](https://adventofcode.com/2015/day/20)
 
@@ -912,6 +913,7 @@ Part 2 modified the problem by only allowing each elf to deliver to 50 houses, i
 For this problem, I decided to interrogate how the number of 'blocks' and 'threads' influenced how long it took to solve the problem (in wall time).  The solution to both parts could be calculated  simultaneously, so I ran some timing code for the two different approaches (house-by-house and elf-by-elf) that I used to solve the problem.
 
 For the house-by-house approach, here's what the timing looked like:
+
 | # of blocks | # of threads | Wall Time |
 | ----------- | ------------ | ----------|
 |          32 |          128 |   164 sec |
@@ -928,9 +930,11 @@ For the house-by-house approach, here's what the timing looked like:
 |         512 |          256 |    48 sec |
 |        1024 |          256 |    47 sec |
 |        2048 |          256 |    46 sec |
+
 Obviously, more blocks or more threads is faster, but the speed gains are limited after a point.
 
 For the elf-by-elf approach, here's the timing table:
+
 | # of blocks | # of threads | Wall Time  |
 | ----------- | ------------ | ---------  |
 |          32 |          128 |   0.91 sec |
@@ -945,7 +949,9 @@ For the elf-by-elf approach, here's the timing table:
 |         256 |          256 |   0.90 sec |
 |         512 |          256 |   0.90 sec |
 |        1024 |          256 |   0.90 sec |
+
 These timings are all essentially identical. I also tried some smaller numbers for this case:
+
 | # of blocks | # of threads | Wall Time  |
 | ----------- | ------------ | ---------  |
 |          64 |           32 |   0.92 sec |
@@ -1133,11 +1139,11 @@ This is decidedly not a parallel problem.  As such, I'm skipping any discussion 
 
 As recompense, here's a meme:
 
-![NVIDIA Master Plan](/images/NVIDIAs-Master-Plan.jpg)
+![NVIDIA Master Plan](../images/NVIDIAs-Master-Plan.jpg)
 
 And another:
 
-![Captain America NVIDIA](images/Cap_America_NVIDIA.jpeg)
+![Captain America NVIDIA](../images/Cap_America_NVIDIA.jpeg)
 
 ## [Day 24: It Hangs in the Balance](https://adventofcode.com/2015/day/24)
 
@@ -1367,7 +1373,7 @@ __global__ void find_other_groups(bool addToHeap)
     }
 }
 ```
-
+{:start="6"}
 6. This is similar to step 2: no device code here, just allocate correct memory for `otherHeap`.
 
 7. Repeat step 5, but add the integers to the heap that has now been allocated, so I replaced the `atomicAdd` line above with 
@@ -1473,7 +1479,9 @@ Like Day 23, this is definitely not a parallel problem. I wrote the solution in 
 
 ## Conclusion
 
-Thanks to anyone who actually read the entire way down here. I owe you a hearty handshake once this pandemic is over. No real conclusions, just the smug satisfications of writing some code. :open_mouth:
+Thanks to anyone who actually read the entire way down here. I owe you a hearty handshake/hug once this pandemic is over. 
+
+No real conclusions here, just the smug satisfications of writing some code that compiles. :open_mouth:
 
 ## Footnotes
 
@@ -1489,21 +1497,21 @@ Thanks to anyone who actually read the entire way down here. I owe you a hearty 
 
 <b id="f6">6</b> Opinions are like my friends, they're all assholes. :fire:  That's how the saying goes, right?[↩](#a6)
 
-<b id="f7">7</b> Ternary statements are the devil's code, in case you're wondering.[↩](#a7)
+<b id="f7">7</b> Ternary statements are hot garbage, in case you're wondering.[↩](#a7)
 
-<b id="f8">8</b> If you look at the github code, the paper and ribbons calculations are done in the same loop[↩](#a8)
+<b id="f8">8</b> If you look at the github code, the paper and ribbons calculations are done in the same loop. [↩](#a8)
 
-<b id="f9">9</b> I don't recommend that route either. I eventually got it to work, but debugging it required compiling and linking another C++ version and lots of print statements to figure out where I had put a `+` instead of a `-`[↩](#a9)
+<b id="f9">9</b> I don't recommend that route either. I eventually got it to work, but debugging it required compiling and linking another C++ version and lots of print statements to figure out where I had put a `+` instead of a `-`. [↩](#a9)
 
-<b id="f10">10</b> Perhaps more to the point, `itoa()` is not in the ANSI-C standard and not supported by `nvcc`[↩](#a10)
+<b id="f10">10</b> Perhaps more to the point, `itoa()` is not in the ANSI-C standard and not supported by `nvcc`. [↩](#a10)
 
-<b id="f11">11</b> Those values are mostly arbitrary: I used a non-square grid to make sure that I was using the grid correctly, but kept it 2D to avoid unneeded complication.[↩](#a11)
+<b id="f11">11</b> Those values are mostly arbitrary: I used a non-square grid to make sure that I was using the grid correctly, but kept it 2D to avoid unneeded complication. Cue obligatory Khan from Star Trek 2 joke. [↩](#a11)
 
 <b id="f12">12</b> Definitely not the first or second or third approach, though.[↩](#a12)
 
 <b id="f13">13</b> Of course, there are `8! = 40320` routes that visit each location exactly once. There is an [algorithm](https://en.wikipedia.org/wiki/Heap%27s_algorithm) to efficiently enumerate those routes, but I don't know it off-hand, so I took a different tack.[↩](#a13)
 
-<b id="f14">14</b> I'm sparing you the function definitions here since they're not particular interesting, but see github if you're compelled to see them.[↩](#a14)
+<b id="f14">14</b> I'll spare you the function definitions here since they're not particular interesting, but see the github repo if you're compelled to see them.[↩](#a14)
 
 <b id="f15">15</b> `int` will not suffice, `int64_t` is needed.[↩](#a15)
 
@@ -1511,6 +1519,6 @@ Thanks to anyone who actually read the entire way down here. I owe you a hearty 
 
 <b id="f17">17</b> I actually tried the forward way, too, but with less success.[↩](#a17)
 
-<b id="f18">18</b> I probably should have done this earlier than I did, but I really wanted my code to work. :flushed: [↩](#a18)
+<b id="f18">18</b> I probably should have done this earlier than I did, but I really wanted my code to work as is. :flushed: [↩](#a18)
 
-<b id="f19">18</b> Strictly speaking, the atomics probably aren't needed, but they don't slow down the code enough to notice and feel safer. [↩](#a19)
+<b id="f19">19</b> Strictly speaking, the atomics probably aren't needed, but they don't slow down the code enough to notice and feel safer in preventing overwrites. [↩](#a19)
