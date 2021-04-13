@@ -497,7 +497,7 @@ The problem was to find the 40th (Part 1) and 50th (Part 2) iterations of a
 
 Here's a meme to distract you from the lack of code for this problem:
 
-![Programming Pain](images/ross_meme.jpg)
+![Programming Pain](/images/ross_meme.jpg)
 
 ## [Day 11: Corporate Policy](https://adventofcode.com/2015/day/11)
 
@@ -1133,7 +1133,7 @@ This is decidedly not a parallel problem.  As such, I'm skipping any discussion 
 
 As recompense, here's a meme:
 
-![NVIDIA Master Plan](images/NVIDIAs-Master-Plan.jpg)
+![NVIDIA Master Plan](/images/NVIDIAs-Master-Plan.jpg)
 
 And another:
 
@@ -1464,7 +1464,12 @@ Despite having several steps and being almost 600 lines of code for both parts f
 
 Like Day 23, this is definitely not a parallel problem. I wrote the solution in 30 lines of C++ code, though, if you want to look at that. I didn't even bother with pretending to write CUDA for this problem.
 
-> youtube: https://www.youtube.com/watch?v=gcJjlL3izVc
+<iframe width="560" height="315" 
+        src="https://www.youtube.com/watch?v=gcJjlL3izVc"
+        frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+</iframe>
 
 ## Conclusion
 
