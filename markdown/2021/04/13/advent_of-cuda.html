@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Advent of Cuda 2015 | Adventures in Telework</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Advent of Cuda 2015" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The one where I try to save Christmas from 6 years ago" />
+<meta property="og:description" content="The one where I try to save Christmas from 6 years ago" />
+<link rel="canonical" href="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html" />
+<meta property="og:url" content="https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html" />
+<meta property="og:site_name" content="Adventures in Telework" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-13T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html","@type":"BlogPosting","headline":"Advent of Cuda 2015","dateModified":"2021-04-13T00:00:00-05:00","datePublished":"2021-04-13T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://bobowedge.github.io/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html"},"description":"The one where I try to save Christmas from 6 years ago","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/adventures-in-telework/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://bobowedge.github.io/adventures-in-telework/feed.xml" title="Adventures in Telework" /><link rel="shortcut icon" type="image/x-icon" href="/adventures-in-telework/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper">
+<a class="site-title" rel="author" href="/adventures-in-telework/">Adventures in Telework</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger">
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewbox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+<a class="page-link" href="/adventures-in-telework/about/">About Me</a><a class="page-link" href="/adventures-in-telework/search/">Search</a><a class="page-link" href="/adventures-in-telework/categories/">Tags</a>
+</div>
+      </nav>
+</div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Advent of Cuda 2015</h1>
+<p class="page-description">The one where I try to save Christmas from 6 years ago</p>
+<p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-04-13T00:00:00-05:00" itemprop="datePublished">
+        Apr 13, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      58 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i> 
+      
+        <a class="category-tags-link" href="/adventures-in-telework/categories/#markdown">markdown</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h1">
+<a href="#advent-of-cuda">Advent of Cuda</a>
+<ul>
+<li class="toc-entry toc-h2">
+<a href="#introduction">Introduction</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#setup">Setup</a></li>
+<li class="toc-entry toc-h3"><a href="#caveats">Caveats</a></li>
+<li class="toc-entry toc-h3"><a href="#premise">Premise</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-1-not-quite-lisp">Day 1: Not Quite Lisp</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2">Part 2</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-2-i-was-told-there-would-be-no-math">Day 2: I Was Told There Would Be No Math</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-1">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-1">Part 2</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-4-the-ideal-stocking-stuffer">Day 4: The Ideal Stocking Stuffer</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-2">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-2">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing">Timing</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-6-probably-a-fire-hazard">Day 6: Probably a Fire Hazard</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-3">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-3">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing-1">Timing</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-9-all-in-a-single-night">Day 9: All in a Single Night</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-4">Part 1</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#part-2-4">Part 2</a></li>
+<li class="toc-entry toc-h2"><a href="#timing-2">Timing</a></li>
+<li class="toc-entry toc-h2"><a href="#day-10-elves-look-elves-say">Day 10: Elves Look, Elves Say</a></li>
+<li class="toc-entry toc-h2">
+<a href="#day-11-corporate-policy">Day 11: Corporate Policy</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-5">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-5">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing-3">Timing</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-18-like-a-gif-for-your-yard">Day 18: Like a GIF For Your Yard</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-6">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-6">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing-4">Timing</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-19-medicine-for-rudolph">Day 19: Medicine for Rudolph</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-7">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-7">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing-5">Timing</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-20-infinite-elves-and-infinite-houses">Day 20: Infinite Elves and Infinite Houses</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-8">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-8">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing-6">Timing</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-21-rpg-simulator-20xx">Day 21: RPG Simulator 20XX</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-9">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-9">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing-7">Timing</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#day-22-wizard-simulator-20xx">Day 22: Wizard Simulator 20XX</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-10">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-10">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing-8">Timing</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#day-23-opening-the-turing-lock">Day 23: Opening the Turing Lock</a></li>
+<li class="toc-entry toc-h2">
+<a href="#day-24-it-hangs-in-the-balance">Day 24: It Hangs in the Balance</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#part-1-11">Part 1</a></li>
+<li class="toc-entry toc-h3"><a href="#part-2-11">Part 2</a></li>
+<li class="toc-entry toc-h3"><a href="#timing-9">Timing</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#day-25-let-it-snow">Day 25: Let It Snow</a></li>
+<li class="toc-entry toc-h2"><a href="#conclusion">Conclusion</a></li>
+<li class="toc-entry toc-h2"><a href="#footnotes">Footnotes</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="advent-of-cuda">
+<a class="anchor" href="#advent-of-cuda" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advent of Cuda</h1>
+
+<h2 id="introduction">
+<a class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>The vast majority of my previous posts have focused on my efforts with the <a href="https://course.fast.ai/">fastai MOOC</a> that I had been working through. Since I had watched all the lessons for the course and worked through most of it, I moved onto the next thing I wanted to try as part of my telework journey: learning <a href="https://en.wikipedia.org/wiki/CUDA">CUDA</a>.<sup id="a1"><a href="#f1">1</a></sup></p>
+
+<p>Rather than try to work through a textbook (e.g. <a href="https://www.amazon.com/CUDA-Example-Introduction-General-Purpose-Programming-ebook/dp/B003VYBOSE">this one</a>) or a guided online tutorial, I decided to try something a little different. This past December, I was introduced to <a href="https://adventofcode.com/2020">Advent of Code</a>, which is a series of small programming puzzles released one a day from December 1 to December 25. For the 2020 version, I wrote all my solutions in Python on the day they were released to try to do them as fast as possible.<sup id="a2"><a href="#f2">2</a></sup>  Prior year versions of Advent of Code are also available: I enjoyed the 2020 version so much that I started doing some 2015 problems in Python as well.</p>
+
+<h3 id="setup">
+<a class="anchor" href="#setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup</h3>
+
+<p>And that’s where we’ll start this CUDA story. I previously did the first 17 days<sup id="a3"><a href="#f3">3</a></sup> for Advent of Code 2015 in Python. Of those days, my Python solutions for days <a href="https://adventofcode.com/2015/day/4">4</a>, <a href="https://adventofcode.com/2015/day/9">9</a>, <a href="https://adventofcode.com/2015/day/10">10</a>, and <a href="https://adventofcode.com/2015/day/11">11</a> were “slow”: they took more than 5 seconds to run. I figured those problems would be worth trying to tackle with CUDA to speed up.</p>
+
+<p>To start, though, I decided to do days <a href="https://adventofcode.com/2015/day/1">1</a> and <a href="https://adventofcode.com/2015/day/2">2</a> in CUDA to get my feet wet. After that and the “slow” problems, I worked the remaining problems where I didn’t have a Python safety net.</p>
+
+<p>There’s a <a href="https://github.com/bobowedge/advent-of-code-2015">github repo</a> with all of the code that I wrote (C++ CUDA and Python) for solving the problems. Also included is the input data<sup id="a4"><a href="#f4">4</a></sup> for the days that I didn’t incorporate it directly into the code.</p>
+
+<p>I would also be remiss if I didn’t mention that I used the <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html">NVIDA C++ Programming Guide</a> extensively.  In particular, I used this guide to look stuff up.</p>
+
+<h3 id="caveats">
+<a class="anchor" href="#caveats" aria-hidden="true"><span class="octicon octicon-link"></span></a>Caveats</h3>
+
+<p>My point for doing this was to learn C++ CUDA and then try to explain it. That means I won’t necessarily be taking the most efficient or direct approach to solving each problem:  I’m basically brand new to CUDA (so I won’t know the “best” approach a priori) and I wanted to learn new parts of the C++ CUDA syntax/library (so I won’t necessarily take the “best” approach even if I know it).</p>
+
+<p>My goal with the writing and explanation of each problem below are to write it at the level that someone who has seen the standard <a href="https://www.nvidia.com/docs/IO/116711/sc11-cuda-c-basics.pdf">vector addition example</a><sup id="a5"><a href="#f5">5</a></sup> can follow. That’s the level I was at when I started Day 1 in CUDA.</p>
+
+<p>I’m using my home computer that has an NVIDA GTX 1660, which seems to a moderate consumer GPU, though I’m sure some will disagree.<sup id="a6"><a href="#f6">6</a></sup>  For this project, everything I did was restricted to a single device (my home GPU), so there’s nothing multi-device here. Also, I didn’t seem to run into any memory problems running the code that I wrote, but, of course, YMMV. I’m compiling using the <code class="language-plaintext highlighter-rouge">nvcc</code> compiler out of Visual Studio Code terminal in Windows.</p>
+
+<p>I’m a C++ programmer at heart, so I’m going to use C++ where I can and muddle my way through when I can’t. Unfortunately, one of the first things that I learned was that none of the <a href="https://en.wikipedia.org/wiki/Standard_Template_Library">C++ STL</a> is supported on CUDA device code, so no STL containers. <img class="emoji" title=":thumbsdown:" alt=":thumbsdown:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f44e.png" height="20" width="20"></p>
+
+<h3 id="premise">
+<a class="anchor" href="#premise" aria-hidden="true"><span class="octicon octicon-link"></span></a>Premise</h3>
+
+<p>For Advent of Code 2015, the premise is that Santa’s weather machine can’t produce snow because it lacks the <strong><em>stars</em></strong> required. Each programming part you solve earns a star and collect 50 (2 for each day) gives you enough to power the snow machine.  Let’s see if I can save Christmas with CUDA.</p>
+
+<h2 id="day-1-not-quite-lisp">
+<a class="anchor" href="#day-1-not-quite-lisp" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/1">Day 1: Not Quite Lisp</a>
+</h2>
+
+<h3 id="part-1">
+<a class="anchor" href="#part-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>This problem boiled down to evaluating a string consisting of opening and closing parentheses, <code class="language-plaintext highlighter-rouge">+1</code> for each opening parenthesis in the string and <code class="language-plaintext highlighter-rouge">-1</code> for each closing parenthesis. Since it was all I seen so far, I decided to adapt the vector addition example to tackle this problem. The core device code (with multiple threads and multiple blocks) for summing two vectors , <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>, into the resultant vector <code class="language-plaintext highlighter-rouge">c</code> is</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">c</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+    <span class="n">index</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Each thread in each block takes a number of indexes in the arrays and does their sum. Which indexes each thread takes relies on these parameters:</p>
+<ul>
+  <li>
+<code class="language-plaintext highlighter-rouge">blockIdx.x</code> –&gt; Index of the block (in the x-direction)</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">threadIdx.x</code> –&gt; Index of the thread in a block (in the x-direction)</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">blockDim.x</code> –&gt; Number of threads per block (in the x-direction)</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">gridDim.x</code> –&gt; Number of blocks (in the x-direction)</li>
+</ul>
+
+<p>For my problem, the input is not integer arrays, but a string of <code class="language-plaintext highlighter-rouge">(</code> and <code class="language-plaintext highlighter-rouge">)</code>, that I’ll denote as <code class="language-plaintext highlighter-rouge">instructions</code>.  The idea I had was that each thread could take some of the instructions and sum those up (<code class="language-plaintext highlighter-rouge">+1</code> for <code class="language-plaintext highlighter-rouge">(</code>, <code class="language-plaintext highlighter-rouge">-1</code> for <code class="language-plaintext highlighter-rouge">)</code>). The core device code becomes<sup id="a7"><a href="#f7">7</a></sup></p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int64_t</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">int64_t</span> <span class="n">index</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">instructions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'('</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="o">++</span><span class="n">sum</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="o">--</span><span class="n">sum</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">index</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Then, we need a way to combine the sums from all the threads and all the blocks.</p>
+
+<p>For combining all the threads, there’s a common idiom for summing up the values from each thread. First, you create an array of shared block values (<code class="language-plaintext highlighter-rouge">__shared__</code>) holds the sum for each thread:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__shared__</span> <span class="kt">int64_t</span> <span class="n">cache</span><span class="p">[</span><span class="n">THREADS</span><span class="p">];</span>
+<span class="k">const</span> <span class="kt">int64_t</span> <span class="n">cacheIndex</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Then, there’s a way to sum the values in the cache in parallel to give <code class="language-plaintext highlighter-rouge">cache[0]</code> the total sum of all the threads in the block. The term that I have seen for this is “reduction”:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Do a reduction to sum the elements created by each thread in a block </span>
+<span class="n">__device__</span> <span class="kt">void</span> <span class="nf">reduction</span><span class="p">(</span><span class="kt">int64_t</span> <span class="o">*</span><span class="n">cache</span><span class="p">,</span> <span class="kt">int64_t</span> <span class="n">cacheIndex</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int64_t</span> <span class="n">index</span> <span class="o">=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">cacheIndex</span> <span class="o">&lt;</span> <span class="n">index</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">cacheIndex</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cache</span><span class="p">[</span><span class="n">cacheIndex</span> <span class="o">+</span> <span class="n">index</span><span class="p">];</span>
+        <span class="p">}</span>
+        <span class="n">__syncthreads</span><span class="p">();</span>
+        <span class="n">index</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Putting it together (where <code class="language-plaintext highlighter-rouge">sum</code> is the sum from each thread):</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__shared__</span> <span class="kt">int64_t</span> <span class="n">cache</span><span class="p">[</span><span class="n">THREADS</span><span class="p">];</span>
+<span class="k">const</span> <span class="kt">int64_t</span> <span class="n">cacheIndex</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="n">cache</span><span class="p">[</span><span class="n">cacheIndex</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
+<span class="c1">// Sync every thread in this block</span>
+<span class="n">__syncthreads</span><span class="p">();</span>
+
+<span class="c1">// Reduce cache to a single value</span>
+<span class="n">reduction</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">cacheIndex</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">cacheIndex</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">result</span><span class="p">[</span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>This gives the sum for each block. To combine the block sums, I returned that result array to the host and used <code class="language-plaintext highlighter-rouge">std::accumulate</code> to get the answer.</p>
+
+<h3 id="part-2">
+<a class="anchor" href="#part-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>The problem was to find the first place the partial sum of <code class="language-plaintext highlighter-rouge">instructions</code> was negative (given the same <code class="language-plaintext highlighter-rouge">+1</code> and <code class="language-plaintext highlighter-rouge">-1</code> for <code class="language-plaintext highlighter-rouge">(</code> and <code class="language-plaintext highlighter-rouge">)</code>).  I skipped writing a solution in CUDA because it seemed too serial.</p>
+
+<h2 id="day-2-i-was-told-there-would-be-no-math">
+<a class="anchor" href="#day-2-i-was-told-there-would-be-no-math" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/2">Day 2: I Was Told There Would Be No Math</a>
+</h2>
+
+<h3 id="part-1-1">
+<a class="anchor" href="#part-1-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>The problem was, given the dimensions of a number of some boxes (right rectangular prisms), find the total sum of the surface areas of all the boxes plus the area of the smallest side from each box.</p>
+
+<p>The solution code for this problem turned out very similar to Day 1. However, while the input for Day 1 had a single line string to parse, Day 2’s input was a list of box dimensions, one per line. To handle that, I wrote a (host) function to parse line and save into a vector of strings:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Read the data from the input file into a vector of strings, one line per element</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">data_lines</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">filename</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">dataLines</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">data</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">line</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">data</span><span class="p">.</span><span class="n">eof</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">getline</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">line</span><span class="p">);</span>
+        <span class="n">dataLines</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">line</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">dataLines</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>(I’ll end up using this quite often for the other days.)</p>
+
+<p>Second, I need those strings converted to integer values to calculate areas and volumes. I ended up with a <code class="language-plaintext highlighter-rouge">std::vector&lt;int64_t&gt;</code> of length 3 times the number of boxes: length, width, and height for each boxes.  From there, the device code looks very similar to Day 1:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1">// Paper for this thread </span>
+    <span class="kt">int64_t</span> <span class="n">sumPaper</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="c1">// Loop over some boxes (different ones for each thread)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int64_t</span> <span class="n">tid</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">tid</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">tid</span> <span class="o">+=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 3 values for dimensions</span>
+        <span class="kt">int64_t</span> <span class="n">length</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">3</span> <span class="o">*</span> <span class="n">tid</span><span class="p">];</span>
+        <span class="kt">int64_t</span> <span class="n">width</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">3</span> <span class="o">*</span> <span class="n">tid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="kt">int64_t</span> <span class="n">height</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">3</span> <span class="o">*</span> <span class="n">tid</span> <span class="o">+</span> <span class="mi">2</span><span class="p">];</span>
+
+        <span class="c1">// Paper needed for Part 1 : surface area + smallest side</span>
+        <span class="n">sumPaper</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">length</span> <span class="o">*</span> <span class="n">width</span> <span class="o">+</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span> <span class="o">+</span> <span class="n">length</span> <span class="o">*</span> <span class="n">height</span><span class="p">);</span>
+        <span class="c1">// min3 is just a function to calculate the minimum of 3 values</span>
+        <span class="n">sumPaper</span> <span class="o">+=</span> <span class="n">min3</span><span class="p">(</span><span class="n">length</span><span class="o">*</span><span class="n">width</span><span class="p">,</span> <span class="n">width</span><span class="o">*</span><span class="n">height</span><span class="p">,</span> <span class="n">length</span><span class="o">*</span><span class="n">height</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Block shared memory array</span>
+    <span class="n">__shared__</span> <span class="kt">int64_t</span> <span class="n">paperCache</span><span class="p">[</span><span class="n">THREADS</span><span class="p">];</span>
+    <span class="k">const</span> <span class="kt">int64_t</span> <span class="n">cacheIndex</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="n">paperCache</span><span class="p">[</span><span class="n">cacheIndex</span><span class="p">]</span> <span class="o">=</span> <span class="n">sumPaper</span><span class="p">;</span>
+    
+    <span class="n">__syncthreads</span><span class="p">();</span>
+
+    <span class="n">reduction</span><span class="p">(</span><span class="n">paperCache</span><span class="p">,</span> <span class="n">cacheIndex</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">cacheIndex</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">papers</span><span class="p">[</span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">paperCache</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>Again, this supplies the amount paper needed calculate for each block and then I used <code class="language-plaintext highlighter-rouge">std::accumulate</code> to calculate the paper needed total across all of the blocks.</p>
+
+<h3 id="part-2-1">
+<a class="anchor" href="#part-2-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>Similar to part 1, the problem was to instead find the total sum of the smallest perimeters around each box plus the volume of each box.</p>
+
+<p>The solution looks almost identical to part 1 as well<sup id="a8"><a href="#f8">8</a></sup>. The only real change is calculate the smallest perimeter and volume instead of the surface area and smallest side:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Ribbon needed for Part 2 : smallest perimeter + volume</span>
+<span class="n">sumRibbon</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nf">min3</span><span class="p">(</span><span class="n">length</span> <span class="o">+</span> <span class="n">width</span><span class="p">,</span> <span class="n">width</span> <span class="o">+</span> <span class="n">height</span><span class="p">,</span> <span class="n">length</span> <span class="o">+</span> <span class="n">height</span><span class="p">);</span>
+<span class="n">sumRibbon</span> <span class="o">+=</span> <span class="n">length</span> <span class="o">*</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="day-4-the-ideal-stocking-stuffer">
+<a class="anchor" href="#day-4-the-ideal-stocking-stuffer" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/4">Day 4: The Ideal Stocking Stuffer</a>
+</h2>
+
+<h3 id="part-1-2">
+<a class="anchor" href="#part-1-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>The problem was to find the smallest integer where the MD5 hash of appending the integer to the given input secret key started with at least 5 zeros.</p>
+
+<p>The trickiest part of solving this problem was getting a MD5 hash algorithm that could run as device code. Of course, plenty of code exists that implements MD5, but I couldn’t get any of it to link via <code class="language-plaintext highlighter-rouge">nvcc</code>, so I ended up implementing my own in <code class="language-plaintext highlighter-rouge">md5_device.hh</code>.<sup id="a9"><a href="#f9">9</a></sup></p>
+
+<p>This problem was also the first (but not the last) time that I really lamented not having access to the C++ STL. This meant that I had to implement my own <code class="language-plaintext highlighter-rouge">itoa()</code> routine to convert an integer to a C-string<sup id="a10"><a href="#f10">10</a></sup> and my own routine for concatenating the secret key with an integer:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Convert an integer to a C-string</span>
+<span class="n">__device__</span> <span class="kt">void</span> <span class="nf">itoa</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">N</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">Nchar</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">Nsize</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Nsize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span><span class="mi">0</span><span class="p">;</span> <span class="o">--</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Nchar</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span> <span class="o">%</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="sc">'0'</span><span class="p">;</span>
+        <span class="n">N</span> <span class="o">/=</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">Nchar</span><span class="p">[</span><span class="n">Nsize</span><span class="p">]</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Concatenate key and Nchar together</span>
+<span class="n">__device__</span> <span class="kt">void</span> <span class="nf">concat</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">str</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">key</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">keyLength</span><span class="p">,</span> 
+                       <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">Nchar</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">Nsize</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">keyLength</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">str</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">Nsize</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">,</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">str</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Nchar</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="n">str</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>After all of those were written, the solution was pretty straightforward: for each <code class="language-plaintext highlighter-rouge">N</code>, convert to it a string, concatenate to the key and take the MD5 hash. As Day 1 and 2, each thread is responsible for different integers:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">increment</span> <span class="o">=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="k">while</span><span class="p">(</span><span class="n">N</span> <span class="o">&lt;</span> <span class="n">solution</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Size of N as string</span>
+    <span class="n">Nsize</span> <span class="o">=</span> <span class="p">(</span><span class="kt">size_t</span><span class="p">)</span><span class="n">log10</span><span class="p">((</span><span class="kt">double</span><span class="p">)</span><span class="n">N</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="c1">// Convert N to string</span>
+    <span class="n">itoa</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">Nchar</span><span class="p">,</span> <span class="n">Nsize</span><span class="p">);</span>
+    <span class="c1">// Concatenate SECRET_KEY and N</span>
+    <span class="n">concat</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">keyLength</span><span class="p">,</span> <span class="n">Nchar</span><span class="p">,</span> <span class="n">Nsize</span><span class="p">);</span>
+    <span class="c1">// Compute MD5 of concatenation</span>
+    <span class="n">MD5</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">hash</span><span class="p">,</span> <span class="n">keyLength</span> <span class="o">+</span> <span class="n">Nsize</span><span class="p">);</span>
+    <span class="c1">// Check for 5 zeros: 00 00 0X</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">hash</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">hash</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">hash</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">solution</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">N</span> <span class="o">+=</span> <span class="n">increment</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As you can see, one of the new CUDA concepts I incorporated was <code class="language-plaintext highlighter-rouge">atomicMin()</code>. This is an atomic operation on shared memory; that is, it blocks other threads and blocks from modifying the value until it’s done storing the minimum of the current value of <code class="language-plaintext highlighter-rouge">solution</code> and <code class="language-plaintext highlighter-rouge">N</code> back into solution.</p>
+
+<p>In this case, <code class="language-plaintext highlighter-rouge">solution</code> is marked as <code class="language-plaintext highlighter-rouge">__managed__</code>, meaning it’s in the <em>global</em> memory shared by both the host and device, so I can access it in both. In this case, I calculate its value in the device and print it in the host. (This is contrasted with the <code class="language-plaintext highlighter-rouge">__shared__</code> tag from Days 1 and 2, which is shared <em>block</em> memory.)</p>
+
+<p>Additionally, if you look through the github code, you can see I used <code class="language-plaintext highlighter-rouge">cudaDeviceSynchronize()</code> for the first time, which tells the host to wait until all the blocks reach that point. While I probably should have used it previously, tt didn’t matter before for Days 1 and 2. However, this time it actually made a difference: <code class="language-plaintext highlighter-rouge">solution</code> doesn’t return correctly without this synchronization.</p>
+
+<h3 id="part-2-2">
+<a class="anchor" href="#part-2-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>Part 2 of the problem upped the difficulty to find the smallest integer where the MD5 hash of appending the integer to the given input secret key started with at least <em>6</em> zeros.</p>
+
+<p>This required essentially a single line change in the core device loop:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Check for 6 zeros: 00 00 00</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">hash</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">hash</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">hash</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">solution</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="timing">
+<a class="anchor" href="#timing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
+
+<p>In contrast to Days 1 and 2, this problem definitely benefited from being solved in parallel in CUDA. My Python solution (which is run entirely serially) takes about 15 seconds to generate both solutions. The corresponding CUDA program runs in less than a second; it probably takes longer to print the solution than to calculate it. :thumbs_up:</p>
+
+<h2 id="day-6-probably-a-fire-hazard">
+<a class="anchor" href="#day-6-probably-a-fire-hazard" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/6">Day 6: Probably a Fire Hazard</a>
+</h2>
+
+<h3 id="part-1-3">
+<a class="anchor" href="#part-1-3" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>For Day 6, there is a 1000x1000 grid of lights that need to be turned off, turned on, or toggled based on a series of instructions. After all the instructions are applied, the question is “how many lights are on?”</p>
+
+<p>Because this problem had an inherent 2D grid structure, I decided to use the dimensional blocks and threads, rather than the integer versions this time</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Block dimensions</span>
+<span class="k">const</span> <span class="n">dim3</span> <span class="nf">BLOCKS</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="c1">// Thread dimensions</span>
+<span class="k">const</span> <span class="n">dim3</span> <span class="nf">THREADS</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</code></pre></div></div>
+<p>This gives a 8x16 grid of compute blocks, where each block has its own rectangle of 16x32 threads.<sup id="a11"><a href="#f11">11</a></sup></p>
+
+<p>The other new concept I used was one of special integer array types available, <code class="language-plaintext highlighter-rouge">int4</code>, which is an array of 4 integers. This type is what I used to hold the grid points (x1, y1, x2, y2) given in each instruction. Using this type was much easier than allocating and passing an array.</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">int4</span> <span class="n">grid</span> <span class="o">=</span> <span class="n">make_int4</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="kt">int</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">z</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The approach that I used was to send each instruction from the host to the device in succession. The host code for that:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Read the data</span>
+<span class="k">auto</span> <span class="n">dataLines</span> <span class="o">=</span> <span class="n">data_lines</span><span class="p">(</span><span class="s">"../data/day06.input.txt"</span><span class="p">);</span>
+<span class="c1">// Loop over the instructions</span>
+<span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">line</span> <span class="o">:</span> <span class="n">dataLines</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Parse the instruction from the line</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">int4</span><span class="o">&gt;</span> <span class="n">typeGridPair</span> <span class="o">=</span> <span class="n">parse_line</span><span class="p">(</span><span class="n">line</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">type</span> <span class="o">=</span> <span class="n">typeGridPair</span><span class="p">.</span><span class="n">first</span><span class="p">;</span>
+    <span class="n">int4</span> <span class="n">grid</span> <span class="o">=</span> <span class="n">typeGridPair</span><span class="p">.</span><span class="n">second</span><span class="p">;</span>
+    <span class="c1">// Apply the instruction on the device</span>
+    <span class="n">apply_instruction</span><span class="o">&lt;&lt;&lt;</span><span class="n">BLOCKS</span><span class="p">,</span><span class="n">THREADS</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">type</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>For the device code, I needed a way to assign each light in the 1000x1000 grid to a particular block and particular thread within that block. The easiest approach<sup id="a12"><a href="#f12">12</a></sup> I found was to treat the row and column each light was in independently. Then, the structure for assigning each light’s row and column looks very similar to what we had in the 1D blocks and threads:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">y</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">;</span> <span class="n">row</span> <span class="o">+=</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+<span class="p">...</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">col</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">;</span> <span class="n">col</span> <span class="o">+=</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+<span class="p">...</span>
+</code></pre></div></div>
+<p>One way to think about this is that each block is responsible for a <code class="language-plaintext highlighter-rouge">THREADS</code>-sized section of the light grid (and might be responible for more than such section).  The blocks are then spread across the light grid to cover it.</p>
+
+<p>With those assignments in place, the core device code is:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__global__</span> <span class="kt">void</span> <span class="nf">apply_instruction</span><span class="p">(</span><span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="n">int4</span> <span class="n">grid</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">firstRow</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">lastRow</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">z</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">firstColumn</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">lastColumn</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
+    <span class="c1">// Each row in the light grid </span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">y</span><span class="p">;</span> 
+        <span class="n">row</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">;</span> 
+        <span class="n">row</span> <span class="o">+=</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// Check if this row is in the instruction</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">row</span> <span class="o">&lt;</span> <span class="n">firstRow</span> <span class="o">||</span> <span class="n">row</span> <span class="o">&gt;</span> <span class="n">lastRow</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="c1">// Each col in the light grid</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> 
+                <span class="n">column</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">;</span> 
+                <span class="n">column</span> <span class="o">+=</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// Check if this column is in the instruction</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">column</span> <span class="o">&lt;</span> <span class="n">firstColumn</span> <span class="o">||</span> <span class="n">column</span> <span class="o">&gt;</span> <span class="n">lastColumn</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="c1">//// Apply instruction</span>
+            <span class="c1">// Toggle</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">lights</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">]</span> <span class="o">^=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="c1">// Turn off</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">lights</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="c1">// Turn on</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="n">lights</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Combined with the previous host code, that applies all of the instructions in order to the light grid. The last thing to do is count the lights that are on. That should be fast on whether its on the host or the device, but I did it on the device. I used the same grid assignment as above to loop over the light grid. I also used the <code class="language-plaintext highlighter-rouge">atomicAdd</code> function to combine the values from each thread into a global value (<code class="language-plaintext highlighter-rouge">numLightsOn</code>) that the host could print.</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">int</span> <span class="n">numLightsOn</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">count_lights</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// Count for this thread</span>
+    <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">y</span><span class="p">;</span> 
+        <span class="n">row</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">;</span> 
+        <span class="n">row</span> <span class="o">+=</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">col</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> 
+            <span class="n">col</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">;</span> 
+            <span class="n">col</span> <span class="o">+=</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="n">lights</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">// Add to global count</span>
+    <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">numLightsOn</span><span class="p">,</span> <span class="n">count</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="part-2-3">
+<a class="anchor" href="#part-2-3" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>For the second part, each instruction was changed to be an increment or decrement of the light’s value rather than a binary operation. The final answer was the sum of the light’s values.  Effectively, this only changed the application of instruction in the interior of the device code loops:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//// Apply instruction</span>
+<span class="c1">// Toggle</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">lights</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// Turn off</span>
+<span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">lights</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="o">--</span><span class="n">lights</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// Turn on</span>
+<span class="k">else</span>
+<span class="p">{</span>
+    <span class="o">++</span><span class="n">lights</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Everything else remained the same.</p>
+
+<h3 id="timing-1">
+<a class="anchor" href="#timing-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
+
+<p>As in Day 4, the solution to this problem benefited from being done in parallel. My python solution took about 10 seconds, while the executable generated from the CUDA solution prints seemingly immediately.</p>
+
+<h2 id="day-9-all-in-a-single-night">
+<a class="anchor" href="#day-9-all-in-a-single-night" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/9">Day 9: All in a Single Night</a>
+</h2>
+
+<h3 id="part-1-4">
+<a class="anchor" href="#part-1-4" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>This problem was a take on the traveling salesman problem: given 8 locations and the distance between each pair of location, find the shortest route that visit each location exactly once.</p>
+
+<p>Very naively, there are <code class="language-plaintext highlighter-rouge">8^8 = 16777216</code> routes that are 8 locations long.<sup id="a13"><a href="#f13">13</a></sup> Most of those routes are invalid; they visit a location more than once. However, they are easy to enumerate via repeated division and modular arithmetic. This enumeration allows each route to be mapped to an integer, which can be assigned to a thread, which can them do the determination of whether the route is valid and how long it is.</p>
+
+<p>I took this opportunity to write my first C++ class designed to be used by device code: <code class="language-plaintext highlighter-rouge">Route</code>. 
+Its constructor is the enumeration via division and modular arithmetic (takes integer, sets the destination list). It has two additional functions: <code class="language-plaintext highlighter-rouge">bool valid()</code>, which checks if a location is listed twice, and <code class="language-plaintext highlighter-rouge">int distance()</code>, which calculates the distance for the route.<sup id="a14"><a href="#f14">14</a></sup></p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Class to hold a particular route</span>
+<span class="k">class</span> <span class="nc">Route</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="c1">// Ordered destination list</span>
+    <span class="kt">int</span> <span class="n">route</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+
+    <span class="c1">// Convert an integer to a particular route (enumeration)</span>
+    <span class="n">__device__</span> <span class="n">Route</span><span class="p">(</span><span class="kt">int</span> <span class="n">N</span><span class="p">);</span>
+
+    <span class="c1">// Check if the route is valid (visit each location exactly once)</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">valid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+    <span class="c1">// Calculate the distance for this route</span>
+    <span class="n">__device__</span> <span class="kt">int</span> <span class="n">distance</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+<p>With this class in hand, the device code to calculate the shortest route is simple:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">rid</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">rid</span> <span class="o">&lt;</span> <span class="mi">16777216</span><span class="p">;</span> <span class="n">rid</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Enumerate route</span>
+    <span class="n">Route</span> <span class="n">route</span><span class="p">(</span><span class="n">rid</span><span class="p">);</span>
+    <span class="c1">// Check if route visit each location exacly once</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">route</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">distance</span> <span class="o">=</span> <span class="n">route</span><span class="p">.</span><span class="n">distance</span><span class="p">();</span>
+        <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">minDistance</span><span class="p">,</span> <span class="n">distance</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>(<code class="language-plaintext highlighter-rouge">minDistance</code> is in global managed memory and initialized to <code class="language-plaintext highlighter-rouge">INT_MAX</code>.)</p>
+
+<h2 id="part-2-4">
+<a class="anchor" href="#part-2-4" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h2>
+
+<p>Part 2 flips the problem to calculate the longest route. The obvious trivial change works: change to using <code class="language-plaintext highlighter-rouge">atomicMax()</code> instead of <code class="language-plaintext highlighter-rouge">atomicMin()</code> after calculating the route’s distance (with a value intialized to 0.)</p>
+
+<h2 id="timing-2">
+<a class="anchor" href="#timing-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h2>
+
+<p>My original Python code took about 9-10 seconds to enumerate the routes and find the minimum distance, but that’s because I used <code class="language-plaintext highlighter-rouge">itertools.product</code> to enumerate all <code class="language-plaintext highlighter-rouge">16777216</code> routes. When I swapped to using <code class="language-plaintext highlighter-rouge">itertools.permutation</code> (40320 valid routes), it complete immediately.  In any case, the CUDA solution once again runs almost instanteneously.</p>
+
+<h2 id="day-10-elves-look-elves-say">
+<a class="anchor" href="#day-10-elves-look-elves-say" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/10">Day 10: Elves Look, Elves Say</a>
+</h2>
+
+<p>The problem was to find the 40th (Part 1) and 50th (Part 2) iterations of a 
+<a href="https://en.wikipedia.org/wiki/Look-and-say_sequence">look-and-say sequence</a>, starting with some given input. I couldn’t find a parallel way to approach this problem (and there probably isn’t one), so I skipped trying to come up with a “better” CUDA version of the solution.</p>
+
+<p>Here’s a meme to distract you from the lack of code for this problem:</p>
+
+<p><img src="images/ross_meme.jpg" alt="Programming Pain"></p>
+
+<h2 id="day-11-corporate-policy">
+<a class="anchor" href="#day-11-corporate-policy" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/11">Day 11: Corporate Policy</a>
+</h2>
+
+<h3 id="part-1-5">
+<a class="anchor" href="#part-1-5" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>This problem was, given the input string of 8 lowercase English letters, find the next string in alphabetical order that meets a precise set of rules, with the premise being that the rules reprsent password policies.</p>
+
+<p>Once again, the trick is converting the problem to something that can be enumerated by integers, so that each enumerated integer can be assigned to a particular thread. In this case, I considered each 
+string of 8 letters in alphabetical order:</p>
+<ul>
+  <li>“aaaaaaaa” is 0</li>
+  <li>“aaaaaaab” is 1</li>
+  <li>“aaaaaaac” is 2</li>
+  <li>…</li>
+  <li>“zzzzzzzz” is 208827064575 (26^8 - 1)
+Each such string maps uniquely to a particular integer.<sup id="a15"><a href="#f15">15</a></sup> Denoting <code class="language-plaintext highlighter-rouge">int_to_pwd</code> (map integer to string) and <code class="language-plaintext highlighter-rouge">pwd_to_int</code> (map string to int) as functions to handle that mapping, the device code becomes:
+    <div class="language-c++ highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="c1">// Find the next valid password</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">next_valid_pwd</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">intPwd</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">// Buffer for storing password string</span>
+  <span class="kt">char</span> <span class="n">pwd</span><span class="p">[</span><span class="n">PWDLEN</span><span class="p">];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int64_t</span> <span class="n">N</span> <span class="o">=</span> <span class="n">intPwd</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="n">soln</span><span class="p">;</span> <span class="n">N</span> <span class="o">+=</span>  <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+  <span class="p">{</span>
+      <span class="c1">// Convert password integer to string</span>
+      <span class="n">int_to_pwd</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">pwd</span><span class="p">);</span>
+      <span class="c1">// Check validity of password (password rules)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">is_valid</span><span class="p">(</span><span class="n">pwd</span><span class="p">))</span>
+      <span class="p">{</span>
+          <span class="c1">// Set solution</span>
+          <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">soln</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+          <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+    <p><code class="language-plaintext highlighter-rouge">intPwd</code> is set in the host code to correspond to the given input. <code class="language-plaintext highlighter-rouge">soln</code> (global shared value) is intialized to <code class="language-plaintext highlighter-rouge">208827064576</code> and becomes the integer corresponding to the next valid password string when the device code is done. Then, the host code can map <code class="language-plaintext highlighter-rouge">soln</code> back to a string.</p>
+  </li>
+</ul>
+
+<h3 id="part-2-5">
+<a class="anchor" href="#part-2-5" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>The second part of the problem is to find the next valid password after the one found in part 1, so I just run the code back after setting the <code class="language-plaintext highlighter-rouge">intPwd</code> to be one more than the <code class="language-plaintext highlighter-rouge">soln</code> found in part 1.</p>
+
+<h3 id="timing-3">
+<a class="anchor" href="#timing-3" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
+
+<p>Again, the CUDA solution runs incredibly fast with near immediate printing. For the serial Python solution using the same concept, the first part takes about 3 seconds and the second takes about 4 seconds after that.</p>
+
+<h2 id="day-18-like-a-gif-for-your-yard">
+<a class="anchor" href="#day-18-like-a-gif-for-your-yard" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/18">Day 18: Like a GIF For Your Yard</a>
+</h2>
+
+<h3 id="part-1-6">
+<a class="anchor" href="#part-1-6" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>Day 18 marks a return to the light grids from Day 6. The grid is now just 100x100 and the problem is to “animate” the grid. For each step, each light turns off or on based on how many of its neighbors are lit. 100 steps are taken from a given intial configuration.</p>
+
+<p>The first idea I had was to set up a kernel where each thread was responsible for a single light. It could check what the status would be for the next light and then update it, after all the threads synced after doing the same check.  Unfortunately, this doesn’t quite work because the total number of threads on a single block is limited to 1024, regardless of shape. A 100x100 = 10,000 thread block is a non-starter with current CUDA standards.</p>
+
+<p>The second idea I had was to do a 100 blocks of 100 threads.<sup id="a16"><a href="#f16">16</a></sup> The issue is that there’s no reasonable way to sync the blocks, so you can start writing the new values for the lights before another block has finished evaluating the number of neighbors that are on.</p>
+
+<p>In the end, the approach that I settled on was to have 100 threads. Each thread was responsible for a row of the grid. A thread checks the value for the next step (based on the current neighboring values) for each column in its assigned row, stores that array of values and then reassigns the values after all the threads have synced.  If <code class="language-plaintext highlighter-rouge">next_value(x, y)</code> gives the value of the light at position <code class="language-plaintext highlighter-rouge">(x,y)</code> at the next step, the core device loop for evaluating and assigning a single step might look like:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Take one step for lights</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">one_step</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// Each thread is responsible for a row</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="c1">// New values for each column in this row</span>
+    <span class="kt">int</span> <span class="n">newValues</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+    <span class="c1">// Get next values</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="o">++</span><span class="n">col</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">newValues</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_value</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="c1">// Sync to make sure not to overwrite values</span>
+    <span class="n">__syncthreads</span><span class="p">();</span>
+    <span class="c1">// Set new values</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="o">++</span><span class="n">col</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">lights</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">newValues</span><span class="p">[</span><span class="n">col</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="c1">// Sync again before moving on to next step</span>
+    <span class="n">__syncthreads</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the host code, I loop over the steps using this kernel:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Loop over the steps and "animate"</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="o">++</span><span class="n">step</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">one_step</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="o">&gt;&gt;&gt;</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>From there, I basically reused the counting lights code I used on Day 6 to count the number of lights that are on after 100 steps and get the solution.</p>
+
+<h3 id="part-2-6">
+<a class="anchor" href="#part-2-6" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>The wrinkle in Part 2 was that the corners remained “on” after every step, instead of following the neighbor rules. The only part of my code that is adjusted is the setting new values in <code class="language-plaintext highlighter-rouge">one_step()</code> to force the value of the lights to be 1.</p>
+
+<h3 id="timing-4">
+<a class="anchor" href="#timing-4" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
+
+<p>I never wrote the corresponding Python code for Day 18 (or any future days), so there’s no comparison to make, but the CUDA code runs basically instanteneously.</p>
+
+<h2 id="day-19-medicine-for-rudolph">
+<a class="anchor" href="#day-19-medicine-for-rudolph" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/19">Day 19: Medicine for Rudolph</a>
+</h2>
+
+<h3 id="part-1-7">
+<a class="anchor" href="#part-1-7" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>For Part 1, the problem was, given a set of string replacements (e.g. “Al” -&gt; “ThF”) and a starting string, find the number of unique strings produced by applying a single replacement to the starting string (across all replacements and all locations for each replacement).</p>
+
+<p>The first order was to modify the transformations and input string to be integer-based rather than string-based to make things more efficient. If you’re really curious, that’s in the <code class="language-plaintext highlighter-rouge">Transforms.hh</code> file on github. The main thing was to turn the replacement transformations into an array of integer arrays that can be indexed into (43 transforms in all).</p>
+
+<p>The guise of the problem was that each component of the string represented a molecule or element that was being transformed to other molecules, so I will also use that vernacular. In particular, I made a C++ class called <code class="language-plaintext highlighter-rouge">Molecule</code> to help structure some things:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">Molecule</span>
+<span class="p">{</span>
+    <span class="c1">// Represent string of elements (284 is longest possible molecule for this problem)</span>
+    <span class="kt">int8_t</span> <span class="n">molecule</span><span class="p">[</span><span class="mi">285</span><span class="p">];</span>
+    <span class="c1">// Size of molecule</span>
+    <span class="kt">size_t</span> <span class="n">msize</span><span class="p">;</span>
+    <span class="c1">// Number of steps taken to produce this molecule (used primarily in Part 2)</span>
+    <span class="kt">size_t</span> <span class="n">steps</span><span class="p">;</span>
+
+    <span class="c1">// Produce an invalid molecule (host and device)</span>
+    <span class="n">__device__</span> <span class="n">__host__</span> <span class="n">Molecule</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">msize</span> <span class="o">=</span> <span class="mi">285</span><span class="p">;</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">INT_MAX</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// Produce a valid molecule from a string of elements</span>
+    <span class="n">__device__</span> <span class="n">__host__</span> <span class="n">Molecule</span><span class="p">(</span><span class="kt">int8_t</span><span class="o">*</span> <span class="n">newm</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">newSize</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">newSteps</span><span class="p">);</span>
+
+    <span class="cm">/** 
+     * Produces a new molecule by applying the transform indicated by `transformIdx` 
+     * to this molecule. `childNum` indicates how many replacements to skip first 
+     * before applying the replacement. An invalid molecule is produced if such a replacement 
+     * isn't possible.
+     */</span>
+    <span class="n">__device__</span> <span class="n">Molecule</span> <span class="n">fabricate</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">transformIdx</span><span class="p">,</span> <span class="kt">int64_t</span> <span class="n">childNum</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+    <span class="c1">// Is this a valid molecule?</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">is_valid</span><span class="p">()</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">steps</span> <span class="o">!=</span> <span class="n">INT_MAX</span> <span class="o">&amp;&amp;</span> <span class="n">msize</span> <span class="o">&lt;</span> <span class="mi">285</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Equality comparison (m1 == m2 if molecules are equal)</span>
+<span class="n">__device__</span> <span class="kt">bool</span> <span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span> <span class="n">Molecule</span><span class="o">&amp;</span> <span class="n">m1</span><span class="p">,</span> <span class="k">const</span> <span class="n">Molecule</span><span class="o">&amp;</span> <span class="n">m2</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>With this <code class="language-plaintext highlighter-rouge">struct</code> set up, the first device kernel can calculate all of the possible molecules that can be produced from the input molecule:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// List of current molecules</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="n">Molecule</span><span class="o">*</span> <span class="n">heap</span><span class="p">;</span>
+<span class="c1">// Current size of heap</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">size_t</span> <span class="n">heapSize</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="c1">// Make the possible children of `start` and add them to `heap`</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">fabricate_molecules</span><span class="p">(</span><span class="n">Molecule</span><span class="o">*</span> <span class="n">start</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int64_t</span> <span class="n">transformIdx</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> 
+                 <span class="n">transformIdx</span> <span class="o">&lt;</span> <span class="mi">43</span><span class="p">;</span> 
+                 <span class="n">transformIdx</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int64_t</span> <span class="n">childNum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="c1">// Produce first child</span>
+        <span class="n">Molecule</span> <span class="n">m</span> <span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">fabricate</span><span class="p">(</span><span class="n">transformIdx</span><span class="p">,</span> <span class="n">childNum</span><span class="p">);</span>
+        <span class="c1">// Continue we produce an invalid child or run out of space</span>
+        <span class="k">while</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">is_valid</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="n">heapSize</span> <span class="o">&lt;</span> <span class="n">MAX_HEAP_SIZE</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// Add to heap</span>
+            <span class="kt">int64_t</span> <span class="n">heapIdx</span> <span class="o">=</span> <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">heapSize</span><span class="p">,</span> <span class="p">(</span><span class="kt">size_t</span><span class="p">)</span><span class="mi">1</span><span class="p">);</span>
+            <span class="n">heap</span><span class="p">[</span><span class="n">heapIdx</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">;</span>
+
+            <span class="o">++</span><span class="n">childNum</span><span class="p">;</span>
+            
+            <span class="c1">// Produce next child</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">fabricate</span><span class="p">(</span><span class="n">transformIdx</span><span class="p">,</span> <span class="n">childNum</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">fabricate_molecules</code> produces all of the possible children from applying a single transformation to the input molecule. The next step is to count the unique strings produced, as the fabrication can produce some duplicates. That’s mostly handled in the same way I’ve been counting things in the previous problems, using the <code class="language-plaintext highlighter-rouge">reduction</code> routine to thread the counting. The <code class="language-plaintext highlighter-rouge">operator==</code> defined for <code class="language-plaintext highlighter-rouge">Molecule</code> is used to check for duplicates while each thread is going through the heap.</p>
+
+<blockquote>
+  <p><a name="atomicAddTrick"> I</a> wanted to highlight the bit of code around <code class="language-plaintext highlighter-rouge">heapIdx</code> and <code class="language-plaintext highlighter-rouge">atomicAdd</code> since I thought it was particularly slick. (I didn’t come up with it.) The <code class="language-plaintext highlighter-rouge">atomicAdd</code> increments the heapSize counter and returns the previous value of heapSize. It allows you to insert a new object into the heap without worrying about other threads or blocks conflicting, because they get the next increment (assuming <code class="language-plaintext highlighter-rouge">atomicAdd</code> is called in the same way before their insert).</p>
+</blockquote>
+
+<h3 id="part-2-7">
+<a class="anchor" href="#part-2-7" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>The problem for part 2 was to find the smallest number of steps required to produce the given input string using the transformations given (same ones discussed in part 1), starting from the string ‘e’ (representing a single electron in the molecule parlance).  Each applied transformation counted as a step.</p>
+
+<p>My approach was to start with the input string and repeatedly ‘reverse apply’ transformations until the ‘e’ was reached.<sup id="a17"><a href="#f17">17</a></sup> The replacements are such that each reverse application will always reduce the size of the molecule.</p>
+<blockquote>
+  <p>For example, if the original replacement was <code class="language-plaintext highlighter-rouge">Al =&gt; ThF</code>, then one possible step would be to replace a single instance of <code class="language-plaintext highlighter-rouge">ThF</code> with <code class="language-plaintext highlighter-rouge">Al</code>.</p>
+</blockquote>
+
+<p>Each such replacement can be consider as a branch of a tree with the original molecule as the root node. The first part of the problem then is to find a path through the tree, i.e. a series of reverse transformations, that terminates with ‘e’. Given that I’m working in the parallel world of CUDA, my plan was to find the shortest branch by exhausting the possible paths over some part of the tree and eliminating the remaining paths as solutions because they were as long or longer.</p>
+
+<p>The procedure I used was as follows:</p>
+<ol>
+  <li>Apply reverse transformations to element(s) at the top of the heap and put the valid ones on the heap</li>
+  <li>Sort the heap, first by size, then by number of steps taken.</li>
+  <li>Continue 1-2 until ‘e’ is reached.</li>
+  <li>Process remaining paths until they reach ‘e’ or they are as long as the best path so far.</li>
+</ol>
+
+<p>For the host code, this looks like</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Continue until done or memory gets full</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">heapSize</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">heapSize</span> <span class="o">&lt;</span> <span class="n">MAX_HEAP_SIZE</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Apply each reverse transformation to the top of the heap</span>
+    <span class="n">deconstruct_molecules</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="n">THREADS</span><span class="o">&gt;&gt;&gt;</span><span class="p">();</span>
+    <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+    <span class="c1">// Sort the heap</span>
+    <span class="n">bitonic_sort</span><span class="p">();</span>
+    <span class="c1">// Recalculate the heap size after the sort</span>
+    <span class="n">reset_heap_size</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">&gt;&gt;&gt;</span><span class="p">();</span>
+    <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>A <a href="https://en.wikipedia.org/wiki/Bitonic_sorter">bitonic_sort</a> was a new concept to me. It is a sorting algorithm that can be implemented in parallel code, so <a name="bitonicSort">I did it</a>:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Single step of the bitonic_sort()</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">bitonic_sort_step</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">j</span><span class="p">,</span> <span class="kt">int64_t</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Each thread handles a different element</span>
+    <span class="kt">int64_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="kt">int64_t</span> <span class="n">ij</span> <span class="o">=</span> <span class="n">i</span> <span class="o">^</span> <span class="n">j</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ij</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// Determines whether or not to swap indices</span>
+        <span class="kt">int64_t</span> <span class="n">ik</span> <span class="o">=</span> <span class="n">i</span><span class="o">&amp;</span><span class="n">k</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="n">ik</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">heap</span><span class="p">[</span><span class="n">ij</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">heap</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">||</span>
+             <span class="p">(</span><span class="n">ik</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">heap</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">heap</span><span class="p">[</span><span class="n">ij</span><span class="p">])</span> <span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Molecule</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+            <span class="n">heap</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">ij</span><span class="p">];</span>
+            <span class="n">heap</span><span class="p">[</span><span class="n">ij</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Parallel sort algorithm</span>
+<span class="n">__host__</span> <span class="kt">void</span> <span class="nf">bitonic_sort</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int64_t</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">MAX_HEAP_SIZE</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;&lt;=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">j</span> <span class="o">=</span> <span class="n">k</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">bitonic_sort_step</span><span class="o">&lt;&lt;&lt;</span><span class="n">BLOCKS</span><span class="p">,</span><span class="n">THREADS</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>You may notice that <code class="language-plaintext highlighter-rouge">bitonic_sort_step()</code> requires the comparison of two heap objects, in this case, <code class="language-plaintext highlighter-rouge">Molecule</code> objects, so we need a less than comparison operator:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__device__</span> <span class="kt">bool</span> <span class="k">operator</span><span class="o">&lt;</span><span class="p">(</span><span class="k">const</span> <span class="n">Molecule</span><span class="o">&amp;</span> <span class="n">m1</span><span class="p">,</span> <span class="k">const</span> <span class="n">Molecule</span><span class="o">&amp;</span> <span class="n">m2</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">m1</span><span class="p">.</span><span class="n">msize</span> <span class="o">!=</span> <span class="n">m2</span><span class="p">.</span><span class="n">msize</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">m1</span><span class="p">.</span><span class="n">msize</span> <span class="o">&lt;</span> <span class="n">m2</span><span class="p">.</span><span class="n">msize</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">m1</span><span class="p">.</span><span class="n">steps</span> <span class="o">&lt;</span> <span class="n">m2</span><span class="p">.</span><span class="n">steps</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>This sort places the invalid molecules at the end of the heap and the shortest valid molecule at the top of the heap.</p>
+
+<p>The next bit of device code is a way to the apply the reverse transformations to an individual <code class="language-plaintext highlighter-rouge">Molecule</code>:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Convert a molecule to a smaller one via a particular reverse transformation</span>
+<span class="n">__device__</span> <span class="n">Molecule</span> <span class="n">Molecule</span><span class="o">::</span><span class="n">deconstruct</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">transformIdx</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+<span class="err">}</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">transformIdx</code> again indicates the particular transformation to use, this time in reverse. As before, an invalid <code class="language-plaintext highlighter-rouge">Molecule</code> is produced if the transformation is not possible.</p>
+
+<p>Using this <code class="language-plaintext highlighter-rouge">deconstruct</code> function to apply a reverse transformation to molecule, this is what the device code for <code class="language-plaintext highlighter-rouge">deconstruct_molecules()</code> looks like:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Apply the reverse transformations to the top of the heap</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">deconstruct_molecules</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">heapSize</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// Each block grabs a different Molecule from the top of the heap</span>
+        <span class="n">Molecule</span> <span class="n">start</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">];</span>
+        <span class="c1">// Each thread applies a different reverse transformation</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">transformIdx</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">transformIdx</span> <span class="o">&lt;</span> <span class="mi">43</span><span class="p">;</span> <span class="n">transformIdx</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// Create the new molecule</span>
+            <span class="n">Molecule</span> <span class="n">m</span> <span class="o">=</span> <span class="n">start</span><span class="p">.</span><span class="n">deconstruct</span><span class="p">(</span><span class="n">transformIdx</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">m</span><span class="p">.</span><span class="n">is_valid</span><span class="p">())</span>
+            <span class="p">{</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="c1">// Reached 'e'</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">msize</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">m</span><span class="p">.</span><span class="n">molecule</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">16</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bestSteps</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">steps</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">steps</span> <span class="o">&lt;</span> <span class="n">bestSteps</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="c1">// Add new molecule to the end of the heap</span>
+                <span class="kt">int64_t</span> <span class="n">heapIdx</span> <span class="o">=</span> <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">heapSize</span><span class="p">,</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+                <span class="n">heap</span><span class="p">[</span><span class="n">heapIdx</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="c1">// This Molecule has been processed, so make it invalid</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">heap</span><span class="p">[</span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>The code is now set up to run through the tree to find a series of transformations that reduces the input molecule to ‘e’…Or not.</p>
+
+<p>Turns out, this doesn’t actually work. More accurately, it works to find <em>a</em> path but it’s not going to exhaust enough paths to finish in my lifetime. There are on the order of 195<sup>23</sup> paths to check. <img class="emoji" title=":grimacing:" alt=":grimacing:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f62c.png" height="20" width="20"></p>
+
+<p>Some googles and a bit of reading later,<sup id="a18"><a href="#f18">18</a></sup> I learned that the ‘true’ solution relies on the fact that particular structure of the input molecule guarantees that any path that terminates with ‘e’ with have the same length. For the general case, this guarantee is not valid.</p>
+
+<p>Given that added guarantee, I know that if I find one path, it’s the best one. My workaround is to modify the <code class="language-plaintext highlighter-rouge">while</code> condition in the host code slightly:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="p">(</span><span class="n">heapSize</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">heapSize</span> <span class="o">&lt;</span> <span class="n">MAX_HEAP_SIZE</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">bestSteps</span> <span class="o">==</span> <span class="n">INT_MAX</span><span class="p">)</span>
+<span class="p">{...</span>
+</code></pre></div></div>
+<p>Now, when it finds a path, the loop ends and <code class="language-plaintext highlighter-rouge">bestSteps</code> is returned. (With the ‘correct’ answer.)</p>
+
+<h3 id="timing-5">
+<a class="anchor" href="#timing-5" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
+
+<p>The solution to Part 1 runs almost instantly. The solution for Part 2 runs in less than half a second (with the <code class="language-plaintext highlighter-rouge">while</code> short circuit).</p>
+
+<h2 id="day-20-infinite-elves-and-infinite-houses">
+<a class="anchor" href="#day-20-infinite-elves-and-infinite-houses" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/20">Day 20: Infinite Elves and Infinite Houses</a>
+</h2>
+
+<h3 id="part-1-8">
+<a class="anchor" href="#part-1-8" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>The premise for this problem is that Santa is having elves deliver presents door-to-door to each house, with each elf delivering ten times its assigned number to each multiple of its number. (Elf 1 delivers 10 presents to all houses; Elf 2 delivers 20 present to each even house; Elf 3 delivers 30 presents to each house number divisible by three, and so on.)  The question is what is the smallest house number that gets above a certain given number of presents.</p>
+
+<p>I came up with two approaches to this problem and ended up implementing them both to see which was faster.</p>
+
+<p>The first approach was to go house by house, figure out which elves delivered there (i.e. the factors of the house number), and add up the presents for that house. The solution arrives at the first house that is above the threshold.</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Given number of input presents</span>
+<span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">PUZZLE_INPUT</span> <span class="o">=</span> <span class="mi">36000000</span><span class="p">;</span>
+<span class="c1">// Maximum house number (guaranteed to be no bigger than this)</span>
+<span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">MAX_HOUSES</span> <span class="o">=</span> <span class="n">PUZZLE_INPUT</span><span class="o">/</span><span class="mi">10</span><span class="p">;</span>
+<span class="c1">// House stack </span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">uint32_t</span><span class="o">*</span> <span class="n">houses</span><span class="p">;</span>
+<span class="c1">// Deliver the presents house by house</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">deliver_by_house</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int32_t</span> <span class="n">presents</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="c1">// Loop over the houses (starting at 1)</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">house</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+        <span class="n">house</span> <span class="o">&lt;</span> <span class="n">MAX_HOUSES</span><span class="p">;</span>
+        <span class="n">house</span> <span class="o">+=</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// Loop over the possible elfs for this house</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">uint32_t</span> <span class="n">elf</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">elf</span> <span class="o">&lt;=</span> <span class="n">house</span><span class="p">;</span> <span class="o">++</span><span class="n">elf</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// Does this elf deliver here (i.e. is elf a factor of house)?</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">house</span> <span class="o">%</span> <span class="n">elf</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">presents</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">elf</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">houses</span><span class="p">[</span><span class="n">house</span><span class="p">]</span> <span class="o">+</span> <span class="n">presents</span> <span class="o">&gt;=</span> <span class="n">PUZZLE_INPUT</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">atomicExch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">houses</span><span class="p">[</span><span class="n">house</span><span class="p">],</span> <span class="n">PUZZLE_INPUT</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">else</span>
+                <span class="p">{</span>
+                    <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">houses</span><span class="p">[</span><span class="n">house</span><span class="p">],</span> <span class="n">presents</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>The only new part in here is <code class="language-plaintext highlighter-rouge">atomicExch</code>, which atomically sets the value. I use it here to set the house value to the puzzle input if the house value would exceed that. This speeds up the code a little as it prevent unnecessary adds once the value is exceeded.<sup id="a19"><a href="#f19">19</a></sup> From here, it’s easy to loop over the houses and find the smallest house with value greater than or equal to <code class="language-plaintext highlighter-rouge">PUZZLE_INPUT</code>.</p>
+
+<p>The second approach I came up with was to deliver the presents elf by elf. So, each elf delivers all its presents to all its houses before going to the next elf.</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Deliver the presents elf by elf</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">deliver_by_elf</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">uint32_t</span> <span class="n">presents</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="c1">// Loop over elves (starting at 1)</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">elf</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+        <span class="n">elf</span> <span class="o">&lt;</span> <span class="n">MAX_HOUSES</span><span class="p">;</span>
+        <span class="n">elf</span> <span class="o">+=</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">presents</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">elf</span><span class="p">;</span>
+        <span class="c1">// Presents for this elf</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">uint32_t</span> <span class="n">j</span> <span class="o">=</span> <span class="n">elf</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">MAX_HOUSES</span><span class="p">;</span> <span class="n">j</span> <span class="o">+=</span> <span class="n">elf</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">houses</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">presents</span> <span class="o">&gt;=</span> <span class="n">PUZZLE_INPUT</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">atomicExch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">houses</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">PUZZLE_INPUT</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">houses</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">presents</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Again, this uses <code class="language-plaintext highlighter-rouge">atomicExch</code> to set the value to prevent unneeded adds.</p>
+
+<p>This approach counting elf-by-elf turned out to be much, much faster than the house-by-house approach. See more in the <a href="#timing-6">Timing</a> section below.</p>
+
+<h3 id="part-2-8">
+<a class="anchor" href="#part-2-8" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>Part 2 modified the problem by only allowing each elf to deliver to 50 houses, i.e. the first 50 multiples of its number, and increasing the number of presents it delivered to be 11 times its number.  This doesn’t change much of the code, it adds the verification that, for each house value, <code class="language-plaintext highlighter-rouge">house &lt;= 50 * elf</code> before adding new presents.</p>
+
+<h3 id="timing-6">
+<a class="anchor" href="#timing-6" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
+
+<p>For this problem, I decided to interrogate how the number of ‘blocks’ and ‘threads’ influenced how long it took to solve the problem (in wall time).  The solution to both parts could be calculated  simultaneously, so I ran some timing code for the two different approaches (house-by-house and elf-by-elf) that I used to solve the problem.</p>
+
+<p>For the house-by-house approach, here’s what the timing looked like:
+| # of blocks | # of threads | Wall Time |
+| ———– | ———— | ———-|
+|          32 |          128 |   164 sec |
+|          64 |          128 |    87 sec |
+|         128 |          128 |    57 sec |
+|         256 |          128 |    54 sec |
+|         512 |          128 |    51 sec |
+|        1024 |          128 |    47 sec |
+|        2048 |          128 |    46 sec |
+|          32 |          256 |    93 sec |
+|          64 |          256 |    56 sec |
+|         128 |          256 |    53 sec |
+|         256 |          256 |    51 sec |
+|         512 |          256 |    48 sec |
+|        1024 |          256 |    47 sec |
+|        2048 |          256 |    46 sec |
+Obviously, more blocks or more threads is faster, but the speed gains are limited after a point.</p>
+
+<p>For the elf-by-elf approach, here’s the timing table:
+| # of blocks | # of threads | Wall Time  |
+| ———– | ———— | ———  |
+|          32 |          128 |   0.91 sec |
+|          64 |          128 |   0.89 sec |
+|         128 |          128 |   0.90 sec |
+|         256 |          128 |   0.90 sec |
+|         512 |          128 |   0.90 sec |
+|        1024 |          128 |   0.90 sec |
+|          32 |          256 |   0.89 sec |
+|          64 |          256 |   0.90 sec |
+|         128 |          256 |   0.90 sec |
+|         256 |          256 |   0.90 sec |
+|         512 |          256 |   0.90 sec |
+|        1024 |          256 |   0.90 sec |
+These timings are all essentially identical. I also tried some smaller numbers for this case:
+| # of blocks | # of threads | Wall Time  |
+| ———– | ———— | ———  |
+|          64 |           32 |   0.92 sec |
+|          64 |           16 |   0.89 sec |
+|          64 |            8 |   0.89 sec |
+|          32 |           16 |   0.94 sec |
+|          16 |           16 |   0.96 sec |
+|           8 |            8 |   1.14 sec |</p>
+
+<p>I don’t have anything groundbreaking to say about how many blocks or threads to use and the timing; I just wanted to see what it looked like if I changed them.</p>
+
+<h2 id="day-21-rpg-simulator-20xx">
+<a class="anchor" href="#day-21-rpg-simulator-20xx" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/21">Day 21: RPG Simulator 20XX</a>
+</h2>
+
+<h3 id="part-1-9">
+<a class="anchor" href="#part-1-9" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>The premise for this problem is that an RPG player finds a shop just before the boss fight. The shop sells various items to set armor and attack damage and the goal is to find the smallest cost the player can pay and still win the boss fight. (The player starting HP and the boss’ starting HP, damage, and armor are all fixed inputs.)</p>
+
+<p>The rules also stipulate exactly one weapon (out of 5), 0-1 armor (out of 5), and 0-2 rings (out of 6), which gives <code class="language-plaintext highlighter-rouge">5*6*22 = 660</code> possible equipment combinations.  These can be easily enumerated to assign each number &lt; 660 to a unique combination. Thus, the overall procedure, for each number will be:</p>
+<ol>
+  <li>Given number N, calculate the cost, armor, and attack damage from the corresponding equipment.</li>
+  <li>Determine who wins the fight if the player dons that equipment</li>
+  <li>If the player wins, compare the current cost to the best cost so far and set the best cost appropriately.</li>
+</ol>
+
+<p>For the device code, I implemented this as</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Cost (746 = buy everything)</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">int</span> <span class="n">bestCost</span> <span class="o">=</span> <span class="mi">746</span><span class="p">;</span>
+<span class="c1">// Find best cost</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">find_costs</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="mi">660</span><span class="p">;</span> <span class="n">N</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">playerCost</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">playerDamage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">playerArmor</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="c1">// Convert N to equipment</span>
+        <span class="n">calculate_equipment</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">playerCost</span><span class="p">,</span> <span class="n">playerDamage</span><span class="p">,</span> <span class="n">playerArmor</span><span class="p">);</span>
+        <span class="c1">// Determine fight winner</span>
+        <span class="kt">bool</span> <span class="n">winner</span> <span class="o">=</span> <span class="n">win_fight</span><span class="p">(</span><span class="n">playerDamage</span><span class="p">,</span> <span class="n">playerArmor</span><span class="p">);</span>
+        <span class="c1">// Set best cost</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">winner</span> <span class="o">&amp;&amp;</span> <span class="n">playerCost</span> <span class="o">&lt;</span> <span class="n">bestCost</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bestCost</span><span class="p">,</span> <span class="n">playerCost</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="part-2-9">
+<a class="anchor" href="#part-2-9" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>The modification for this part was to find the maximum the player could spend at the shop (with the same equipment limitations) and still lose the boss fight. The code change is just to swap the conditional for setting the best cost to set the worst cost instead:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Cost (buy nothing)</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">int</span> <span class="n">worstCost</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="c1">// Set worst cost</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">winner</span> <span class="o">&amp;&amp;</span> <span class="n">playerCost</span> <span class="o">&gt;</span> <span class="n">worstCost</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">atomicMax</span><span class="p">(</span><span class="o">&amp;</span><span class="n">worstCost</span><span class="p">,</span> <span class="n">playerCost</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="p">...</span>
+</code></pre></div></div>
+
+<h3 id="timing-7">
+<a class="anchor" href="#timing-7" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
+
+<p>This is decidedly not a problem that requires a parallel solution. There are only 660 possible combinations to check, so a single thread runs almost instantly, just as the 660 thread solution does. C’est la vie.</p>
+
+<h2 id="day-22-wizard-simulator-20xx">
+<a class="anchor" href="#day-22-wizard-simulator-20xx" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/22">Day 22: Wizard Simulator 20XX</a>
+</h2>
+
+<h3 id="part-1-10">
+<a class="anchor" href="#part-1-10" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>The premise for this problem is similar to Day 21: there’s an RPG player in a boss fight.  This time, however, the player is a wizard who has set of 5 spells that can be cast on each turn. Each spell costs a different amount of mana to use and can have effects like healing, damaging the boss, increasing armor, or increasing the amount of remaining mana. The problem is to find the least amount of mana that can be spent to win the fight. (Player and boss starting HP, boss damage, and player starting mana pool are all fixed inputs. Boss has zero armor.)</p>
+
+<p>The vision I had for solving this problem was similar to ones I’ve used above: construct a mechanism for converting from an integer to a sequence of spells. In this case, there is straightforward way to do so.  Each spell is assigned a number from 0-4.  Given an integer,  repeated division and modding by 5 of that integer will give a sequence of numbers 0-4. That sequence of integers corresponding directly to a sequence of spells.</p>
+
+<p>I set up the player and boss as C++ classes to make it a little easier to track each round (see github for omitted details):</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Boss class</span>
+<span class="k">class</span> <span class="nc">Boss</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="c1">// HP (51 is given input)</span>
+    <span class="kt">int</span> <span class="n">hp</span> <span class="o">=</span> <span class="mi">51</span><span class="p">;</span>
+    <span class="c1">// Damage (9 is given input)</span>
+    <span class="kt">int</span> <span class="n">damage</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span>
+    <span class="c1">// Constructor</span>
+    <span class="n">__device__</span> <span class="n">Boss</span><span class="p">()</span> <span class="p">{};</span>
+    <span class="c1">// Boss attack player for damage</span>
+    <span class="n">__device__</span> <span class="kt">void</span> <span class="n">attack</span><span class="p">(</span><span class="n">Player</span><span class="o">&amp;</span> <span class="n">player</span><span class="p">);</span>
+    <span class="c1">// Check if the boss is dead (HP &lt;= 0)</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">is_dead</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="c1">// Player class</span>
+<span class="k">class</span> <span class="nc">Player</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="c1">// Total mana spent so far</span>
+    <span class="kt">int</span> <span class="n">manaSpent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="c1">// Mana pool (500 is given input)</span>
+    <span class="kt">int</span> <span class="n">mana</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+    <span class="c1">// HP (50 is given input)</span>
+    <span class="kt">int</span> <span class="n">hp</span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span>
+    <span class="c1">// Constructor</span>
+    <span class="n">__device__</span> <span class="n">Player</span><span class="p">()</span> <span class="p">{};</span>
+    <span class="c1">// Magic missile spell (spell 0)</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">magic_missile</span><span class="p">(</span><span class="n">Boss</span><span class="o">&amp;</span> <span class="n">boss</span><span class="p">);</span>
+    <span class="c1">// Drain spell (spell 1)</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">drain</span><span class="p">(</span><span class="n">Boss</span><span class="o">&amp;</span> <span class="n">boss</span><span class="p">);</span>
+    <span class="c1">// Shield spell (spell 2)</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">shield</span><span class="p">()</span>
+    <span class="c1">// Poison spell (spell 3)</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">poison</span><span class="p">()</span>
+    <span class="c1">// Recharge spell (spell 4)</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">recharge</span><span class="p">()</span>
+    <span class="c1">// Check if there's enough mana to cast any spell</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">can_cast</span><span class="p">();</span>
+    <span class="c1">// Check if player is dead</span>
+    <span class="n">__device__</span> <span class="kt">bool</span> <span class="n">is_dead</span><span class="p">();</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>To execute one round (one player turn and one boss turn), then I implemented as</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Return true if round is valid (player can cast)</span>
+<span class="n">__device__</span> <span class="kt">bool</span> <span class="nf">round</span><span class="p">(</span><span class="kt">int64_t</span><span class="o">&amp;</span> <span class="n">spellList</span><span class="p">,</span> <span class="n">Player</span><span class="o">&amp;</span> <span class="n">player</span><span class="p">,</span> <span class="n">Boss</span><span class="o">&amp;</span> <span class="n">boss</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Get next spell</span>
+    <span class="kt">int</span> <span class="n">spell</span> <span class="o">=</span> <span class="n">spellList</span> <span class="o">%</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="c1">// Take player turn (player spell, etc.)</span>
+    <span class="kt">bool</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">player_turn</span><span class="p">(</span><span class="n">spell</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">boss</span><span class="p">);</span>
+    <span class="c1">// Invalid if not enough mana to cast spell</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">valid</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// Take boss turn (boss attack, etc.)</span>
+    <span class="n">boss_turn</span><span class="p">(</span><span class="n">player</span><span class="p">,</span> <span class="n">boss</span><span class="p">);</span>
+    <span class="c1">// Discard last spell</span>
+    <span class="n">spellList</span> <span class="o">/=</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="c1">// Valid round</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>With those pieces set, I found the best mana by given each thread a different integer:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Find the smallest mana to use to beat boss</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">find_best_mana</span><span class="p">(</span><span class="kt">bool</span> <span class="n">hardMode</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">N</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="n">INT_MAX</span><span class="p">;</span> <span class="n">N</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int64_t</span> <span class="n">spellList</span> <span class="o">=</span> <span class="n">N</span><span class="p">;</span>
+        <span class="n">Player</span> <span class="n">player</span><span class="p">;</span>
+        <span class="n">Boss</span> <span class="n">boss</span><span class="p">;</span>
+        <span class="c1">// Continue until boss is dead, player is dead, or too much mana is spent</span>
+        <span class="k">while</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">can_cast</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">player</span><span class="p">.</span><span class="n">is_dead</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">boss</span><span class="p">.</span><span class="n">is_dead</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="n">player</span><span class="p">.</span><span class="n">manaSpent</span> <span class="o">&lt;</span> <span class="n">bestMana</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// Run a single round (player turn + boss turn)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">round</span><span class="p">(</span><span class="n">spellList</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">boss</span><span class="p">,</span> <span class="n">hardMode</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="c1">// If boss is dead, check against best mana</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">boss</span><span class="p">.</span><span class="n">is_dead</span><span class="p">())</span>
+        <span class="p">{</span>
+            <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bestMana</span><span class="p">,</span> <span class="n">player</span><span class="p">.</span><span class="n">manaSpent</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="part-2-10">
+<a class="anchor" href="#part-2-10" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>For Part 2, the change was that the player took an additional HP loss at the start of their turn (<em>hard mode</em>). This added about 3 lines of code to <code class="language-plaintext highlighter-rouge">player_turn</code> to account for this.</p>
+
+<h3 id="timing-8">
+<a class="anchor" href="#timing-8" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
+
+<p>For the code as written and outlayed above, it takes less than one second each for both parts, but it isn’t quite instanteous.</p>
+
+<h2 id="day-23-opening-the-turing-lock">
+<a class="anchor" href="#day-23-opening-the-turing-lock" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/23">Day 23: Opening the Turing Lock</a>
+</h2>
+
+<p>This is decidedly not a parallel problem.  As such, I’m skipping any discussion of it here, but you can check out the github repo for <code class="language-plaintext highlighter-rouge">day23.cu</code>, if you’re dying to see some CUDA code solving it.</p>
+
+<p>As recompense, here’s a meme:</p>
+
+<p><img src="images/NVIDIAs-Master-Plan.jpg" alt="NVIDIA Master Plan"></p>
+
+<p>And another:</p>
+
+<p><img src="images/Cap_America_NVIDIA.jpeg" alt="Captain America NVIDIA"></p>
+
+<h2 id="day-24-it-hangs-in-the-balance">
+<a class="anchor" href="#day-24-it-hangs-in-the-balance" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/24">Day 24: It Hangs in the Balance</a>
+</h2>
+
+<h3 id="part-1-11">
+<a class="anchor" href="#part-1-11" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1</h3>
+
+<p>Under the guise of balancing the presents on sleigh, the problem for Day 24 was to divide a group of integers into 3 groups so that the sum of each of the groups was the same. Additionally, you needed to find the arrangement that had the group with the smallest <a href="https://en.wikipedia.org/wiki/Cardinality">cardinality</a> and, if there were multiple such arrangements, the one with the smallest product within that set with the smallest cardinality.</p>
+
+<p>There were 28 weights to put into the 3 groups. Thus, any group in an arrangement could be represented by some nonnegative integer less than <code class="language-plaintext highlighter-rouge">2**28</code> by considering the binary representation of the integer as a indicator of whether the weight is in the group.  For example,</p>
+<blockquote>
+  <p>If N = 100663297 = 110000000000000000000000001, the group would have the first weight, the second-to-last weight, and the last weight in it (and nothing else).</p>
+</blockquote>
+
+<ol>
+  <li>Find the number of possible smallest groups (by looping over all non-negative integers &lt; 2**28): those groups that sum to 1/3 of the total weight and fewer than 10 elements.</li>
+  <li>Allocate a heap of integers of the size found in step 1.</li>
+  <li>Add each valid integers from step 1 to heap</li>
+  <li>Sort the heap (using <code class="language-plaintext highlighter-rouge">bitonic_sort</code>), first by cardinality of the corresponding group, then by the product of the elements of the group.</li>
+  <li>For each non-negative integers &lt; 2**28, get a group of weights (“second group”). If this second group sums to 1/3 the weight, test it against every “first group” from the heap. If they don’t overlap in any weights, this also gives a “third group” to give a valid arrangement. If so, test the cardinality and product of the “first group” against the best arrangement found so far.</li>
+</ol>
+
+<p>Following these steps will give the desired arrangement.  The device code for each step is laid out below for each step:</p>
+
+<ol>
+  <li>Find the number of groups that sum to 1/3 of the total weight and have fewer than 10 elements
+    <div class="language-c++ highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="c1">// Total sum of WEIGHTS</span>
+<span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">TOTAL_WEIGHT</span> <span class="o">=</span> <span class="mi">1524</span><span class="p">;</span>
+<span class="c1">// 1/3 of TOTAL_WEIGHT</span>
+<span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">GROUP_WEIGHT</span> <span class="o">=</span> <span class="n">TOTAL_WEIGHT</span> <span class="o">/</span> <span class="mi">3</span><span class="p">;</span>
+<span class="c1">// Heap of integers representing sets of weights</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">uint32_t</span><span class="o">*</span> <span class="n">heap</span><span class="p">;</span>
+<span class="c1">// Size of heap</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">size_t</span> <span class="n">heapSize</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="c1">// Current index of heap</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">size_t</span> <span class="n">heapIdx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="c1">// Part 1, Step 1</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">find_first_groups</span><span class="p">()</span>
+<span class="p">{</span>
+ <span class="kt">uint32_t</span> <span class="n">weights</span><span class="p">[</span><span class="mi">28</span><span class="p">];</span>
+ <span class="kt">size_t</span> <span class="n">cardinality</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="kt">uint32_t</span> <span class="n">sumWeights</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">N</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="mi">268435456</span><span class="c1">// 2**28</span>
+     <span class="n">N</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+ <span class="p">{</span>   
+     <span class="c1">// Convert integer to weights group</span>
+     <span class="n">cardinality</span> <span class="o">=</span> <span class="n">convert_weights</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">weights</span><span class="p">);</span>
+     <span class="c1">// If cardinality &gt; 9, it's not the smallest group in arrangement</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">cardinality</span> <span class="o">&gt;</span> <span class="mi">9</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="k">continue</span><span class="p">;</span>
+     <span class="p">}</span>
+     <span class="c1">// Weights must sum to 1/3 TOTAL WEIGHT</span>
+     <span class="n">sumWeights</span> <span class="o">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">);</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">sumWeights</span> <span class="o">!=</span> <span class="n">GROUP_WEIGHT</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="k">continue</span><span class="p">;</span>
+     <span class="p">}</span>
+     <span class="c1">// Increment heap size to make room for this N in step 3</span>
+     <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">heapSize</span><span class="p">,</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>No device code for this step: Allocate the first power of 2 larger than <code class="language-plaintext highlighter-rouge">heapSize</code> number of integers for <code class="language-plaintext highlighter-rouge">heap</code> (Power of 2 required for <code class="language-plaintext highlighter-rouge">bitonic_sort</code> in step 4).</p>
+  </li>
+  <li>Repeat step 1, but add the integers to the heap that has now been allocated, so I replaced the <code class="language-plaintext highlighter-rouge">atomicAdd</code> above with
+    <div class="language-c++ highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="c1">// Add this integer to the heap</span>
+<span class="kt">size_t</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">heapIdx</span><span class="p">,</span> <span class="p">(</span><span class="kt">size_t</span><span class="p">)</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">heap</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="p">;</span>
+</code></pre></div>    </div>
+    <p>This uses the same incrementing an index trick I used in <a href="#atomicAddTrick">Day 19</a> to allow each thread to store to the heap without clobbering writes by other threads.</p>
+  </li>
+  <li>
+    <p>Sort the heap by considering the cardinalities and products of the weights each integer in the heap represents. The sorting algorithm is <code class="language-plaintext highlighter-rouge">bitonic_sort</code>, using basically the same code that I used on <a href="#bitonicSort">Day 19</a> as well.</p>
+  </li>
+  <li>Lastly, I looped over the possible second group of weights and tested each first group that made a valid arrangement to find the first group with the lowest cardinality (and smallest product within the groups with the same cardinality.)
+    <div class="language-c++ highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="c1">// Smallest cardinality found for first group</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">uint32_t</span> <span class="n">bestCardinality</span> <span class="o">=</span> <span class="n">UINT_MAX</span><span class="p">;</span>
+<span class="c1">// Smallest product found in smallest cardinality for first group</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">uint64_t</span> <span class="n">bestQE</span> <span class="o">=</span> <span class="n">UINT64_MAX</span><span class="p">;</span>
+<span class="c1">// Part 1, Step 5</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">test_valid_arrangements</span><span class="p">()</span>
+<span class="p">{</span>
+ <span class="c1">// Weight arrays</span>
+ <span class="kt">uint32_t</span> <span class="n">weights1</span><span class="p">[</span><span class="n">LENGTH</span><span class="p">];</span>
+ <span class="kt">uint32_t</span> <span class="n">weights2</span><span class="p">[</span><span class="n">LENGTH</span><span class="p">];</span>
+ <span class="c1">// Cardinalities</span>
+ <span class="kt">uint32_t</span> <span class="n">cardinality1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="kt">uint32_t</span> <span class="n">cardinality2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="kt">uint32_t</span> <span class="n">cardinality3</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="c1">// Sum of weights</span>
+ <span class="kt">uint32_t</span> <span class="n">sumWeights2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="c1">// Product of weights (quantum entanglement)</span>
+ <span class="kt">uint64_t</span> <span class="n">qe1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="c1">// Loop over integers &lt; 2**28 (second group)</span>
+ <span class="k">for</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">N2</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> 
+     <span class="n">N2</span> <span class="o">&lt;</span> <span class="n">POSSIBLES</span><span class="p">;</span> 
+     <span class="n">N2</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+ <span class="p">{</span>   
+     <span class="c1">// Get second group weights</span>
+     <span class="n">cardinality2</span> <span class="o">=</span> <span class="n">convert_weights</span><span class="p">(</span><span class="n">N2</span><span class="p">,</span> <span class="n">weights2</span><span class="p">);</span>
+     <span class="c1">// Calculate sum of weights</span>
+     <span class="n">sumWeights2</span> <span class="o">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">weights2</span><span class="p">);</span>
+     <span class="c1">// Check for invalid group</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">sumWeights2</span> <span class="o">!=</span> <span class="n">GROUP_WEIGHT</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="k">continue</span><span class="p">;</span>
+     <span class="p">}</span>
+     <span class="c1">// Loop over all first group weights in heap</span>
+     <span class="k">for</span> <span class="p">(</span><span class="kt">uint64_t</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="n">heapSize</span><span class="p">;</span> <span class="o">++</span><span class="n">idx</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="kt">uint32_t</span> <span class="n">N1</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+         <span class="c1">// If N1 &amp; N2 is not zero, weights overlap</span>
+         <span class="k">if</span> <span class="p">((</span><span class="n">N1</span> <span class="o">&amp;</span> <span class="n">N2</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="k">continue</span><span class="p">;</span>
+         <span class="p">}</span>
+         <span class="c1">// Get first group weights</span>
+         <span class="n">cardinality1</span> <span class="o">=</span> <span class="n">convert_weights</span><span class="p">(</span><span class="n">N1</span><span class="p">,</span> <span class="n">weights1</span><span class="p">);</span>
+         <span class="c1">// Check if already bigger than bestCardinality or smaller than second group</span>
+         <span class="k">if</span> <span class="p">(</span><span class="n">cardinality1</span> <span class="o">&gt;</span> <span class="n">bestCardinality</span> <span class="o">||</span> <span class="n">cardinality2</span> <span class="o">&lt;</span> <span class="n">cardinality1</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="k">break</span><span class="p">;</span>
+         <span class="p">}</span>
+         <span class="c1">// Cardinality of third group</span>
+         <span class="n">cardinality3</span> <span class="o">=</span> <span class="n">LENGTH</span> <span class="o">-</span> <span class="p">(</span><span class="n">cardinality1</span> <span class="o">+</span> <span class="n">cardinality2</span><span class="p">);</span>
+         <span class="c1">// Check if it's smaller than first group</span>
+         <span class="k">if</span> <span class="p">(</span><span class="n">cardinality3</span> <span class="o">&lt;</span> <span class="n">cardinality1</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="k">continue</span><span class="p">;</span>
+         <span class="p">}</span>
+         <span class="c1">// Test against the best arrangement so far</span>
+         <span class="n">qe1</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="n">weights1</span><span class="p">);</span>
+         <span class="k">if</span> <span class="p">(</span><span class="n">cardinality1</span> <span class="o">==</span> <span class="n">bestCardinality</span> <span class="o">&amp;&amp;</span> <span class="n">qe1</span> <span class="o">&gt;=</span> <span class="n">bestQE</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="k">break</span><span class="p">;</span>
+         <span class="p">}</span>
+         <span class="k">else</span>
+         <span class="p">{</span>
+             <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bestCardinality</span><span class="p">,</span> <span class="n">cardinality1</span><span class="p">);</span>
+             <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bestQE</span><span class="p">,</span> <span class="n">qe1</span><span class="p">);</span>
+             <span class="k">break</span><span class="p">;</span>
+         <span class="p">}</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+    <p>This sets <code class="language-plaintext highlighter-rouge">bestCardinality</code> and <code class="language-plaintext highlighter-rouge">bestQE</code> to be the desired values.</p>
+  </li>
+</ol>
+
+<h3 id="part-2-11">
+<a class="anchor" href="#part-2-11" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2</h3>
+
+<p>Part 2 had the same basic premise as Part 1, except now, instead of 3 equally summed groups, there were 4.</p>
+
+<p>To tackle this problem, I used a similar approach as I did in Part 1 to start, however, it needed to be modified a bit after that to account for the extra group. Steps 1-4 from Part 1 were identical:</p>
+
+<ol>
+  <li>Find the number of possible smallest groups (by looping over all non-negative integers &lt; 2**28).Those groups that sum to 1/4 of the total weight and fewer than 10 elements.</li>
+  <li>Allocate a heap of integers of the size found in step 1.</li>
+  <li>Add each valid integer from step 1 to heap</li>
+  <li>Sort the heap (using <code class="language-plaintext highlighter-rouge">bitonic_sort</code>), first by cardinality of the corresponding group, then by the product of the elements of the group.</li>
+</ol>
+
+<p>Next, I made a second heap that corresponded to all other groups that could co-exist with at least one group in the first heap. It plays very similar to Steps 1-3:</p>
+
+<ol>
+  <li>Find the number of possible other groups (by looping over all non-negative integers &lt; 2**28): those groups that sum to 1/4 of the total weight and have at least one non-overlapping group in the first heap whose cardinality is not bigger than its cardinality.</li>
+  <li>Allocate a second heap of integers of the size found in step 5.</li>
+  <li>Add each valid integer from step 5 to the second heap.</li>
+</ol>
+
+<p>The last step in Part 2 is a bit different than the last step in Part 1:</p>
+
+<ol>
+  <li>For every possible pair of groups in the second heap (“second” and “third” groups), find the non-overlapping groups in the first heap (“first” groups). If none of the 3 groups overlap, this also gives a “fourth” group of the remaining unused weights to specify a valid arrangement. If so, test the cardinality and product of the “first” group against the best arrangement found so far.</li>
+</ol>
+
+<p>In terms of device code, steps 1-4 are basically identical to Part 1. For the remaining steps:</p>
+
+<ol>
+  <li>Find the possible second groups that have at least one valid first group:
+    <div class="language-c++ highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="c1">// Heap of integers represeting sets of weights for other groups (Part 2 only)</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">uint32_t</span><span class="o">*</span> <span class="n">otherHeap</span><span class="p">;</span>
+<span class="c1">// Size of otherHeap</span>
+<span class="n">__device__</span> <span class="n">__managed__</span> <span class="kt">size_t</span> <span class="n">otherHeapSize</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="c1">// Part 2, Step 5</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">find_other_groups</span><span class="p">(</span><span class="kt">bool</span> <span class="n">addToHeap</span><span class="p">)</span>
+<span class="p">{</span>
+ <span class="c1">// Weight arrays</span>
+ <span class="kt">uint32_t</span> <span class="n">weights1</span><span class="p">[</span><span class="n">LENGTH</span><span class="p">];</span>
+ <span class="kt">uint32_t</span> <span class="n">weights2</span><span class="p">[</span><span class="n">LENGTH</span><span class="p">];</span>
+ <span class="c1">// Cardinalities</span>
+ <span class="kt">uint32_t</span> <span class="n">cardinality1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="kt">uint32_t</span> <span class="n">cardinality2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="c1">// Sum of weights</span>
+ <span class="kt">uint32_t</span> <span class="n">sumWeights2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="c1">// Allocate some temp integers</span>
+ <span class="kt">uint32_t</span> <span class="n">N1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="c1">// Loop over integers &lt; 2**28 for second group</span>
+ <span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">N2</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> 
+              <span class="n">N2</span> <span class="o">&lt;</span> <span class="n">POSSIBLES</span><span class="p">;</span> 
+              <span class="n">N2</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+ <span class="p">{</span>   
+     <span class="n">cardinality2</span> <span class="o">=</span> <span class="n">convert_weights</span><span class="p">(</span><span class="n">N2</span><span class="p">,</span> <span class="n">weights2</span><span class="p">);</span>
+     <span class="n">sumWeights2</span> <span class="o">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">weights2</span><span class="p">);</span>
+     <span class="c1">// Check if valid group</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">sumWeights2</span> <span class="o">!=</span> <span class="n">GROUP_WEIGHT2</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="k">continue</span><span class="p">;</span>
+     <span class="p">}</span>
+     <span class="c1">// Check if there's at least one valid first group that goes with this second group</span>
+     <span class="kt">bool</span> <span class="n">validN2</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+     <span class="c1">// Loop over all first group weights in heap</span>
+     <span class="k">for</span> <span class="p">(</span><span class="kt">uint64_t</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="n">heapSize</span><span class="p">;</span> <span class="o">++</span><span class="n">idx</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="n">N1</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+         <span class="c1">// If N1 &amp; N2 is not zero, weights overlap</span>
+         <span class="k">if</span> <span class="p">((</span><span class="n">N1</span> <span class="o">&amp;</span> <span class="n">N2</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="k">continue</span><span class="p">;</span>
+         <span class="p">}</span>
+         <span class="c1">// Second group can't be smaller than first group</span>
+         <span class="n">cardinality1</span> <span class="o">=</span> <span class="n">convert_weights</span><span class="p">(</span><span class="n">N1</span><span class="p">,</span> <span class="n">weights1</span><span class="p">);</span>
+         <span class="k">if</span> <span class="p">(</span><span class="n">cardinality2</span> <span class="o">&lt;</span> <span class="n">cardinality1</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="k">continue</span><span class="p">;</span>
+         <span class="p">}</span>
+         <span class="c1">// Found a possible first group, so break</span>
+         <span class="n">validN2</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+         <span class="k">break</span><span class="p">;</span>
+     <span class="p">}</span>
+     <span class="c1">// Possible valid N2</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">validN2</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="c1">// Increment otherHeap size to make room for this N2 in next pass</span>
+         <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">otherHeapSize</span><span class="p">,</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>This is similar to step 2: no device code here, just allocate correct memory for <code class="language-plaintext highlighter-rouge">otherHeap</code>.</p>
+  </li>
+  <li>Repeat step 5, but add the integers to the heap that has now been allocated, so I replaced the <code class="language-plaintext highlighter-rouge">atomicAdd</code> line above with
+    <div class="language-c++ highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="c1">// Add this integer to the heap</span>
+<span class="kt">size_t</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">heapIdx</span><span class="p">,</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+<span class="n">otherHeap</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">N2</span><span class="p">;</span>
+</code></pre></div>    </div>
+    <p>(Same as was done in step 3.)</p>
+  </li>
+  <li>Lastly, loop over the second heap twice and the first loop once to find valid arrangements and test the first groups to find the one with the lowest cardinality and product:
+    <div class="language-c++ highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="c1">// Part 2, Step 8</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">test_valid_arrangements2</span><span class="p">()</span>
+<span class="p">{</span>
+ <span class="c1">// Weight arrays</span>
+ <span class="kt">uint32_t</span> <span class="n">weights1</span><span class="p">[</span><span class="n">LENGTH</span><span class="p">];</span>
+ <span class="kt">uint32_t</span> <span class="n">weights2</span><span class="p">[</span><span class="n">LENGTH</span><span class="p">];</span>
+ <span class="kt">uint32_t</span> <span class="n">weights3</span><span class="p">[</span><span class="n">LENGTH</span><span class="p">];</span>
+ <span class="c1">// Cardinalities</span>
+ <span class="kt">uint32_t</span> <span class="n">cardinality1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="kt">uint32_t</span> <span class="n">cardinality2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="kt">uint32_t</span> <span class="n">cardinality3</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="kt">uint32_t</span> <span class="n">cardinality4</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="c1">// Product (quantum entanglement)</span>
+ <span class="kt">uint64_t</span> <span class="n">qe1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="c1">// Loop over otherHeap (third group)</span>
+ <span class="c1">// Each block handles a different third group</span>
+ <span class="k">for</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">idx3</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">idx3</span> <span class="o">&lt;</span> <span class="n">otherHeapSize</span><span class="p">;</span> <span class="n">idx3</span> <span class="o">+=</span> <span class="n">gridDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+ <span class="p">{</span>   
+     <span class="kt">uint32_t</span> <span class="n">N3</span> <span class="o">=</span> <span class="n">otherHeap</span><span class="p">[</span><span class="n">idx3</span><span class="p">];</span>
+     <span class="n">cardinality3</span> <span class="o">=</span> <span class="n">convert_weights</span><span class="p">(</span><span class="n">N3</span><span class="p">,</span> <span class="n">weights3</span><span class="p">);</span>
+     <span class="c1">// Loop over otherHeap (second group)</span>
+     <span class="c1">// Each thread handles a different second group</span>
+     <span class="k">for</span><span class="p">(</span><span class="kt">int64_t</span> <span class="n">idx2</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">idx2</span> <span class="o">&lt;</span> <span class="n">otherHeapSize</span><span class="p">;</span> <span class="n">idx2</span> <span class="o">+=</span> <span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="kt">uint32_t</span> <span class="n">N2</span> <span class="o">=</span> <span class="n">otherHeap</span><span class="p">[</span><span class="n">idx2</span><span class="p">];</span>
+         <span class="c1">// Check for overlap between groups</span>
+         <span class="k">if</span> <span class="p">((</span><span class="n">N3</span> <span class="o">&amp;</span> <span class="n">N2</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="k">continue</span><span class="p">;</span>
+         <span class="p">}</span>
+         <span class="c1">// Cut the search space in half by only considering when cardinality2 &lt;= cardinality3</span>
+         <span class="n">cardinality2</span> <span class="o">=</span> <span class="n">convert_weights</span><span class="p">(</span><span class="n">N2</span><span class="p">,</span> <span class="n">weights2</span><span class="p">);</span>
+         <span class="k">if</span> <span class="p">(</span><span class="n">cardinality2</span> <span class="o">&gt;</span> <span class="n">cardinality3</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="k">continue</span><span class="p">;</span>
+         <span class="p">}</span>
+         <span class="c1">// Loop over possible first groups</span>
+         <span class="k">for</span> <span class="p">(</span><span class="kt">int64_t</span> <span class="n">idx1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">idx1</span> <span class="o">&lt;</span> <span class="n">heapSize</span><span class="p">;</span> <span class="o">++</span><span class="n">idx1</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="n">N1</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">idx1</span><span class="p">];</span>
+             <span class="n">cardinality1</span> <span class="o">=</span> <span class="n">convert_weights</span><span class="p">(</span><span class="n">N1</span><span class="p">,</span> <span class="n">weights1</span><span class="p">);</span>
+             <span class="c1">// Can't do any better with the rest of the heap</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">cardinality1</span> <span class="o">&gt;</span> <span class="n">bestCardinality</span><span class="p">)</span>
+             <span class="p">{</span>
+                 <span class="k">break</span><span class="p">;</span>
+             <span class="p">}</span>
+             <span class="c1">// Group 1 needs to be the smallest</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">cardinality1</span> <span class="o">&gt;</span> <span class="n">cardinality2</span><span class="p">)</span>
+             <span class="p">{</span>
+                 <span class="k">break</span><span class="p">;</span>
+             <span class="p">}</span>
+             <span class="c1">// Group 1 needs to be the smallest</span>
+             <span class="n">cardinality4</span> <span class="o">=</span> <span class="n">LENGTH</span> <span class="o">-</span> <span class="p">(</span><span class="n">cardinality1</span> <span class="o">+</span> <span class="n">card23</span><span class="p">);</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">cardinality1</span> <span class="o">&gt;</span> <span class="n">cardinality4</span><span class="p">)</span>
+             <span class="p">{</span>
+                 <span class="k">break</span><span class="p">;</span>
+             <span class="p">}</span>
+             <span class="c1">// Test against the best arrangement so far</span>
+             <span class="n">qe1</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="n">weights1</span><span class="p">);</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">cardinality1</span> <span class="o">==</span> <span class="n">bestCardinality</span> <span class="o">&amp;&amp;</span> <span class="n">qe1</span> <span class="o">&gt;=</span> <span class="n">bestQE</span><span class="p">)</span>
+             <span class="p">{</span>
+                 <span class="k">break</span><span class="p">;</span>
+             <span class="p">}</span>
+             <span class="k">else</span>
+             <span class="p">{</span>
+                 <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bestCardinality</span><span class="p">,</span> <span class="n">cardinality1</span><span class="p">);</span>
+                 <span class="n">atomicMin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bestQE</span><span class="p">,</span> <span class="n">qe1</span><span class="p">);</span>
+                 <span class="k">break</span><span class="p">;</span>
+             <span class="p">}</span>
+         <span class="p">}</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+    <p>This sets the correct <code class="language-plaintext highlighter-rouge">bestCardinality</code> and <code class="language-plaintext highlighter-rouge">bestQE</code> values for Part 2.</p>
+  </li>
+</ol>
+
+<h3 id="timing-9">
+<a class="anchor" href="#timing-9" aria-hidden="true"><span class="octicon octicon-link"></span></a>Timing</h3>
+
+<p>Despite having several steps and being almost 600 lines of code for both parts for this problem, the code runs basically instantly. Both the heap sizes and the short circuiting of doing further checks have a lot to do with that. For Part 1, the heap size (i.e. the number of valid first groups) was 20679. For Part 2, the first heap had 11179 elements and the second heap (i.e. number of valid “other” groups) had 54966 elements.</p>
+
+<h2 id="day-25-let-it-snow">
+<a class="anchor" href="#day-25-let-it-snow" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://adventofcode.com/2015/day/25">Day 25: Let It Snow</a>
+</h2>
+
+<p>Like Day 23, this is definitely not a parallel problem. I wrote the solution in 30 lines of C++ code, though, if you want to look at that. I didn’t even bother with pretending to write CUDA for this problem.</p>
+
+<blockquote>
+  <p>youtube: https://www.youtube.com/watch?v=gcJjlL3izVc</p>
+</blockquote>
+
+<h2 id="conclusion">
+<a class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h2>
+
+<p>Thanks to anyone who actually read the entire way down here. I owe you a hearty handshake once this pandemic is over. No real conclusions, just the smug satisfications of writing some code. <img class="emoji" title=":open_mouth:" alt=":open_mouth:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f62e.png" height="20" width="20"></p>
+
+<h2 id="footnotes">
+<a class="anchor" href="#footnotes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Footnotes</h2>
+
+<p><b id="f1">1</b>I came close to learning some CUDA before: I took an High Performance Computing class two years ago that covered programming in CUDA for a day or two. Unfortunately, my daughter ran a fever at daycare that day, so I missed it and couldn’t find the time to revisit it. Now, however, with the opportunity to learn it at my own pace, I had no excuses.<a href="#a1">↩</a></p>
+
+<p><b id="f2">2</b> At first, because I wanted to get on the leaderboard. However, it became quickly clear  that was never happening, but I kept up the facade of doing it as quickly as <em>I</em> could.<a href="#a2">↩</a></p>
+
+<p><b id="f3">3</b> Each day is a 2-part problem, where the second part is revealed after correctly answering the first part<a href="#a3">↩</a></p>
+
+<p><b id="f4">4</b> One of the cool things about Advent of Code is that each person gets a different batch of input data.<a href="#a4">↩</a></p>
+
+<p><b id="f5">5</b> This seems to be the “hello world” equivalent for CUDA. In addition to being the example that NVIDIA uses, it’s the first meaningful example in the book I mentioned above,and pretty much all of the video examples if you search for “Introduction to CUDA”. <a href="#a5">↩</a></p>
+
+<p><b id="f6">6</b> Opinions are like my friends, they’re all assholes. <img class="emoji" title=":fire:" alt=":fire:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f525.png" height="20" width="20">  That’s how the saying goes, right?<a href="#a6">↩</a></p>
+
+<p><b id="f7">7</b> Ternary statements are the devil’s code, in case you’re wondering.<a href="#a7">↩</a></p>
+
+<p><b id="f8">8</b> If you look at the github code, the paper and ribbons calculations are done in the same loop<a href="#a8">↩</a></p>
+
+<p><b id="f9">9</b> I don’t recommend that route either. I eventually got it to work, but debugging it required compiling and linking another C++ version and lots of print statements to figure out where I had put a <code class="language-plaintext highlighter-rouge">+</code> instead of a <code class="language-plaintext highlighter-rouge">-</code><a href="#a9">↩</a></p>
+
+<p><b id="f10">10</b> Perhaps more to the point, <code class="language-plaintext highlighter-rouge">itoa()</code> is not in the ANSI-C standard and not supported by <code class="language-plaintext highlighter-rouge">nvcc</code><a href="#a10">↩</a></p>
+
+<p><b id="f11">11</b> Those values are mostly arbitrary: I used a non-square grid to make sure that I was using the grid correctly, but kept it 2D to avoid unneeded complication.<a href="#a11">↩</a></p>
+
+<p><b id="f12">12</b> Definitely not the first or second or third approach, though.<a href="#a12">↩</a></p>
+
+<p><b id="f13">13</b> Of course, there are <code class="language-plaintext highlighter-rouge">8! = 40320</code> routes that visit each location exactly once. There is an <a href="https://en.wikipedia.org/wiki/Heap%27s_algorithm">algorithm</a> to efficiently enumerate those routes, but I don’t know it off-hand, so I took a different tack.<a href="#a13">↩</a></p>
+
+<p><b id="f14">14</b> I’m sparing you the function definitions here since they’re not particular interesting, but see github if you’re compelled to see them.<a href="#a14">↩</a></p>
+
+<p><b id="f15">15</b> <code class="language-plaintext highlighter-rouge">int</code> will not suffice, <code class="language-plaintext highlighter-rouge">int64_t</code> is needed.<a href="#a15">↩</a></p>
+
+<p><b id="f16">16</b> This seem to work accidentally on my machine for Part 1, but breaks gloriously for Part 2, giving nondeterminstic answers.<a href="#a16">↩</a></p>
+
+<p><b id="f17">17</b> I actually tried the forward way, too, but with less success.<a href="#a17">↩</a></p>
+
+<p><b id="f18">18</b> I probably should have done this earlier than I did, but I really wanted my code to work. <img class="emoji" title=":flushed:" alt=":flushed:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f633.png" height="20" width="20"> <a href="#a18">↩</a></p>
+
+<p><b id="f19">18</b> Strictly speaking, the atomics probably aren’t needed, but they don’t slow down the code enough to notice and feel safer. <a href="#a19">↩</a></p>
+
+  </div>
+<a class="u-url" href="/adventures-in-telework/markdown/2021/04/13/advent_of-cuda.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/adventures-in-telework/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/adventures-in-telework/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>What happens when I work when I'm not at work</p>
+      </div>
+    </div>
+
+    <div class="social-links">
+<ul class="social-media-list"><li><a rel="me" href="https://github.com/bobowedge" title="bobowedge"><svg class="svg-icon grey"><use xlink:href="/adventures-in-telework/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
