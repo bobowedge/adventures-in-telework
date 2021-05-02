@@ -2,7 +2,7 @@
 toc: true
 layout: post
 description: The one where I try to save Christmas from 6 years ago
-categories: [markdown]
+categories: [markdown, cuda, c++]
 title: Advent of Cuda 2015
 ---
 
@@ -1483,7 +1483,7 @@ No real conclusions here, just the smug satisfications of writing some parallel 
 
 ## Footnotes
 
-<b id="f1">1</b>I came close to learning some CUDA before: I took an High Performance Computing class two years ago that covered programming in CUDA for a day or two. Unfortunately, my daughter ran a fever at daycare that day, so I missed it and couldn't find the time to revisit it. Now, however, with the opportunity to learn it at my own pace, I had no excuses.[↩](#a1)
+<b id="f1">1</b> I came close to learning some CUDA before: I took an High Performance Computing class two years ago that covered programming in CUDA for a day or two. Unfortunately, my daughter ran a fever at daycare that day, so I missed it and couldn't find the time to revisit it. Now, however, with the opportunity to learn it at my own pace, I had no excuses.[↩](#a1)
 
 <b id="f2">2</b> At first, because I wanted to get on the leaderboard. However, it became quickly clear  that was never happening, but I kept up the facade of doing it as quickly as *I* could.[↩](#a2)
 
@@ -1491,7 +1491,7 @@ No real conclusions here, just the smug satisfications of writing some parallel 
 
 <b id="f4">4</b> One of the cool things about Advent of Code is that each person gets a different batch of input data.[↩](#a4)
 
-<b id="f5">5</b> This seems to be the "hello world" equivalent for CUDA. In addition to being the example that NVIDIA uses, it's the first meaningful example in the book I mentioned above,and pretty much all of the video examples if you search for "Introduction to CUDA". [↩](#a5)
+<b id="f5">5</b> This seems to be the "hello world" equivalent for CUDA. In addition to being the example that NVIDIA uses, it's the first meaningful example in the book I mentioned above, and pretty much all of the examples if you search for "Introduction to CUDA". [↩](#a5)
 
 <b id="f6">6</b> Opinions are like my friends, they're all assholes. :fire:  That's how the saying goes, right?[↩](#a6)
 
@@ -1503,7 +1503,7 @@ No real conclusions here, just the smug satisfications of writing some parallel 
 
 <b id="f10">10</b> Perhaps more to the point, `itoa()` is not in the ANSI-C standard and not supported by `nvcc`. [↩](#a10)
 
-<b id="f11">11</b> Those values are mostly arbitrary: I used a non-square grid to make sure that I was using the grid correctly, but kept it 2D to avoid unneeded complication. Cue obligatory Khan from Star Trek 2 joke. [↩](#a11)
+<b id="f11">11</b> Those values are mostly arbitrary: I used a non-square grid to make sure that I was using the grid correctly, but kept it 2D to avoid unneeded complication. Cue obligatory Wrath of Khan joke. [↩](#a11)
 
 <b id="f12">12</b> Definitely not the first or second or third approach, though.[↩](#a12)
 
@@ -1513,7 +1513,7 @@ No real conclusions here, just the smug satisfications of writing some parallel 
 
 <b id="f15">15</b> `int` will not suffice, `int64_t` is needed.[↩](#a15)
 
-<b id="f16">16</b> This seem to work accidentally on my machine for Part 1, but breaks gloriously for Part 2, giving nondeterminstic answers.[↩](#a16)
+<b id="f16">16</b> This seem to work accidentally on my machine for Part 1, but breaks gloriously for Part 2 by giving nondeterminstic answers.[↩](#a16)
 
 <b id="f17">17</b> I actually tried the forward way, too, but with less success.[↩](#a17)
 
